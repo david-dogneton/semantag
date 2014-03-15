@@ -1,7 +1,62 @@
 @(message: String)
 
-@main("Welcome to Play") {
+@main("Bienvenue sur Semantag !!") {
+    <h2 class="ui center aligned header">Moteur d'analyse, de recherche et de recommandation sémantique.</h2>
+    <div class="ui page grid overview segment">
+        <div class="sixteen wide column">
+            <div class="ui three column center aligned stackable divided grid">
+                <div class="column">
+                    <div class="ui icon header">
+                        <i class="circular tags icon"></i>
+                        Analyse et taggage d'articles
+                    </div>
+                    <p>Semantag analyse les articles de nombreux sites internet pour comprendre leur contenu et les lier à des entités (acteur, film, sportif, etc.).</p>
+                    <p><a class="ui teal right labeled icon button" href="#">
+                        Entités "à la une" <i class="down long arrow icon"></i></a></p>
+                </div>
+                <div class="column">
+                    <div class="ui icon header">
+                        <i class="circular user icon"></i>
+                        Recommandation personnalisée
+                    </div>
+                    <p>Semantag analyse vos goûts afin de vous recommander des articles appropriés. De nombreux domaines sont représentés, et peuvent être mis en commun.</p>
+                    <p><a class="ui teal right labeled icon button" href="#">
+                        Research <i class="right long arrow icon"></i></a></p>
+                </div>
+                <div class="column">
+                    <div class="ui icon header">
+                        <i class="circular signal icon"></i>
+                    Analyses statistiques
+                    </div>
+                    <p>Semantag génére automatiquement un grand nombre de statistiques à partir des actions que vous effectuez sur l'application (articles lus, etc.).</p>
+                    <p><a class="ui teal right labeled icon button" href="#">
+                        Share <i class="right long arrow icon"></i></a></p>
+                </div>
+            </div>
+        </div>
 
-    @play20.welcome(message)
+    </div>
+    <div class="ui horizontal divider">
+        <i class="circular level down icon"></i>
+    </div>
+    <div class="ui grid">
+        <div class="four wide column"></div>
+        <div class="eight wide column">
+            <div class="ui fluid icon input">
+                <input type="text" placeholder="Rechercher une entité...">
+                <i class="search icon"></i>
+            </div>
+        </div>
+        <div class="four wide column"></div>
+    </div>
+    <div class="ui horizontal divider">
+        <i class="circular level up icon"></i>
+    </div>
+    <div class="ui right floated segment">
+        <p>This segment will appear to the right
+        </p></div>
+    <div class="ui left floated segment">
+        This segment will appear to the left
+    </div>
 
 }
