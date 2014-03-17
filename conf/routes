@@ -9,5 +9,6 @@ GET        /                    controllers.Application.index
 GET        /assets/*file        controllers.Assets.at(path="/public", file)
 
 GET        /create              controllers.Application.create
-GET        /get/france          controllers.Application.get
+GET        /get/france          controllers.Application.getNodeOfFrance
+GET        /get                 controllers.Application.getAllNodes
 

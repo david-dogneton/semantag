@@ -16,8 +16,14 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def get = Action {
+  def getNodeOfFrance = Action {
     val result: List[(String, String)] = Country.getNodesOfFrance()
+    result.foreach(el=> Logger.debug("el : "+el))
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def getAllNodes = Action {
+    val result: List[(String, String, String)] = Country.getAllNodes()
     result.foreach(el=> Logger.debug("el : "+el))
     Ok(views.html.index("Your new application is ready."))
   }
