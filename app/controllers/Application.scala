@@ -16,6 +16,11 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def delete = Action {
+    Country.delete()
+    Ok(views.html.index("Your new application is ready."))
+  }
+
   def getNodeOfFrance = Action {
     val result: List[(String, String)] = Country.getNodesOfFrance()
     result.foreach(el=> Logger.debug("el : "+el))
@@ -23,7 +28,7 @@ object Application extends Controller {
   }
 
   def getAllNodes = Action {
-    val result: List[(String, String, Double)] = Country.getAllNodes()
+    val result: List[(String, String, Double)] = Country.getAllCountries()
     result.foreach(el=> Logger.debug("el : "+el))
     Ok(views.html.index("Your new application is ready."))
   }

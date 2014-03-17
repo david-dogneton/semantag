@@ -11,4 +11,4 @@ GET        /assets/*file        controllers.Assets.at(path="/public", file)
 GET        /create              controllers.Application.create
 GET        /get/france          controllers.Application.getNodeOfFrance
 GET        /get                 controllers.Application.getAllNodes
-
+GET        /delete              controllers.Application.delete
