@@ -23,7 +23,7 @@ object Application extends Controller {
   }
 
   def getAllNodes = Action {
-    val result: List[(String, String, String)] = Country.getAllNodes()
+    val result: List[(String, String, Double)] = Country.getAllNodes()
     result.foreach(el=> Logger.debug("el : "+el))
     Ok(views.html.index("Your new application is ready."))
   }
