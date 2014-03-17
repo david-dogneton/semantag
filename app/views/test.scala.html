@@ -1,0 +1,11 @@
+@()
+Messi a atteint la barre des 370 buts.
+<dl>
+    @for(entree<- Annotator.annotate("Messi a atteint la barre des 370 buts.")) {
+    <dt>
+        @for(donnee<- entree){
+            @donnee |
+        }
+    </dt>
+    }
+</dl>

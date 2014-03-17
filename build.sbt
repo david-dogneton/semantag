@@ -12,7 +12,9 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  "org.anormcypher" %% "anormcypher" % "0.4.4"
+  "org.anormcypher" %% "anormcypher" % "0.4.4",
+  "com.sun.jersey" % "jersey-bundle" % "1.10",
+  "org.json" % "json" % "20090211"
 )
 
 play.Project.playScalaSettings
