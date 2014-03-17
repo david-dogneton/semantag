@@ -1,4 +1,5 @@
 package models.database
+
 import org.anormcypher._
 
 /**
@@ -7,11 +8,11 @@ import org.anormcypher._
 object Country {
 
   def create(): Boolean = {
-    val result = Cypher("""
+    val result = Cypher( """
   create (germany {name:"Germany", population:81726000, type:"Country", code:"DEU"}),
          (france {name:"France", population:65436552, type:"Country", code:"FRA", indepYear:1790}),
          (monaco {name:"Monaco", population:32000, type:"Country", code:"MCO"});
-                        """).execute()
+                         """).execute()
     result
   }
 
@@ -21,8 +22,8 @@ object Country {
       """
     start n=node(*)
     match n-->m
-    where n.code = 'FRA';
-    return n,m;
+    where n.code = 'FRA'
+    return n, m;
       """
     )
     val countries = cypherQuery.apply().map(row =>
