@@ -17,12 +17,11 @@ object Country {
   }
 
 
-  def getAllNodes(): List[(String, String, String)] = {
+  def getAllNodes(): List[(String, String, Double)] = {
 
-    val allCountries = Cypher("START n=node(*) where n.type = 'Country' return n.code as code, n.name as name, n.indepYear as indepYear;")
+    val allCountries = Cypher("START n=node(*) where n.type = 'Country' return n.code as code, n.name as name, n.population as population;")
 
-    val countries = allCountries.apply().map(row =>
-      (row[String]("code"),row[String]("name"),row[String]("indepYear"))
+    val countries = allCountries.apply().map(row => (row[String]("code"),row[String]("name"),row[Double]("population"))
     ).toList
     countries
   }
