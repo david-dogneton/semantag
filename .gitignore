@@ -16,6 +16,10 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+<<<<<<< HEAD
+
+    
+=======
 db
 eclipse
 lib
@@ -31,3 +35,4 @@ test-result
 server.pid
 *.iml
 *.eml
+>>>>>>> a407df3d2f89a5e5c27c941d72373865c74c4cc2
