@@ -1,3 +1,6 @@
+factory/blob/master/.gitignore
+.*
+!.gitignore
 logs
 project/project
 project/target
@@ -13,3 +16,18 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+db
+eclipse
+lib
+log
+logs
+modules
+precompiled
+project/project
+project/target
+target
+tmp
+test-result
+server.pid
+*.iml
+*.eml
