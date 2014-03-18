@@ -29,17 +29,17 @@ object Global extends GlobalSettings {
         })
 
 
-    Akka.system.scheduler
-      .schedule(
-        Duration.create(0,TimeUnit.SECONDS),
-        //Duration.create(nextExecutionInSeconds(8, 0),TimeUnit.SECONDS),
-        //Duration.create(24, TimeUnit.HOURS),
-        Duration.create(10, TimeUnit.SECONDS),
-        new Runnable() {
-          override def run()= {
-            Logger.info("EVERY DAY AT 8:00" + System.currentTimeMillis()) }
-        }
-      )
+//    Akka.system.scheduler
+//      .schedule(
+//        Duration.create(0,TimeUnit.SECONDS),
+//        //Duration.create(nextExecutionInSeconds(8, 0),TimeUnit.SECONDS),
+//        //Duration.create(24, TimeUnit.HOURS),
+//        Duration.create(10, TimeUnit.SECONDS),
+//        new Runnable() {
+//          override def run()= {
+//            Logger.info("EVERY DAY AT 8:00" + System.currentTimeMillis()) }
+//        }
+//      )
 
   }
 
