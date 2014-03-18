@@ -41,7 +41,8 @@ object Application extends Controller {
   var ok : Boolean = false
 
   try {
-    val feedUrl : URL = new URL("http://rss.lemonde.fr/c/205/f/3050/index.rss")
+    //val feedUrl : URL = new URL("http://rss.lemonde.fr/c/205/f/3050/index.rss")
+    val feedUrl : URL = new URL("http://feeds2.feedburner.com/LeJournalduGeek")
 
     val input : SyndFeedInput = new SyndFeedInput()
     val feed : SyndFeed = input.build(new XmlReader(feedUrl))
