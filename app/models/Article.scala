@@ -1,7 +1,7 @@
 package models
 
-import java.util.Date
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
+import org.joda.time.DateTime
 
 /**
  * Created by Administrator on 17/03/14.
@@ -9,7 +9,7 @@ import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
 case class Article(titre: String,
                    auteur: String,
                    description: String,
-                   date: Date,
+                   date: DateTime,
                    image: String,
                    url: String,
                    site: Site,
@@ -53,7 +53,7 @@ object Article {
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
         "description" -> article.description,
-        "date" -> article.date.toString,
+        "date" -> article.date.toString(),
         "image" -> article.image,
         "url" -> article.url,
         "consultationsJour" -> article.consultationsJour,
@@ -110,13 +110,12 @@ object Article {
         nbEtoiles: BigDecimal,
         nbCoeurs: BigDecimal) =>
           try {
-          println("site : "+urlSite)
           val site = Site.get(urlSite)
           new Article(
             titre,
             auteur,
             description,
-            new Date(),
+            new DateTime(date),
             image, url,
             new Site(urlSite, site.nom, site.typeSite),
             consultationsJour.toInt,

@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "org.anormcypher" %% "anormcypher" % "0.4.4",
   "jdom" % "jdom" % "1.0",
   "rome" % "rome" % "1.0",
-  "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
+  "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
+  "joda-time" % "joda-time" % "2.3"
 )
 
 play.Project.playScalaSettings
