@@ -14,10 +14,9 @@ import ExecutionContext.Implicits.global
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
+
     Neo4jREST.setServer("localhost", 7474, "/db/data/")
     Logger.info("Application has started")
-
-
 
     Akka.system.scheduler
       .scheduleOnce(
