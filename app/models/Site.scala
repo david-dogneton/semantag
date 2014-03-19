@@ -39,7 +39,7 @@ object Site {
 
     result match {
       case Nil => throw new NoSuchElementException("Site not found")
-      case head::tail =>                     head
+      case head::tail => head
     }
   }
 
