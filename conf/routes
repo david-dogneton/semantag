@@ -6,7 +6,7 @@
 GET        /                    controllers.Application.index
 
 
-GET        /podcasts            controllers.Application.podcaststest
+GET       /lectureflux/:url     controllers.Application.lectureFlux(url :String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file        controllers.Assets.at(path="/public", file)
@@ -16,10 +16,3 @@ GET        /create              controllers.Application.create
 GET        /get/france          controllers.Application.getNodeOfFrance
 GET        /get                 controllers.Application.getAllNodes
 GET        /delete              controllers.Application.delete
-GET        /createUser          controllers.Application.createUser
-GET        /getUser             controllers.Application.getUser
-GET        /setMailUser         controllers.Application.setMailUser
-GET        /setPseudoUser       controllers.Application.setPseudoUser
-GET        /setMdpUser          controllers.Application.setMdpUser
-GET        /incrNbCoeurs        controllers.Application.incrementerNbCoeurs
-GET        /decrNbCoeurs        controllers.Application.decrementerNbCoeurs
