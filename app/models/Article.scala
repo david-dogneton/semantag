@@ -29,9 +29,10 @@ object Article {
 
   def create(article: Article): Boolean = {
 
-    println("article : "+article.site.url)
     Cypher(
       """
+        match (site : Site)
+        where site.url = {urlSite}
         create (article: Article {
           titre: {titre},
           auteur: {auteur},
@@ -46,9 +47,8 @@ object Article {
           consultations: {consultationsMois},
           totalEtoiles: {totalEtoiles},
           nbEtoiles: {nbEtoiles},
-          nbCoeurs: {nbCoeurs},
-          urlSite: {urlSite}
-        })
+          nbCoeurs: {nbCoeurs}
+        })-[r: APPARTIENT]->(site)
       """
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
@@ -72,14 +72,14 @@ object Article {
 
     val result: List[CypherResultRow] = Cypher(
       """
-        Match (article:Article) where article.url = {url}
+        Match (article:Article {url: {url}})--(site:Site)
         return  article.titre as titre,
                 article.auteur as auteur,
                 article.description as description,
                 article.date as date,
                 article.image as image,
                 article.url as url,
-                article.urlSite as urlSite,
+                site.url as urlSite,
                 article.consultationsJour as consultationsJour,
                 article.consultationsSemaine as consultationsSemaine,
                 article.consultationsSemaineDerniere as consultationsSemaineDerniere,
