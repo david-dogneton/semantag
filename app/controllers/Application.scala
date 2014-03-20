@@ -5,7 +5,8 @@ import play.api._
 import play.api.mvc._
 import com.sun.syndication.feed.synd.{SyndEnclosureImpl, SyndEntry}
 import java.util
-import models.database.{Utilisateur, Country}
+import models.database.{Country}
+import models.Utilisateur
 
 object Application extends Controller {
 

@@ -1,4 +1,4 @@
-package models.database
+package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, CypherStatement, Cypher}
 import play.Logger
