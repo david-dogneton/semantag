@@ -8,7 +8,7 @@ import java.util
 import models.database.Country
 import models.FluxRss
 import models.database.{Country}
-import models.Utilisateur
+import models.{AppreciationEntite, Entite, Utilisateur}
 
 
 object Application extends Controller {
@@ -23,15 +23,122 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def createEntite = Action {
+    val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
+    Logger.debug("result test create entité : "+result)
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def createAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail2@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.create(AppreciationEntite(utilisateur, entite, 4, 3))
+            Logger.debug("result test create appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def getAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail1@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.get(utilisateur, entite)
+            Logger.debug("result test create appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def setQuantiteAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail1@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.setQuantite(utilisateur, entite, -3)
+            Logger.debug("result test set quantité appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def setNbCoeursAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail1@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.incrNbCoeurs(utilisateur, entite)
+            Logger.debug("result test set quantité appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def setFavoriAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail1@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.setFavori(utilisateur, entite)
+            Logger.debug("result test set quantité appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def estFavoriAppreciationEntite = Action {
+    val utilisateurOpt = Utilisateur.get("mail2@test.com")
+    val entiteOpt = Entite.get("http://quartsDeFinale.com")
+    utilisateurOpt match {
+      case Some(utilisateur) =>
+        entiteOpt match {
+          case Some(entite) =>
+            val result = AppreciationEntite.estFavori(utilisateur, entite)
+            Logger.debug("result test set quantité appréciation entité : "+result)
+          case None => println("entiteOpt not found")
+        }
+      case None => println("utilisateurOpt not found")
+    }
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+
   def createUser = Action {
-    val result = Utilisateur.create(Utilisateur("mail1Change@test.com", "mdpTest1", "pseudoTest1"))
+    val result = Utilisateur.create(Utilisateur("mail2@test.com", "mdpTest2", "pseudoTest2"))
     Logger.debug("result test create user : "+result)
     Ok(views.html.index("Your new application is ready."))
   }
 
   def getUser = Action {
-    val result = Utilisateur.get("mail1Change@test.com")
-    Logger.debug("result test get user : " + result)
+    val resultOpt = Utilisateur.get("mail1Change@test.com")
+    resultOpt match {
+      case Some(result) =>
+        Logger.debug("result test get user : " + result)
+      case None => println("Utilisateur not found.")
+    }
     Ok(views.html.index("Your new application is ready."))
   }
 
