@@ -43,5 +43,4 @@ object EstLie {
       case head::tail => head[BigDecimal]("ponderation").toInt
     }
   }
-
 }
