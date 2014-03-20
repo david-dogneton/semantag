@@ -40,7 +40,7 @@ object Entite {
       ).execute()
   }
 
-  def get(url: String): Entite = {
+  def get(url: String): Option[Entite] = {
 
     val result: List[Entite] = Cypher(
       """
@@ -71,8 +71,8 @@ object Entite {
     }.toList
 
     result match {
-      case Nil => throw new NoSuchElementException("Entite not found")
-      case head :: tail => head
+      case Nil => None
+      case head :: tail => Some(head)
     }
   }
 }
