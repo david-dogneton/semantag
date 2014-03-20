@@ -152,6 +152,22 @@ class TestArticle extends FunSuite with ShouldMatchers {
     println("sites : " + sites)
   }
 
+  test("a pour type") {
+
+    val typeTOpt = Type.get("denomination type 1")
+    val entiteOpt = Entite.get("url entite 1")
+    entiteOpt match {
+      case Some(entite) =>
+        typeTOpt match {
+          case Some(typeT) => assert(APourType.create(entite, typeT))
+          case None => println("type not found")
+        }
+      case None => println("article not found")
+    }
+
+
+  }
+
   //  test("delete") {
   //    val article = Article.deleteArticle("url 1")
   //    println("article : "+article)
