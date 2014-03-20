@@ -5,11 +5,16 @@
 # Home page
 GET        /                    controllers.Application.index
 
+
+GET       /lectureflux/:url     controllers.Application.lectureFlux(url :String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file        controllers.Assets.at(path="/public", file)
+
 
 GET        /create              controllers.Application.create
 GET        /get/france          controllers.Application.getNodeOfFrance
 GET        /get                 controllers.Application.getAllNodes
+GET        /delete              controllers.Application.delete
 GET        /annotation/test     controllers.Application.test
 GET        /presentation        controllers.Application.presentation
