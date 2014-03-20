@@ -88,11 +88,11 @@ object Article {
                 article.totalEtoiles as totalEtoiles,
                 article.nbEtoiles as nbEtoiles,
                 article.nbCoeurs as nbCoeurs;
-      """).on("url" -> url).apply().toList
+      """).on("url" -> url)().toList
 
 
     result match {
-      case Nil => throw new NoSuchElementException("Article Not Found")
+      case Nil => None
       case head :: tail => head match {
         case CypherRow(titre: String,
         auteur: String,

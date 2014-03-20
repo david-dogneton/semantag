@@ -94,10 +94,14 @@ object Application extends Controller {
 
   def miseAJourFlux = Action {
 
-    FluxRss.MisAJourTousSites()
+    println("RES " + FluxRss.MisAJourTousSites())
     Ok(views.html.index("C'est READY QUOI"))
 
   }
 
+  def insertSites= Action {
+    FluxRss.insertAll
+    Ok(views.html.index("C'est READY QUOI"))
+  }
 
 }
