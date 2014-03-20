@@ -10,9 +10,9 @@ case class Article(titre: String,
                    auteur: String,
                    description: String,
                    date: DateTime,
-                   image: String,
                    url: String,
                    site: Site,
+                   image: String = "",
                    consultationsJour: Int = 0,
                    consultationsSemaine: Int = 0,
                    consultationsSemaineDerniere: Int = 0,
@@ -38,8 +38,8 @@ object Article {
           auteur: {auteur},
           description: {description},
           date: {date},
-          image: {image},
           url: {url},
+          image: {image},
           consultationsJour: {consultationsJour},
           consultationsSemaine: {consultationsSemaine},
           consultationsSemaineDerniere: {consultationsSemaineDerniere},
@@ -48,14 +48,14 @@ object Article {
           totalEtoiles: {totalEtoiles},
           nbEtoiles: {nbEtoiles},
           nbCoeurs: {nbCoeurs}
-        })-[r: APPARTIENT]->(site)
+        })-[r: appartient]->(site)
       """
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
         "description" -> article.description,
         "date" -> article.date.toString(),
-        "image" -> article.image,
         "url" -> article.url,
+        "image" -> article.image,
         "consultationsJour" -> article.consultationsJour,
         "consultationsSemaine" -> article.consultationsSemaine,
         "consultationsSemaineDerniere" -> article.consultationsSemaineDerniere,
@@ -68,7 +68,7 @@ object Article {
       ).execute()
   }
 
-  def getArticle(url: String): Article = {
+  def getArticle(url: String): Option[Article] = {
 
     val result: List[CypherResultRow] = Cypher(
       """
@@ -77,9 +77,9 @@ object Article {
                 article.auteur as auteur,
                 article.description as description,
                 article.date as date,
-                article.image as image,
                 article.url as url,
                 site.url as urlSite,
+                article.image as image,
                 article.consultationsJour as consultationsJour,
                 article.consultationsSemaine as consultationsSemaine,
                 article.consultationsSemaineDerniere as consultationsSemaineDerniere,
@@ -88,19 +88,18 @@ object Article {
                 article.totalEtoiles as totalEtoiles,
                 article.nbEtoiles as nbEtoiles,
                 article.nbCoeurs as nbCoeurs;
-      """).on("url" -> url).apply().toList
-
+      """).on("url" -> url)().toList
 
     result match {
-      case Nil => throw new NoSuchElementException("Article Not Found")
+      case Nil => None
       case head :: tail => head match {
         case CypherRow(titre: String,
         auteur: String,
         description: String,
         date: String,
-        image: String,
         url: String,
         urlSite: String,
+        image: String,
         consultationsJour: BigDecimal,
         consultationsSemaine: BigDecimal,
         consultationsSemaineDerniere: BigDecimal,
@@ -109,25 +108,25 @@ object Article {
         totalEtoiles: BigDecimal,
         nbEtoiles: BigDecimal,
         nbCoeurs: BigDecimal) =>
-          try {
-          val site = Site.get(urlSite)
-          new Article(
-            titre,
-            auteur,
-            description,
-            new DateTime(date),
-            image, url,
-            new Site(urlSite, site.nom, site.typeSite),
-            consultationsJour.toInt,
-            consultationsSemaine.toInt,
-            consultationsSemaineDerniere.toInt,
-            consultationsMois.toInt,
-            consultations.toInt,
-            totalEtoiles.toInt,
-            nbEtoiles.toInt,
-            nbCoeurs.toInt)
-          } catch {
-            case e : Exception => throw e
+          val siteOpt = Site.get(urlSite)
+          siteOpt match {
+            case Some(site) => Some(new Article(
+              titre,
+              auteur,
+              description,
+              new DateTime(date),
+              url,
+              new Site(urlSite, site.nom, site.typeSite),
+              image,
+              consultationsJour.toInt,
+              consultationsSemaine.toInt,
+              consultationsSemaineDerniere.toInt,
+              consultationsMois.toInt,
+              consultations.toInt,
+              totalEtoiles.toInt,
+              nbEtoiles.toInt,
+              nbCoeurs.toInt))
+            case None => None
           }
         case _ => throw new IllegalArgumentException("Mauvais format de l'article")
       }
@@ -144,6 +143,4 @@ object Article {
     println("result : " + result)
     result
   }
-
-
 }
