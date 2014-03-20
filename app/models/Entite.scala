@@ -1,28 +1,33 @@
 package models
 
-import org.anormcypher.Cypher
+import org.anormcypher.{CypherRow, Cypher}
 
 /**
  * Created by Administrator on 18/03/14.
  */
-case class Entite(nom : String,
-                  url : String,
-                  apparitionsJour: String,
-                  apparitionsSemaine: String,
-                  apparitionsSemaineDerniere: String,
-                  apparitionsMois: String,
-                  apparitions: String) {
+case class Entite(nom: String,
+                  url: String,
+                  apparitionsJour: Int = 0,
+                  apparitionsSemaine: Int = 0,
+                  apparitionsSemaineDerniere: Int = 0,
+                  apparitionsMois: Int = 0,
+                  apparitions: Int = 0) {
 
 }
 
 object Entite {
 
-  def create(entite: Entite) = {
+  def create(entite: Entite): Boolean = {
     Cypher(
       """
-        create (article: Article {
+        create (entite: Entite{
+          nom: {nom},
           url: {url},
-          nom: {nom};
+          apparitionsJour: {apparitionsJour},
+          apparitionsSemaine: {apparitionsSemaine},
+          apparitionsSemaineDerniere: {apparitionsSemaineDerniere},
+          apparitionsMois: {apparitionsMois},
+          apparitions: {apparitions}
         })
       """
     ).on("nom" -> entite.nom,
@@ -35,5 +40,39 @@ object Entite {
       ).execute()
   }
 
+  def get(url: String): Entite = {
 
+    val result: List[Entite] = Cypher(
+      """
+        Match (entite:Entite) where entite.url = {url}
+        return  entite.nom as nom,
+                entite.url as url,
+                entite.apparitionsJour as apparitionsJour,
+                entite.apparitionsSemaine as apparitionsSemaine,
+                entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
+                entite.apparitionsMois as apparitionsMois,
+                entite.apparitions as apparitions;
+      """).on("url" -> url)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => throw new NoSuchElementException("Entite not found")
+      case head :: tail => head
+    }
+  }
 }
