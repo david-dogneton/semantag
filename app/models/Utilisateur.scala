@@ -25,51 +25,51 @@ object Utilisateur {
     result
   }
 
-  def get(adresseMail: String): Utilisateur = {
+  def get(adresseMail: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
-  def setMail(ancienMail: String, nouveauMail: String): Utilisateur = {
+  def setMail(ancienMail: String, nouveauMail: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.mail = {nouveauMail} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> ancienMail, "nouveauMail" -> nouveauMail).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
-  def setPseudo(adresseMail: String, nouveauPseudo: String): Utilisateur = {
+  def setPseudo(adresseMail: String, nouveauPseudo: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.pseudo = {nouveauPseudo} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail, "nouveauPseudo" -> nouveauPseudo).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
-  def setMdp(adresseMail: String, nouveauMdp: String): Utilisateur = {
+  def setMdp(adresseMail: String, nouveauMdp: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.mdp = {nouveauMdp} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail, "nouveauMdp" -> nouveauMdp).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
-  def incrementerNbCoeurs(adresseMail: String): Utilisateur = {
+  def incrementerNbCoeurs(adresseMail: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.nbCoeurs = n.nbCoeurs + 1 return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
-  def decrementerNbCoeurs(adresseMail: String): Utilisateur = {
+  def decrementerNbCoeurs(adresseMail: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.nbCoeurs = n.nbCoeurs - 1 return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail).apply().head
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
-      case _ => throw new Exception("Utilisateur not found")
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
     }
   }
 
