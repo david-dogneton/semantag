@@ -62,6 +62,12 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def deleteUser = Action {
+    val result = Utilisateur.delete("mail1Change@test.com")
+    Logger.debug("result test delete : " + result)
+    Ok(views.html.index("Your new application is ready."))
+  }
+
   def delete = Action {
     Country.delete()
     Ok(views.html.index("Your new application is ready."))

@@ -73,4 +73,9 @@ object Utilisateur {
     }
   }
 
+  def delete(adresseMail: String): Boolean = {
+    val result: Boolean = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} delete n;").on("mailDonne" -> adresseMail).execute()
+    result
+  }
+
 }
