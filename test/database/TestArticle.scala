@@ -25,7 +25,7 @@ class TestArticle extends FunSuite with ShouldMatchers {
 
     val siteA: Option[Site] = Site.get("http://www.lexpress.fr/rss/alaune.xml")
     siteA match {
-      case Some(site) => val article = Article("titre 1", "auteur 1", "description 1", new DateTime(), "image 1", "url 1", site)
+      case Some(site) => val article = Article("titre 1", "auteur 1", "description 1", new DateTime(), "url 1", site)
         assert(Article.create(article))
       case None =>
     }
@@ -36,9 +36,9 @@ class TestArticle extends FunSuite with ShouldMatchers {
     val siteB = Site.get("http://rss.lefigaro.fr/lefigaro/laune")
     siteB match {
       case Some(site) =>
-        val article = Article("titre 2", "auteur 2", "description 2", new DateTime(), "image 2", "url 2", site)
+        val article = Article("titre 2", "auteur 2", "description 2", new DateTime(), "url 2", site, "image 2")
         assert(Article.create(article))
-        val article2 = Article("titre 3", "auteur 3", "description 3", new DateTime(), "image 3", "url 3", site)
+        val article2 = Article("titre 3", "auteur 3", "description 3", new DateTime(), "url 3", site, "image 3")
         assert(Article.create(article2))
       case None => println("site not found")
     }
