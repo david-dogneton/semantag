@@ -48,7 +48,7 @@ object Article {
           totalEtoiles: {totalEtoiles},
           nbEtoiles: {nbEtoiles},
           nbCoeurs: {nbCoeurs}
-        })-[r: APPARTIENT]->(site)
+        })-[r: appartient]->(site)
       """
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
@@ -68,7 +68,7 @@ object Article {
       ).execute()
   }
 
-  def getArticle(url: String): Article = {
+  def getArticle(url: String): Option[Article] = {
 
     val result: List[CypherResultRow] = Cypher(
       """
@@ -109,25 +109,24 @@ object Article {
         totalEtoiles: BigDecimal,
         nbEtoiles: BigDecimal,
         nbCoeurs: BigDecimal) =>
-          try {
-          val site = Site.get(urlSite)
-          new Article(
-            titre,
-            auteur,
-            description,
-            new DateTime(date),
-            image, url,
-            new Site(urlSite, site.nom, site.typeSite),
-            consultationsJour.toInt,
-            consultationsSemaine.toInt,
-            consultationsSemaineDerniere.toInt,
-            consultationsMois.toInt,
-            consultations.toInt,
-            totalEtoiles.toInt,
-            nbEtoiles.toInt,
-            nbCoeurs.toInt)
-          } catch {
-            case e : Exception => throw e
+          val siteOpt = Site.get(urlSite)
+          siteOpt match {
+            case Some(site) => Some(new Article(
+              titre,
+              auteur,
+              description,
+              new DateTime(date),
+              image, url,
+              new Site(urlSite, site.nom, site.typeSite),
+              consultationsJour.toInt,
+              consultationsSemaine.toInt,
+              consultationsSemaineDerniere.toInt,
+              consultationsMois.toInt,
+              consultations.toInt,
+              totalEtoiles.toInt,
+              nbEtoiles.toInt,
+              nbCoeurs.toInt))
+            case None => None
           }
         case _ => throw new IllegalArgumentException("Mauvais format de l'article")
       }
@@ -144,6 +143,4 @@ object Article {
     println("result : " + result)
     result
   }
-
-
 }

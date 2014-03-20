@@ -24,7 +24,7 @@ object Site {
       ).execute()
   }
 
-  def get(url: String): Site = {
+  def get(url: String): Option[Site] = {
 
     val result: List[Site] = Cypher(
       """
@@ -38,9 +38,25 @@ object Site {
     }.toList
 
     result match {
-      case Nil => throw new NoSuchElementException("Site not found")
-      case head::tail => head
+      case Nil => None
+      case head::tail => Some(head)
     }
+  }
+
+  def getAll(): List[Site] = {
+
+    val result: List[Site] = Cypher(
+      """
+        Match (site:Site)
+        return  site.url as url,
+                site.nom as nom,
+                site.type as type;
+      """)().collect {
+      case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)
+      case _ => throw new IllegalArgumentException("Mauvais format du site")
+    }.toList
+
+    result
   }
 
   def delete(url : String): Boolean = {
