@@ -6,7 +6,7 @@ import play.api.mvc._
 import com.sun.syndication.feed.synd.{SyndEnclosureImpl, SyndEntry}
 import java.util
 import models.database.{Country}
-import models.Utilisateur
+import models.{AppreciationEntite, Entite, Utilisateur}
 
 object Application extends Controller {
 
@@ -20,8 +20,20 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def createEntite = Action {
+    val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
+    Logger.debug("result test create entité : "+result)
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  def createAppreciationEntite = Action {
+    val result = AppreciationEntite.create(AppreciationEntite(Utilisateur.get("mail1@test.com"), Entite.get("http://quartsDeFinale.com"), 4, 3))
+    Logger.debug("result test create appréciation entité : "+result)
+    Ok(views.html.index("Your new application is ready."))
+  }
+
   def createUser = Action {
-    val result = Utilisateur.create(Utilisateur("mail1Change@test.com", "mdpTest1", "pseudoTest1"))
+    val result = Utilisateur.create(Utilisateur("mail1@test.com", "mdpTest1", "pseudoTest1"))
     Logger.debug("result test create user : "+result)
     Ok(views.html.index("Your new application is ready."))
   }

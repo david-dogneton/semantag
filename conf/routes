@@ -16,4 +16,7 @@ GET        /create                  controllers.Application.create
 GET        /get/france              controllers.Application.getNodeOfFrance
 GET        /get                     controllers.Application.getAllNodes
 GET        /delete                  controllers.Application.delete
+GET        /createUser              controllers.Application.createUser
 GET        /deleteUser              controllers.Application.deleteUser
+GET        /createEntite            controllers.Application.createEntite
+GET        /createAppreciationEntite            controllers.Application.createAppreciationEntite
