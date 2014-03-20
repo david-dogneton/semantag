@@ -12,3 +12,4 @@ GET        /create              controllers.Application.create
 GET        /get/france          controllers.Application.getNodeOfFrance
 GET        /get                 controllers.Application.getAllNodes
 GET        /annotation/test     controllers.Application.test
+GET        /presentation        controllers.Application.presentation

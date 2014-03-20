@@ -1,0 +1,6 @@
+#toogleBar {
+    position: fixed;
+    top: 200px;
+    z-index: 500;
+    font-size:12px;
+}

@@ -1,0 +1,36 @@
+#HEADER
+header.slogan=Find what you like
+header.presentation=Presentation
+header.subscribe=Sign in
+header.connect=Log in
+header.buttonSubscribe=Want to sign in ?
+header.buttonSubscribeHover=I sign in now !
+header.entities=Entities
+header.stats=Statistics
+header.stats.today=Today
+header.stats.thisWeek=This week
+header.stats.thisMonth=This month
+header.stats.fromBeginning=From the beginning
+header.search=Find articles talking about...
+
+#INDEX
+index.title=Semantag : semantic news
+index.header=What do we really talk about on the Web ?
+
+#PRESENTATION
+presentation.title=What is Semantag ?
+presentation.header=Semantag provide a semantic structuration and recommendation engine for Web articles.
+presentation.grid.one.title=Rss feeds aggregation
+presentation.grid.one.link=See websites
+presentation.grid.one.content=News listed on Semantag are the exclusive property of the websites that provide them. We use RSS feeds to analyze the title and the description of each item to include them in the system.
+presentation.grid.two.title=Articles analyse and tagging
+presentation.grid.two.link=News Highlights
+presentation.grid.two.content=Semantag analyzes items from various news sites, understand their content and extract entities (actors, movies, sports, cities...).
+presentation.grid.three.title=Personnal Recommandation
+presentation.grid.three.link=Connexion
+presentation.grid.three.content=Semantag recommends items according to your likes and your choices, filterable by area (Sports, Science, Cinema ...) or specific entities. Sign up in a few seconds with your email address!
+presentation.grid.four.title=Statistics
+presentation.grid.four.link=Public stats
+presentation.grid.four.content=Semantag automatically generates a lot of statistics from the news. It becomes easy to see what is the most talked about on the web.
+presentation.featured.sentence=Semantag can link items from the Web according to their matching tags.<br/>These tags correspond to entities from DBpedia, the Wikipedia structured database.<br/>The Annotation system for generating tags is provided by DBpedia Spotlight.
+presentation.featured.us=Semantag was conducted as part of a project graduation by four engineering students from the French engineering school EISTI who thanked the work of the members of the open source project DBpedia Spotlight.

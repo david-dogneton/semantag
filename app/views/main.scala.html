@@ -1,15 +1,18 @@
-@(title: String)(content: Html)
+@(title: String)(page:String)(content: Html)(implicit lang: Lang)
 
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
-    </head>
-    <body>
-        @content
-    </body>
+<head>
+    <title>@title</title>
+    <link rel="stylesheet" media="screen" href='@routes.Assets.at("stylesheets/semantic.css")'>
+    <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/main.css")'>
+    <link rel="shortcut icon" type="image/png" href='@routes.Assets.at("images/favicon.png")'>
+    <script src='@routes.Assets.at("javascripts/jquery-1.9.0.min.js")' type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/semantic.js")' type="text/javascript"></script>
+</head>
+<body>
+    @header(page)
+    @content
+</body>
 </html>
