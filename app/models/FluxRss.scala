@@ -101,7 +101,8 @@ object FluxRss {
               image =imageList.get(0).getUrl
             }
 
-            val nouvelArticle=Article(titre,auteur,description,new DateTime(date),image,lien,site)
+            /* IMPORTANT ::: ICI CA NE COMPILAIT PAS A CETTE LIGNE, j'ai changé les paramètres pour que çà compile mais checkez ! */
+            val nouvelArticle=Article(titre,auteur,description,new DateTime(date),lien,site,image)
             val bool =Article.create(nouvelArticle)
             if(bool){
               nombreArtAdd = nombreArtAdd+1

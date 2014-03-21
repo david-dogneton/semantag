@@ -1,146 +1,26 @@
 @()(implicit lang: Lang)
 @main(Messages("index.title"))("accueil") {
-<div class="ui grid">
-
+<div class="ui grid" ng-controller="NewsRenderer">
     <div class="twelve wide column">
         <div class="ui five items">
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Cute Dog</div>
-                    <p class="description">This dog has some things going for it. Its pretty cute and looks like it'd be fun to cuddle up with.</p>
-                    <div class="extra">
-                        199 votes
+            <div class="item" ng-repeat="item in news['items']">
+            <a href="{{item['url']}}" target="_blank">
+                    <div class="image">
+                        <img src="{{item['image']}}">
+                      <!--  <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>-->
                     </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres2.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="meta">5 days ago</div>
-                    <div class="name">Faithful Dog</div>
-                    <p class="description">Sometimes its more important to have a dog you know you can trust. But not every dog is trustworthy, you can tell by looking at its smile.</p>
-                    <div class="extra">
-                        311 votes
+                    <div class="content">
+                        <div class="meta">il y a 5 minutes</div>
+                        <div class="name">{{item['title']}}</div>
+                        <p><span class="theme">{{item['theme']}}</span> - {{item['site']}}</p>
+                        <p class="description">{{item['description']}}</p>
+                        <div class="extra">
+                            <i class="unhide icon"></i> {{item['dayViews']}}
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Cute Dog</div>
-                    <p class="description">This dog has some things going for it. Its pretty cute and looks like it'd be fun to cuddle up with.</p>
-                    <div class="extra">
-                        199 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres2.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="meta">5 days ago</div>
-                    <div class="name">Faithful Dog</div>
-                    <p class="description">Sometimes its more important to have a dog you know you can trust. But not every dog is trustworthy, you can tell by looking at its smile.</p>
-                    <div class="extra">
-                        311 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Cute Dog</div>
-                    <p class="description">This dog has some things going for it. Its pretty cute and looks like it'd be fun to cuddle up with.</p>
-                    <div class="extra">
-                        199 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres2.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="meta">5 days ago</div>
-                    <div class="name">Faithful Dog</div>
-                    <p class="description">Sometimes its more important to have a dog you know you can trust. But not every dog is trustworthy, you can tell by looking at its smile.</p>
-                    <div class="extra">
-                        311 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres3.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Silly Dog</div>
-                    <p class="description">Silly dogs can be quite fun to have as companions. You never know what kind of ridiculous thing they will do.</p>
-                    <div class="extra">
-                        522 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres3.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Silly Dog</div>
-                    <p class="description">Silly dogs can be quite fun to have as companions. You never know what kind of ridiculous thing they will do.</p>
-                    <div class="extra">
-                        522 votes
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <div class="image">
-                    <img src="/images/demo/highres.jpg">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
-                </div>
-                <div class="content">
-                    <div class="name">Cute Dog</div>
-                    <p class="description">This dog has some things going for it. Its pretty cute and looks like it'd be fun to cuddle up with.</p>
-                    <div class="extra">
-                        199 votes
-                    </div>
-                </div>
+             </a>
             </div>
         </div>
     </div>
@@ -191,5 +71,6 @@
     </div>
 </div>
 <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
 <script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
 }

@@ -30,7 +30,7 @@ object Application extends Controller {
   def createEntite = Action {
     val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
     Logger.debug("result test create entité : "+result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createAppreciationEntite = Action {
@@ -46,7 +46,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getAppreciationEntite = Action {
@@ -62,7 +62,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setQuantiteAppreciationEntite = Action {
@@ -78,7 +78,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setNbCoeursAppreciationEntite = Action {
@@ -94,7 +94,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setFavoriAppreciationEntite = Action {
@@ -110,7 +110,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def estFavoriAppreciationEntite = Action {
@@ -126,14 +126,14 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
 
   def createUser = Action {
     val result = Utilisateur.create(Utilisateur("mail2@test.com", "mdpTest2", "pseudoTest2"))
     Logger.debug("result test create user : "+result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getUser = Action {
@@ -143,49 +143,49 @@ object Application extends Controller {
         Logger.debug("result test get user : " + result)
       case None => println("Utilisateur not found.")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
 
   def setMailUser = Action {
     val result = Utilisateur.setMail("mail1Change@test.com", "mail1Change@test.com")
     Logger.debug("result test set mail user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setPseudoUser = Action {
     val result = Utilisateur.setPseudo("mail1Change@test.com", "pseudoTest1Change")
     Logger.debug("result test set pseudo user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setMdpUser = Action {
     val result = Utilisateur.setMdp("mail1Change@test.com", "mdpTest1Change")
     Logger.debug("result test set mdp user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def incrementerNbCoeurs = Action {
     val result = Utilisateur.incrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test incrémenter nb coeurs : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def decrementerNbCoeurs = Action {
     val result = Utilisateur.decrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test décrémenter nb coeurs : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def deleteUser = Action {
     val result = Utilisateur.delete("mail1Change@test.com")
     Logger.debug("result test delete : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def delete = Action {
     Country.delete()
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getNodeOfFrance = Action {
@@ -210,13 +210,13 @@ object Application extends Controller {
   def miseAJourFlux = Action {
 
     println("RES " + FluxRss.MisAJourTousSites())
-    Ok(views.html.index("C'est READY QUOI"))
+    Ok(views.html.index())
 
   }
 
   def insertSites= Action {
     FluxRss.insertAll
-    Ok(views.html.index("C'est READY QUOI"))
+    Ok(views.html.index())
   }
 
 }

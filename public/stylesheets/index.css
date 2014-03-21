@@ -4,3 +4,102 @@
     z-index: 500;
     font-size:12px;
 }
+
+.ui.items .item > a> .content > p > .theme {
+    text-transform: uppercase;
+    clear: both;
+    margin: 0em;
+}
+
+.ui.items .item > a > .content > p {
+    clear: both;
+}
+
+.ui.items > .row > .item> a, .ui.items > .item > a{
+    font-size: 0.7em;
+    line-height: 1.2;
+}
+
+
+.ui.items > .row > .item, .ui.items > .item{
+    min-height: 0px;
+}
+
+.ui.items .item > a > .image >  img {
+    display: block;
+    width: 100%;
+}
+
+
+
+.ui.items .item,
+.ui.items .item > a > .image,
+.ui.items .item > a > .image .overlay,
+.ui.items .item > a > .content,
+.ui.items .item > a > .content > .meta,
+.ui.items .item > a > .content > .extra {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/*--------------
+      Images
+---------------*/
+
+.ui.items .item > a > .image {
+    display: block;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.05);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 0.2em;
+}
+
+.ui.items .item > a > .image > img {
+    display: block;
+    width: 100%;
+}
+
+/*--------------
+     Content
+---------------*/
+
+.ui.items .item > a > .content {
+    padding: 0.75em 0.5em;
+}
+
+.ui.items .item > a > .content > .name {
+    display: block;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 0.2em;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.ui.items .item > a > .content > .description {
+    clear: both;
+    margin: 0em 0em;
+    color: rgba(0, 0, 0, 0.45);
+}
+
+.ui.items .item > a > .content > .description p {
+    margin: 0em 0em 0.2em;
+}
+
+.ui.items .item > a > .content > .description p:last-child {
+    margin-bottom: 0em;
+}
+
+/*--------------
+      Meta
+---------------*/
+
+
+.ui.items .item > a > .content > .meta + .name {
+    float: left;
+}
+
