@@ -3,16 +3,15 @@
 # ~~~~
 
 # Home page
+GET        /                    controllers.Application.index
 
-GET        /                                controllers.Application.index
 
-GET        /flux                controllers.Application.miseAJourFlux
-
-GET        /createsites         controllers.Application.insertSites
+GET        /majsites            controllers.Application.miseAJourSites
+GET        /majflux                controllers.Application.miseAJourFlux
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                    controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)
 
 
 GET        /create                          controllers.Application.create
@@ -24,3 +23,5 @@ GET        /deleteUser                      controllers.Application.deleteUser
 GET        /createEntite                    controllers.Application.createEntite
 GET        /createAppreciationEntite        controllers.Application.createAppreciationEntite
 GET        /testBDD                         controllers.Application.estFavoriAppreciationEntite
+GET        /annotation/test     controllers.Application.test
+GET        /presentation        controllers.Application.presentation

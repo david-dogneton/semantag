@@ -1,0 +1,68 @@
+@()(implicit lang: Lang)
+@main(Messages("presentation.title"))("presentation") {
+<h2 class="ui center aligned header" style="margin-top:50px">@Messages("presentation.header")</h2>
+<div class="ui page grid overview segment" style="min-height:490px">
+    <div class="sixteen wide column">
+        <div class="ui four column center aligned stackable divided grid">
+            <div class="column">
+                <div class="ui icon header">
+                    <i class="circular rss link icon"></i>
+                    @Messages("presentation.grid.one.title")
+                </div>
+                <p>@Messages("presentation.grid.one.content")</p>
+                <p><a class="ui teal right labeled icon button" href="#">
+                    @Messages("presentation.grid.one.link")<i class="right long arrow icon"></i></a></p>
+            </div>
+            <div class="column">
+                <div class="ui icon header">
+                    <i class="circular tags link icon"></i>
+                    @Messages("presentation.grid.two.title")
+                </div>
+                <p>@Messages("presentation.grid.two.content")</p>
+                <p><a class="ui teal right labeled icon button" href="#">
+                    @Messages("presentation.grid.two.link") <i class="right long arrow icon"></i></a></p>
+            </div>
+            <div class="column">
+                <div class="ui icon header">
+                    <i class="circular user link icon"></i>
+                    @Messages("presentation.grid.three.title")
+                </div>
+                <p>@Messages("presentation.grid.three.content")</p>
+                <p><a class="ui teal right labeled icon button" href="#">
+                    @Messages("presentation.grid.three.link") <i class="right long arrow icon"></i></a></p>
+            </div>
+            <div class="column">
+                <div class="ui icon header">
+                    <i class="circular signal link icon"></i>
+                    @Messages("presentation.grid.four.title")
+                </div>
+                <p>@Messages("presentation.grid.four.content")</p>
+                <p><a class="ui teal right labeled icon button" href="#">
+                    @Messages("presentation.grid.four.link") <i class="right long arrow icon"></i></a></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="ui horizontal divider">
+    <i class="circular level down icon"></i>
+</div>
+
+<div class="ui inverted page grid stackable relaxed feature segment">
+    <div class="column">
+        <h2 class="center aligned ui header">
+            @Html(Messages("presentation.featured.sentence"))
+        </h2>
+    </div>
+</div>
+<div class="ui horizontal divider">
+    <i class="circular level up icon"></i>
+</div>
+<div class="ui page grid overview segment">
+    <div class="column">
+        <h3 class="center aligned ui header">
+            @Messages("presentation.featured.us")
+        </h3>
+    </div>
+</div>
+}
