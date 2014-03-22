@@ -63,8 +63,8 @@ object FluxRss {
 
       val input : SyndFeedInput = new SyndFeedInput()
       val feed : SyndFeed = input.build(new XmlReader(feedUrl))
-      println(feed.getTitle)
-      println(feed.getDescription)
+     // println(feed.getTitle)
+     // println(feed.getDescription)
 
       ok = true
       // "Cast" obligatoire car l'api ne reconnait pas directement le type renvoyé par getEntries
@@ -79,7 +79,7 @@ object FluxRss {
         listeFluxScala=listeFluxScala.::(tmp)
       }
 
-      println("Nombre flux " + site.nom +"   "+listeFluxScala.size)
+     // println("Nombre flux " + site.nom +"   "+listeFluxScala.size)
       var nombreArtAdd =0
       listeFluxScala.foreach(
         art => {
@@ -101,7 +101,8 @@ object FluxRss {
               image =imageList.get(0).getUrl
             }
 
-            val nouvelArticle=Article(titre,auteur,description,new DateTime(date),image,lien,site)
+            val nouvelArticle=Article(titre,auteur,description,new DateTime(date),lien,site,image)
+
             val bool =Article.create(nouvelArticle)
             if(bool){
               nombreArtAdd = nombreArtAdd+1
@@ -128,7 +129,7 @@ object FluxRss {
           }
         }
       )
-      println("Nombre flux RAJOUTE" + site.nom +"   "+nombreArtAdd)
+      //println("Nombre flux RAJOUTE" + site.nom +"   "+nombreArtAdd)
     }
     catch {
       case ex : Exception =>
