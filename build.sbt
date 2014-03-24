@@ -21,7 +21,9 @@ libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
   "joda-time" % "joda-time" % "2.3",
   "com.sun.jersey" % "jersey-bundle" % "1.10",
-  "org.json" % "json" % "20090211"
+  "org.json" % "json" % "20090211",
+  "jp.t2v" %% "play2-auth"      % "0.11.0",
+  "jp.t2v" %% "play2-auth-test" % "0.11.0" % "test"
 )
 
 play.Project.playScalaSettings

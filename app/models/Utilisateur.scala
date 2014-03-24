@@ -33,6 +33,16 @@ object Utilisateur {
     }
   }
 
+
+  def authenticate(adresseMail: String, mdp :String): Option[Utilisateur] = {
+    val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} and n.mdp = {mdpDonne} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail, "mdpDonne" -> mdp).apply().head
+    result match {
+      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
+      case _ => None
+    }
+  }
+
+
   def setMail(ancienMail: String, nouveauMail: String): Option[Utilisateur] = {
     val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} set n.mail = {nouveauMail} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> ancienMail, "nouveauMail" -> nouveauMail).apply().head
     result match {

@@ -9,9 +9,10 @@ import models.database.Country
 import models.FluxRss
 import models.database.{Country}
 import models.{AppreciationEntite, Entite, Utilisateur}
+import jp.t2v.lab.play2.auth.AuthenticationElement
 
 
-object Application extends Controller {
+object Application extends Controller  with AuthenticationElement with AuthConfigImpl {
 
   def index = Action {
     implicit request => Ok(views.html.index())
@@ -217,5 +218,13 @@ object Application extends Controller {
     FluxRss.miseAJourBddSites
     Ok(views.html.index())
   }
+
+
+  def mapage = StackAction {
+    implicit request =>
+      Ok(views.html.mapage())
+  }
+
+
 
 }
