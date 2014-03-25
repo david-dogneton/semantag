@@ -81,10 +81,6 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       )
   }
 
-
-
-
-
   def inscription =StackAction{
     implicit request =>
     val maybeUser :Option[User] = loggedIn
