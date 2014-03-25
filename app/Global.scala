@@ -20,7 +20,7 @@ object Global extends GlobalSettings {
     Neo4jREST.setServer("localhost", 7474, "/db/data/")
     Logger.info("Application has started")
 
-    Akka.system.scheduler
+    /*Akka.system.scheduler
       .scheduleOnce(
         Duration.create(0,TimeUnit.MILLISECONDS)
         ,
@@ -33,6 +33,7 @@ object Global extends GlobalSettings {
         })
 
 
+<<<<<<< HEAD
 //    Akka.system.scheduler
 //      .schedule(
 //        Duration.create(0,TimeUnit.SECONDS),
@@ -47,7 +48,7 @@ object Global extends GlobalSettings {
 //          }
 //        }
 //      )
-
+// */
   }
 
   override def onStop(app: Application) {

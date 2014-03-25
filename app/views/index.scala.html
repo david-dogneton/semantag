@@ -1,76 +1,77 @@
 @()(implicit lang: Lang)
 @main(Messages("index.title"))("accueil") {
 <div class="ui grid" ng-controller="NewsRenderer">
+    <div class="column"><h4 class="ui header">Domaine</h4></div>
+    <div class="column" style="text-transform:uppercase; font-family: 'Source Sans Pro'">
+        <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
+    </div>
+    <div class="column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+        <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+    </div>
+    <div class="ui clearing divider"></div>
     <div class="twelve wide column">
         <div class="ui five items">
-            <div class="item" ng-repeat="item in news['items']">
-            <a href="{{item['url']}}" target="_blank">
+            <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
+                <a class="like ui corner label">
+                    <i class="like icon"></i>
+                </a>
+
+                <a href="{{item['url']}}" target="_blank">
                     <div class="image">
                         <img src="{{item['image']}}">
-                      <!--  <a class="like ui corner label">
-                            <i class="like icon"></i>
-                        </a>-->
+                        <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
-                    <div class="content">
-                        <div class="meta">il y a 5 minutes</div>
-                        <div class="name">{{item['title']}}</div>
-                        <p><span class="theme">{{item['theme']}}</span> - {{item['site']}}</p>
-                        <p class="description">{{item['description']}}</p>
-                        <div class="extra">
-                            <i class="unhide icon"></i> {{item['dayViews']}}
-                        </div>
+                </a>
+
+                <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                <div class="content">
+                    <a href="{{item['url']}}" target="_blank">
+                        <div class="name">{{item['titre']}}</div>
+                    </a>
+                    <p>{{item['site']}}</p>
+                    <p class="description">{{item['description']}}</p>
+                    <div class="extra">
+                        <i class="unhide icon"></i> {{item['consultationsJour']}} |
+                        <i class="heart icon"></i> {{item['coeurs']}} |
+                        <i class="star icon"></i> {{item['note']}}
                     </div>
-             </a>
+                </div>
+
+                <p>
+                    <i class="tags icon"></i>
+                    <a href=""><span style="padding:2px;margin:2px;font-size:11px" ng-repeat="tag in item['tags']" class="ui label">
+                            {{tag}}
+                        </span> </a>
+                </p>
+                <p ng-show="item['lies']>1">
+                    <a href=""> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
+                </p>
+                <p ng-show="item['lies']==1">
+                    <a href=""> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                </p>
+                <p ng-show="item['lies']==0">
+                    <i class="add icon"></i>Pas d'article lié à ce sujet.
+                </p>
             </div>
         </div>
+        <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
     </div>
     <div class="four wide column">
-        <div class="ui center aligned icon header">
-            <i class="circular star icon"></i>
-            TOP DU JOUR
-        </div>
-
-        <div class="ui divided ordered list">
-            <div class="item">
-                <img class="ui avatar image" src="/images/demo/avatar2.jpg">
-                <div class="content">
-                    <div class="ui label">
-                        Dogs
-                        <div class="detail">214</div>
+        <h3 class="ui header">Top du jour</h4>
+            <div class="ui divided ordered list">
+                <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                    <img class="ui avatar image" src="{{item['image']}}" alt="">
+                    <div class="content">
+                        <a class="header">{{item['nom']}}</a>
+                        <div class="description">{{item['type']}}</div>
+                        <div class="detail">{{item['nombre']}}</div>
                     </div>
                 </div>
             </div>
-            <div class="item">
-                <img class="ui avatar image" src="/images/demo/avatar3.jpg">
-                <div class="content">
-                    <div class="ui label">
-                        Poneys
-                        <div class="detail">204</div>
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <img class="ui avatar image" src="/images/demo/avatar2.jpg">
-                <div class="content">
-                    <div class="ui label">
-                        Cats
-                        <div class="detail">151</div>
-                    </div>
-                </div>
-            </div>
-            <div class="item">
-                <img class="ui avatar image" src="/images/demo/avatar3.jpg">
-                <div class="content">
-                    <div class="ui label">
-                        Raflesia
-                        <div class="detail">123</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
 <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
 <script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
 }
