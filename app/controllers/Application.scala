@@ -166,7 +166,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
     Ok(views.html.index())
   }
 
-  def incrementerNbCoeurs = Action {
+  def incremrNbCoeurs = Action {
     val result = Utilisateur.incrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test incrémenter nb coeurs : " + result)
     Ok(views.html.index())

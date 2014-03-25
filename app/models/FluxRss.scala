@@ -5,6 +5,7 @@ import com.sun.syndication.feed.synd.{SyndEnclosureImpl, SyndEntry}
 import org.joda.time.DateTime
 import scala.io.Source
 import play.api.Logger
+import controllers.Annotator
 
 /**
  * Created by Romain on 20/03/14.
@@ -38,12 +39,15 @@ object FluxRss {
   }
   //Mise à jour des sites DEJA existants en BDD
   def misAJourTousSites() : Int= {
+    Logger.debug("/*/*/*/*/*/*/*/*/*/*/*/")
     val listeSites =Site.getAll()
     var nombreArtAdd =0
     if(listeSites.size!=0){
-      listeSites.foreach(
-        site => nombreArtAdd= nombreArtAdd+ misAJourSite(site)
-      )
+//      listeSites.foreach(
+//        site => nombreArtAdd= nombreArtAdd+ misAJourSite(site)
+//      )
+
+      misAJourSite(listeSites(0))
     }
     nombreArtAdd
   }
@@ -89,6 +93,7 @@ object FluxRss {
             val description = art.getDescription.getValue
             val lien = art.getLink
 
+            println("/////////////////////////////////////")
             //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
             val imageList : util.List[SyndEnclosureImpl] = art.getEnclosures.asInstanceOf[util.List[SyndEnclosureImpl]]
             var image : String =""
@@ -99,6 +104,11 @@ object FluxRss {
             val nouvelArticle=Article(titre,auteur,description,new DateTime(date),lien,site,image)
             val bool =Article.create(nouvelArticle)
             if(bool){
+              Logger.debug("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/")
+              Logger.debug("titre : "+titre)
+              Logger.debug("auteur : "+auteur)
+              def annotator : util.List[util.List[String]] = Annotator.annotate(titre)
+              println("annotator : "+annotator)
               nombreArtAdd = nombreArtAdd+1
             }
             else{

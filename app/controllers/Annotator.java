@@ -6,6 +6,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import play.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -23,7 +24,7 @@ public class Annotator {
     public static List<List<String>> annotate(String shortText) throws JSONException {
         List<List<String>> entrees=new LinkedList<>();
         String json1 = jersey_client(shortText, fr, "Document");
-        System.out.println("JSON : "+json1);
+//        Logger.debug("JSON : " + json1);
         if(json1.length()>0){
         final JSONObject obj = new JSONObject(json1);
         final JSONArray resources = obj.getJSONArray("Resources");
@@ -54,7 +55,7 @@ public class Annotator {
         try {
             MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
             /*queryParams.add("disambiguator", disambiguator); */
-            queryParams.add("confidence", "0.1");
+            queryParams.add("confidence", "0.5");
             queryParams.add("support", "-1");
             queryParams.add("text", text);
             //queryParams.add("text", java.net.URLEncoder.encode(text,"UTF-8"));
