@@ -3,12 +3,17 @@ package controllers;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,8 +50,6 @@ public class Annotator {
         return entrees;
     }
 
-
-
     private static String jersey_client(String text, String url, String disambiguator) {
         Client client = Client.create();
         WebResource webResource = client.resource(url);
@@ -54,14 +57,13 @@ public class Annotator {
         try {
             MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
             /*queryParams.add("disambiguator", disambiguator); */
-            queryParams.add("confidence", "0.1");
-            queryParams.add("support", "-1");
-            queryParams.add("text", text);
-            //queryParams.add("text", java.net.URLEncoder.encode(text,"UTF-8"));
-
+            //queryParams.add("confidence", "0.1");
+            //queryParams.add("support", "-1");
+            //queryParams.add("text", text);
+            queryParams.add("text", java.net.URLEncoder.encode(text,"UTF-8"));
 
             json = webResource.
-                    accept( MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML).
+                    accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML).
                     header("ContentType","application/x-www-form-urlencoded;charset=UTF-8").
                             post(String.class, queryParams);
         } catch (Exception e) {
