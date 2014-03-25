@@ -28,7 +28,7 @@
                     <a href="{{item['url']}}" target="_blank">
                         <div class="name">{{item['titre']}}</div>
                     </a>
-                    <p>{{item['site']}}</p>
+                    <p style="font-weight:bold">{{item['site']}}</p>
                     <p class="description">{{item['description']}}</p>
                     <div class="extra">
                         <i class="unhide icon"></i> {{item['consultationsJour']}} |
@@ -57,7 +57,7 @@
         <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
     </div>
     <div class="four wide column">
-        <h3 class="ui header">Top du jour</h4>
+        <h3 class="ui header">Top du jour</h3>
             <div class="ui divided ordered list">
                 <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
                     <img class="ui avatar image" src="{{item['image']}}" alt="">
