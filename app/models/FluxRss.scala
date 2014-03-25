@@ -16,6 +16,7 @@ object FluxRss {
     var listeSites : List[Site]= List()
     val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv","utf-8")
     val iter: Iterator[Array[String]] = src.getLines().map(_.split(";"))
+
     while(iter.hasNext){
       val currentline = iter.next()
       val site = Site(currentline(1),currentline(0),currentline(2))
@@ -107,8 +108,8 @@ object FluxRss {
               Logger.debug("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/")
               Logger.debug("titre : "+titre)
               Logger.debug("auteur : "+auteur)
-              def annotator : util.List[util.List[String]] = Annotator.annotate(titre)
-              println("annotator : "+annotator)
+//              def annotator : util.List[util.List[String]] = Annotator.annotate(titre)
+//              println("annotator : "+annotator)
               nombreArtAdd = nombreArtAdd+1
             }
             else{
