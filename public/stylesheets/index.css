@@ -3,7 +3,7 @@
 }
 
 .ui.items > .row > .item, .ui.items > .item {
-    font-size: 0.7em;
+    font-size: 0.8em;
     line-height: 1.2;
 }
 
@@ -15,6 +15,7 @@
 .ui.items .item > a > .image >  img {
     display: block;
     width: 100%;
+    height:110px;
 }
 
 .ui.ribbon.label {
@@ -75,19 +76,24 @@
 }
 
 
-
-.ui.items .item > a > .content > .description {
+ */
+.ui.items .item > .content > .description {
     clear: both;
     margin: 0em 0em;
-    color: rgba(0, 0, 0, 0.45);
+    color: rgba(0, 0, 0, 0.75);
+    font-size:1.2em;
 }
 
+.ui.five.items > .item {
+    min-height: 600px;
+}
+/*
 .ui.items .item > a > .content > .description p {
-    margin: 0em 0em 0.2em;
+   margin: 0em 0em 0.2em;
 }
 
 .ui.items .item > a > .content > .description p:last-child {
-    margin-bottom: 0em;
+   margin-bottom: 0em;
 }
 
 */
