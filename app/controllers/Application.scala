@@ -5,27 +5,35 @@ import play.api._
 import play.api.mvc._
 import com.sun.syndication.feed.synd.{SyndEnclosureImpl, SyndEntry}
 import java.util
-import models.database.{Country}
+import models.database.Country
 import models._
+import models.database.{Country}
 import scala.Some
 import org.joda.time.DateTime
+import jp.t2v.lab.play2.auth.AuthenticationElement
+import scala.Some
 
-object Application extends Controller {
+
+object Application extends Controller  with AuthenticationElement with AuthConfigImpl {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    implicit request => Ok(views.html.index())
+  }
+
+  def presentation = Action {
+    implicit request => Ok(views.html.presentation())
   }
 
   def create = Action {
     val result = Country.create()
-    Logger.debug("result : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Logger.debug("result : "+result)
+    Ok(views.html.index())
   }
 
   def createEntite = Action {
     val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
-    Logger.debug("result test create entité : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Logger.debug("result test create entité : "+result)
+    Ok(views.html.index())
   }
 
   def createAppreciationEntite = Action {
@@ -36,12 +44,12 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.create(AppreciationEntite(utilisateur, entite, 4, 3))
-            Logger.debug("result test create appréciation entité : " + result)
+            Logger.debug("result test create appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getAppreciationEntite = Action {
@@ -52,12 +60,12 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.get(utilisateur, entite)
-            Logger.debug("result test create appréciation entité : " + result)
+            Logger.debug("result test create appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setQuantiteAppreciationEntite = Action {
@@ -68,12 +76,12 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.setQuantite(utilisateur, entite, -3)
-            Logger.debug("result test set quantité appréciation entité : " + result)
+            Logger.debug("result test set quantité appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setNbCoeursAppreciationEntite = Action {
@@ -84,12 +92,12 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.incrNbCoeurs(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : " + result)
+            Logger.debug("result test set quantité appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setFavoriAppreciationEntite = Action {
@@ -100,12 +108,12 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.setFavori(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : " + result)
+            Logger.debug("result test set quantité appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def estFavoriAppreciationEntite = Action {
@@ -116,18 +124,18 @@ object Application extends Controller {
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.estFavori(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : " + result)
+            Logger.debug("result test set quantité appréciation entité : "+result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createSite = Action {
     val result = Site.create(Site("www.magness.fr", "Magness", "Informations diverses"))
     Logger.debug("result test create site : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createNote = Action {
@@ -143,7 +151,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createConsultation = Action {
@@ -159,7 +167,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createRecommandation = Action {
@@ -175,7 +183,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getNote = Action {
@@ -191,7 +199,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getConsultation = Action {
@@ -207,7 +215,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getRecommandation = Action {
@@ -223,19 +231,19 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createArticle = Action {
     val siteOpt = Site.get("www.magness.fr")
     siteOpt match {
       case Some(site) =>
-        val result = Article.create(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "", "http://magness.fr/blablabla", site))
+        val result = Article.create(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "http://magness.fr/blablabla", site))
         Logger.debug("result test create article : " + result)
       case None => println("www.magness.fr not found.")
     }
 
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
 
@@ -253,7 +261,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getAppreciationDomaine = Action {
@@ -269,7 +277,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setNbCoeursAppreciationDomaine = Action {
@@ -285,7 +293,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setFavoriAppreciationDomaine = Action {
@@ -301,7 +309,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def estFavoriAppreciationDomaine = Action {
@@ -317,7 +325,7 @@ object Application extends Controller {
         }
       case None => println("utilisateurOpt not found")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   //fin tests AppreciationDomaine
@@ -325,13 +333,13 @@ object Application extends Controller {
   def createDomaine = Action {
     val result = Domaine.create(Domaine("Sport"))
     Logger.debug("result test create domaine : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def createUser = Action {
     val result = Utilisateur.create(Utilisateur("mail2@test.com", "mdpTest2", "pseudoTest2"))
-    Logger.debug("result test create user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Logger.debug("result test create user : "+result)
+    Ok(views.html.index())
   }
 
   def getUser = Action {
@@ -341,62 +349,85 @@ object Application extends Controller {
         Logger.debug("result test get user : " + result)
       case None => println("Utilisateur not found.")
     }
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
 
   def setMailUser = Action {
     val result = Utilisateur.setMail("mail1Change@test.com", "mail1Change@test.com")
     Logger.debug("result test set mail user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setPseudoUser = Action {
     val result = Utilisateur.setPseudo("mail1Change@test.com", "pseudoTest1Change")
     Logger.debug("result test set pseudo user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def setMdpUser = Action {
     val result = Utilisateur.setMdp("mail1Change@test.com", "mdpTest1Change")
     Logger.debug("result test set mdp user : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def incrementerNbCoeurs = Action {
     val result = Utilisateur.incrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test incrémenter nb coeurs : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def decrementerNbCoeurs = Action {
     val result = Utilisateur.decrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test décrémenter nb coeurs : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def deleteUser = Action {
     val result = Utilisateur.delete("mail1Change@test.com")
     Logger.debug("result test delete : " + result)
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def delete = Action {
     Country.delete()
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def getNodeOfFrance = Action {
     val result: List[(String, String)] = Country.getNodesOfFrance()
-    result.foreach(el => Logger.debug("el : " + el))
-    Ok(views.html.index("Your new application is ready."))
+    result.foreach(el=> Logger.debug("el : "+el))
+    Ok(views.html.index())
   }
+
 
 
   def getAllNodes = Action {
     val result: List[(String, String, Double)] = Country.getAllCountries()
-    result.foreach(el => Logger.debug("el : " + el))
-    Ok(views.html.index("Your new application is ready."))
+    result.foreach(el=> Logger.debug("el : "+el))
+    Ok(views.html.index())
+  }
+
+  def test = Action {
+    Ok(views.html.test())
+  }
+
+
+  def miseAJourFlux = Action {
+    FluxRss.misAJourTousSites()
+    Ok(views.html.index())
+
+  }
+
+  def miseAJourSites= Action {
+    FluxRss.miseAJourBddSites
+    Ok(views.html.index())
+  }
+
+
+  def mapage = StackAction {
+    implicit request =>
+      Ok(views.html.mapage())
   }
 
   def lectureFlux(url: String) = Action {
@@ -457,7 +488,7 @@ object Application extends Controller {
       println("The first parameter must be the URL of the feed to read.")
     }
 
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
 
