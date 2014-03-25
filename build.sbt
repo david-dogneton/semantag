@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "com.sun.jersey" % "jersey-bundle" % "1.10",
   "org.json" % "json" % "20090211",
   "jp.t2v" %% "play2-auth"      % "0.11.0",
-  "jp.t2v" %% "play2-auth-test" % "0.11.0" % "test"
+  "jp.t2v" %% "play2-auth-test" % "0.11.0" % "test",
+  "org.apache.httpcomponents" % "httpclient" % "4.2"
 )
 
 play.Project.playScalaSettings
