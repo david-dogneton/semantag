@@ -3,20 +3,20 @@
     @*<div class="ui page grid overview segment">*@
     <form class="ui form segment" method="POST" action="@routes.LoginLogout.inscriptionsubmit">
         <div class="field">
-            <label>Username</label>
+            <label>Adresse E-mail</label>
             <div class="ui left labeled icon input">
-                <input type="text" placeholder="Username">
-                <i class="user icon"></i>
+                <input type="email" placeholder="Adresse e-mail" name="email">
+                <i class="user icon black"></i>
                 <div class="ui corner label">
                     <i class="icon asterisk"></i>
                 </div>
             </div>
         </div>
         <div class="field">
-            <label>Password</label>
+            <label>Mot de passe</label>
             <div class="ui left labeled icon input">
-                <input type="password">
-                <i class="lock icon"></i>
+                <input type="password" placeholder="Mot de passe" name="password">
+                <i class="lock icon red "></i>
                 <div class="ui corner label">
                     <i class="icon asterisk"></i>
                 </div>
@@ -25,8 +25,8 @@
         <div class="field">
             <label>Pseudo</label>
             <div class="ui left labeled icon input">
-                <input type="text">
-                <i class="lock icon"></i>
+                <input type="text" placeholder="Pseudonyme" name="pseudo">
+                <i class="user icon black "></i>
                 <div class="ui corner label">
                     <i class="icon asterisk"></i>
                 </div>

@@ -17,6 +17,17 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
   val loginForm = Form(
     mapping(
       "email" -> text,
+      "password" -> text
+    ){
+      (email, password) =>Utilisateur(email,password,"")
+    }{
+      utilisateur => Some(utilisateur.mail,utilisateur.mdp)
+    }
+  )
+
+  val inscriptionForm = Form(
+    mapping(
+      "email" -> text,
       "password" -> text,
       "pseudo"->text
     ){
@@ -49,7 +60,7 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       loginForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Formulaire connexion mal rempli")
-          Future.successful(BadRequest("Non"))
+          Future.successful(BadRequest("Non."))
         },
         user => {
           Logger.debug("Formulaire connexion bien rempli")
@@ -87,11 +98,11 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
   }
   def inscriptionsubmit = Action{
     implicit request =>
-      loginForm.bindFromRequest.fold(
+      inscriptionForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Compte mal renseigné")
           Logger.debug(s"Bad registration !! : ${formWithErrors}")
-          Ok(views.html.inscription())
+          BadRequest(views.html.inscription())
         },
         admin => {
           Logger.debug("Compte bien renseigné")
