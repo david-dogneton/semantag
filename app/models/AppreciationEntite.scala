@@ -100,7 +100,6 @@ object AppreciationEntite {
     val result = Cypher(
       """
          match (user: Utilisateur {mail : {mailUser}})-[r:appreciationEntite]-(entite: Entite{url : {urlEnt}})
-         set r.nbCoeurs = r.nbCoeurs - 1
          return r.estFavori as estFavori;
       """
     ).on("mailUser" -> user.mail,
