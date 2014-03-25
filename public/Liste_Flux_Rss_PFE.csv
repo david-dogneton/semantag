@@ -1,0 +1,78 @@
+﻿l'express;http://www.lexpress.fr/rss/alaune.xml;à la une
+Le figaro;http://rss.lefigaro.fr/lefigaro/laune;à la une
+Le monde;http://rss.lemonde.fr/c/205/f/3050/index.rss;à la une
+Le nouvel observateur;http://rss.nouvelobs.com/c/32262/fe.ed/tempsreel.nouvelobs.com/rss.xml;à la une
+libération;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/latest/;à la une
+Le Parisien;http://www.leparisien.fr/actualites-a-la-une.rss.xml;à la une
+Le point;http://www.lepoint.fr/rss.xml;à la une
+Libération;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/58/;cinéma
+télérama;http://www.telerama.fr/rss/cinema.xml;cinéma
+Cinéma;http://rss.allocine.fr/ac/actualites/;cinéma
+Allociné sortie semaine;http://rss.allocine.fr/ac/cine/cettesemaine;cinéma
+Allociné toujours affiche;http://rss.allocine.fr/ac/cine/alaffiche;cinéma
+Allociné prochainement;http://rss.allocine.fr/ac/cine/prochainement;cinéma
+Allocné top consultations;http://rss.allocine.fr/ac/cine/topfilms;cinéma
+Allociné top consultations séries;http://rss.allocine.fr/ac/series/top;cinéma
+Allociné A la tv ce soir;http://rss.allocine.fr/ac/series/tvcesoir;cinéma
+Première  Live;http://www.premiere.fr/var/premiere/storage/rss/live_actu.xml;cinéma
+première Cinéma;http://www.premiere.fr/var/premiere/storage/rss/cinema_actu.xml;cinéma
+Nouvel obs;http://cinema.nouvelobs.com/articles.rss;cinéma
+Le Monde;http://rss.lemonde.fr/c/205/f/3060/index.rss;culture
+Le figaro;http://www.lefigaro.fr/rss/figaro_culture.xml;culture
+Le soir livres;http://www.lesoir.be/feed/Culture/Livres/destination_principale_block;culture
+Le Monde livres;http://rss.lemonde.fr/c/205/f/3064/index.rss;culture
+Le figaro theatre;http://www.lefigaro.fr/rss/figaro_theatre.xml;culture
+Le point;http://www.lepoint.fr/culture/rss.xml;culture
+L'express;http://www.lexpress.fr/rss/culture.xml;culture
+L'express Lives;http://www.lexpress.fr/rss/livres.xml;culture
+Le nouvel obs;http://rss.nouvelobs.com/c/32262/fe.ed/tempsreel.nouvelobs.com/culture/rss.xml;culture
+L'expansion éco actu;http://lexpansion.lexpress.fr/rss/economie-actualites.xml;économie
+L'expansion éco entreprises;http://lexpansion.lexpress.fr/rss/economie-entreprises.xml;économie
+Le figaro éco;http://www.lefigaro.fr/rss/figaro_economie.xml;économie
+Le figaro sociétés;http://www.lefigaro.fr/rss/figaro_societes.xml;économie
+Le monde éco;http://rss.lemonde.fr/c/205/f/3055/index.rss;économie
+Le monde finances;http://www.lemonde.fr/rss/tag/finance.xml;économie
+Libération;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/13/;économie
+Les échos;http://rss.feedsportal.com/c/499/f/413824/index.rss;économie
+Le nouvel observateur;http://rss.nouvelobs.com/c/32262/fe.ed/tempsreel.nouvelobs.com/economie/rss.xml;économie
+01net actu;http://rss.feedsportal.com/c/629/f/502199/index.rss;technologies
+01 média;http://rss.feedsportal.com/c/629/f/502204/index.rss;technologies
+01techno;http://rss.feedsportal.com/c/629/f/502206/index.rss;technologies
+01 tests;http://rss.feedsportal.com/c/629/f/502209/index.rss;technologies
+01 produits nouveautés;http://rss.feedsportal.com/c/629/f/502210/index.rss;technologies
+01 astuces;http://rss.feedsportal.com/c/629/f/649882/index.rss;technologies
+01 dossiers;http://rss.feedsportal.com/c/629/f/650356/index.rss;technologies
+Clubic actu;http://com.clubic.feedsportal.com/c/33464/f/581979/index.rss;technologies
+Clubic bon plans;http://www.clubic.com/bon-plan/actualites.rss;technologies
+Zdnet actu;http://www.zdnet.fr/feeds/rss/actualites/;technologies
+le journal du geek;http://feeds2.feedburner.com/LeJournalduGeek;technologies
+Le monde technos;http://rss.lemonde.fr/c/205/f/3061/index.rss;technologies
+Clubic JV actus;http://com.clubic.feedsportal.com/c/33464/f/581986/index.rss;Jeux vidéos
+gamekult actu;http://www.gamekult.com/feeds/actu.html;Jeux vidéos
+gamekult tests;http://www.gamekult.com/feeds/test.html;Jeux vidéos
+gameblog actu;http://gameblog.fr.feedsportal.com/c/35230/f/655016/index.rss;Jeux vidéos
+gameblog dosiers;http://gameblog.fr.feedsportal.com/c/35230/f/655234/index.rss;Jeux vidéos
+gameblog tests;http://gameblog.fr.feedsportal.com/c/35230/f/655233/index.rss;Jeux vidéos
+L'express;http://www.lexpress.fr/rss/musique.xml;musique
+Le figaro;http://www.lefigaro.fr/rss/figaro_musique.xml;musique
+Figaro politique;http://www.lefigaro.fr/rss/figaro_politique.xml;politique
+Le parisien politique;http://www.leparisien.fr/politique/rss.xml;politique
+Libération politique;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/11/;politique
+Le monde politique;http://rss.lemonde.fr/c/205/f/3067/index.rss;politique
+Nouvel obs politique;http://rss.nouvelobs.com/c/32262/fe.ed/tempsreel.nouvelobs.com/politique/rss.xml;politique
+Le figaro Sport;http://www.lefigaro.fr/rss/figaro_sport.xml;sports
+Le monde sport;http://rss.lemonde.fr/c/205/f/3058/index.rss;sports
+Eurosport articles;http://www.eurosport.fr/rss.xml;sports
+Eurosport brèves;http://www.eurosport.fr/rss-flash.xml;sports
+libération sports;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/14/;sports
+Nouvel obs sports;http://rss.nouvelobs.com/c/32262/fe.ed/tempsreel.nouvelobs.com/sport/rss.xml;sports
+le parisien société;http://www.leparisien.fr/societe/rss.xml;sociétés
+Libération société;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/12/;sociétés
+Nouvel obs société;http://tempsreel.nouvelobs.com/societe/rss.xml;sociétés
+Le monde société;http://rss.lemonde.fr/c/205/f/3054/index.rss;sociétés
+Le Figaro;http://www.lefigaro.fr/rss/figaro_actualite-france.xml;sciences
+Le monde sciences;http://www.lemonde.fr/rss/tag/sciences.xml;sciences
+Le figaro;http://www.lefigaro.fr/rss/figaro_sciences.xml;sciences
+Sciences et Avenir;http://rss.nouvelobs.com/c/32581/fe.ed/www.sciencesetavenir.fr/rss.xml;sciences
+Pour la science site web;http://www.pourlascience.fr/ewb_pages/f/flux_rss_general_pls.xml;sciences
+Science gouv;http://www.science.gouv.fr/fr/flux-rss/bdd/flux/1/format/RSS2.0;sciences

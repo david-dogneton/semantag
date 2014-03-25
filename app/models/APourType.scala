@@ -27,6 +27,4 @@ object APourType {
   def create(aPourType: APourType): Boolean = {
     create(aPourType.entite, aPourType.typeT)
   }
-
-
 }

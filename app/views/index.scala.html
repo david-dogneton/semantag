@@ -1,62 +1,77 @@
-@(message: String)
+@()(implicit lang: Lang)
+@main(Messages("index.title"))("accueil") {
+<div class="ui grid" ng-controller="NewsRenderer">
+    <div class="column"><h4 class="ui header">Domaine</h4></div>
+    <div class="column" style="text-transform:uppercase; font-family: 'Source Sans Pro'">
+        <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
+    </div>
+    <div class="column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+        <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+    </div>
+    <div class="ui clearing divider"></div>
+    <div class="twelve wide column">
+        <div class="ui five items">
+            <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
+                <a class="like ui corner label">
+                    <i class="like icon"></i>
+                </a>
 
-@main("Bienvenue sur Semantag !!") {
-    <h2 class="ui center aligned header">Moteur d'analyse, de recherche et de recommandation sémantique.</h2>
-    <div class="ui page grid overview segment">
-        <div class="sixteen wide column">
-            <div class="ui three column center aligned stackable divided grid">
-                <div class="column">
-                    <div class="ui icon header">
-                        <i class="circular tags icon"></i>
-                        Analyse et taggage d'articles
+                <a href="{{item['url']}}" target="_blank">
+                    <div class="image">
+                        <img src="{{item['image']}}">
+                        <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
-                    <p>Semantag analyse les articles de nombreux sites internet pour comprendre leur contenu et les lier à des entités (acteur, film, sportif, etc.).</p>
-                    <p><a class="ui teal right labeled icon button" href="#">
-                        Entités "à la une" <i class="down long arrow icon"></i></a></p>
-                </div>
-                <div class="column">
-                    <div class="ui icon header">
-                        <i class="circular user icon"></i>
-                        Recommandation personnalisée
+                </a>
+
+                <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                <div class="content">
+                    <a href="{{item['url']}}" target="_blank">
+                        <div class="name">{{item['titre']}}</div>
+                    </a>
+                    <p>{{item['site']}}</p>
+                    <p class="description">{{item['description']}}</p>
+                    <div class="extra">
+                        <i class="unhide icon"></i> {{item['consultationsJour']}} |
+                        <i class="heart icon"></i> {{item['coeurs']}} |
+                        <i class="star icon"></i> {{item['note']}}
                     </div>
-                    <p>Semantag analyse vos goûts afin de vous recommander des articles appropriés. De nombreux domaines sont représentés, et peuvent être mis en commun.</p>
-                    <p><a class="ui teal right labeled icon button" href="#">
-                        Research <i class="right long arrow icon"></i></a></p>
                 </div>
-                <div class="column">
-                    <div class="ui icon header">
-                        <i class="circular signal icon"></i>
-                    Analyses statistiques
-                    </div>
-                    <p>Semantag génére automatiquement un grand nombre de statistiques à partir des actions que vous effectuez sur l'application (articles lus, etc.).</p>
-                    <p><a class="ui teal right labeled icon button" href="#">
-                        Share <i class="right long arrow icon"></i></a></p>
-                </div>
+
+                <p>
+                    <i class="tags icon"></i>
+                    <a href=""><span style="padding:2px;margin:2px;font-size:11px" ng-repeat="tag in item['tags']" class="ui label">
+                            {{tag}}
+                        </span> </a>
+                </p>
+                <p ng-show="item['lies']>1">
+                    <a href=""> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
+                </p>
+                <p ng-show="item['lies']==1">
+                    <a href=""> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                </p>
+                <p ng-show="item['lies']==0">
+                    <i class="add icon"></i>Pas d'article lié à ce sujet.
+                </p>
             </div>
         </div>
-
+        <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
     </div>
-    <div class="ui horizontal divider">
-        <i class="circular level down icon"></i>
-    </div>
-    <div class="ui grid">
-        <div class="four wide column"></div>
-        <div class="eight wide column">
-            <div class="ui fluid icon input">
-                <input type="text" placeholder="Rechercher une entité...">
-                <i class="search icon"></i>
+    <div class="four wide column">
+        <h3 class="ui header">Top du jour</h4>
+            <div class="ui divided ordered list">
+                <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                    <img class="ui avatar image" src="{{item['image']}}" alt="">
+                    <div class="content">
+                        <a class="header">{{item['nom']}}</a>
+                        <div class="description">{{item['type']}}</div>
+                        <div class="detail">{{item['nombre']}}</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="four wide column"></div>
     </div>
-    <div class="ui horizontal divider">
-        <i class="circular level up icon"></i>
-    </div>
-    <div class="ui right floated segment">
-        <p>This segment will appear to the right
-        </p></div>
-    <div class="ui left floated segment">
-        This segment will appear to the left
-    </div>
-
+</div>
+<link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
 }
