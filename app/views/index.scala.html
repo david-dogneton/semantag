@@ -1,17 +1,16 @@
 @()(implicit lang: Lang)
 @main(Messages("index.title"))("accueil") {
 <div class="ui grid" ng-controller="NewsRenderer">
-    <div class="ui clearing divider"></div>
-    <div class="three wide column">
-        <div class="sixteen wide column"><h4 class="ui header">Domaine</h4></div>
-        <div class="sixteen wide column" style="text-transform:uppercase; font-family: 'Source Sans Pro'">
+    <div class="two wide column">
+        <div class="sixteen wide column">
+            <h3 class="ui header">Domaine</h3>
             <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
-        </div>
-        <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
-            <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+            <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+            </div>
         </div>
     </div>
-    <div class="ten wide column">
+    <div class="eleven wide column">
         <div class="ui five items">
             <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
                 <a class="like ui corner label">

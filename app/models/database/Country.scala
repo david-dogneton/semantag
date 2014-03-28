@@ -31,10 +31,10 @@ object Country {
   def delete() = {
     val result: Boolean = Cypher(
       """
-        match (n)
-        optional match (n)-[r]-()
-        optional match ()-[r]-(n)
-        delete n,r
+        START n = node(*)
+        OPTIONAL MATCH n-[r]-()
+        WHERE (ID(n)>0)
+          DELETE n, r;
       """).execute()
     result
   }

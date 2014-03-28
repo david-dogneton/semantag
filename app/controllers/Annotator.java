@@ -27,23 +27,27 @@ public class Annotator {
             "shortly after the violence began and she has lived in France for years. More than 800,000 Tutsis ";*/
 
     public static List<List<String>> annotate(String shortText) throws JSONException {
-        List<List<String>> entrees=new LinkedList<>();
+        List<List<String>> entrees = new LinkedList<>();
         String json1 = jersey_client(shortText, fr, "Document");
-//        Logger.debug("JSON : " + json1);
-        if(json1.length()>0){
-        final JSONObject obj = new JSONObject(json1);
-        final JSONArray resources = obj.getJSONArray("Resources");
-        final int n = resources.length();
-        for (int i = 0; i < n; ++i) {
-            final JSONObject resource = resources.getJSONObject(i);
-            List<String> donnees=new LinkedList<>();
-            donnees.add(resource.getString("@surfaceForm"));
-            donnees.add(resource.getString("@URI"));
-            donnees.add(resource.getString("@types"));
-            entrees.add(donnees);
-        }
-        }
-        else{
+        Logger.debug("JSON : " + json1);
+        if (json1.length() > 0) {
+            final JSONObject obj = new JSONObject(json1);
+            try {
+
+                final JSONArray resources = obj.getJSONArray("Resources");
+                final int n = resources.length();
+                for (int i = 0; i < n; ++i) {
+                    final JSONObject resource = resources.getJSONObject(i);
+                    List<String> donnees = new LinkedList<>();
+                    donnees.add(resource.getString("@surfaceForm"));
+                    donnees.add(resource.getString("@URI"));
+                    donnees.add(resource.getString("@types"));
+                    entrees.add(donnees);
+                }
+            } catch (Exception e) {
+
+            }
+        } else {
             List empty = new LinkedList<String>();
             empty.add("Pas de résultats.");
             entrees.add(empty);
@@ -62,12 +66,12 @@ public class Annotator {
             queryParams.add("support", "-1");
             queryParams.add("text", text);
             //queryParams.add("text", java.net.URLEncoder.encode(text,"UTF-8"));
-            queryParams.add("text", java.net.URLEncoder.encode(text,"UTF-8"));
+            queryParams.add("text", java.net.URLEncoder.encode(text, "UTF-8"));
 
             json = webResource.
                     accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML).
-                    header("ContentType","application/x-www-form-urlencoded;charset=UTF-8").
-                            post(String.class, queryParams);
+                    header("ContentType", "application/x-www-form-urlencoded;charset=UTF-8").
+                    post(String.class, queryParams);
         } catch (Exception e) {
             e.printStackTrace();
         }
