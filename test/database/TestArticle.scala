@@ -164,13 +164,10 @@ class TestArticle extends FunSuite with ShouldMatchers {
         }
       case None => println("article not found")
     }
-
-
   }
 
   //  test("delete") {
   //    val article = Article.deleteArticle("url 1")
   //    println("article : "+article)
   //  }
-
 }

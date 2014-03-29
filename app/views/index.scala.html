@@ -1,15 +1,16 @@
 @()(implicit lang: Lang)
 @main(Messages("index.title"))("accueil") {
 <div class="ui grid" ng-controller="NewsRenderer">
-    <div class="column"><h4 class="ui header">Domaine</h4></div>
-    <div class="column" style="text-transform:uppercase; font-family: 'Source Sans Pro'">
-        <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
+    <div class="two wide column">
+        <div class="sixteen wide column">
+            <h3 class="ui header">Domaine</h3>
+            <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
+            <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+            </div>
+        </div>
     </div>
-    <div class="column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
-        <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
-    </div>
-    <div class="ui clearing divider"></div>
-    <div class="twelve wide column">
+    <div class="eleven wide column">
         <div class="ui five items">
             <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
                 <a class="like ui corner label">
@@ -56,18 +57,18 @@
         </div>
         <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
     </div>
-    <div class="four wide column">
+    <div class="three wide column">
         <h3 class="ui header">Top du jour</h3>
-            <div class="ui divided ordered list">
-                <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                    <img class="ui avatar image" src="{{item['image']}}" alt="">
-                    <div class="content">
-                        <a class="header">{{item['nom']}}</a>
-                        <div class="description">{{item['type']}}</div>
-                        <div class="detail">{{item['nombre']}}</div>
-                    </div>
+        <div class="ui divided ordered list">
+            <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                <img class="ui avatar image" src="{{item['image']}}" alt="">
+                <div class="content">
+                    <a class="header">{{item['nom']}}</a>
+                    <div class="description">{{item['type']}}</div>
+                    <div class="detail">{{item['nombre']}}</div>
                 </div>
             </div>
+        </div>
     </div>
 </div>
 <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
