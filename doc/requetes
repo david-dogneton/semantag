@@ -1,0 +1,2 @@
+recupère les sites qui n'ont pas d'articles :
+MATCH (a:`Site`) where not (a)<-[:`appartient`]-() RETURN a

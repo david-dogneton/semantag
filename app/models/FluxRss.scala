@@ -71,7 +71,6 @@ class Child extends Actor {
         val date = art.getPublishedDate
         val description = art.getDescription.getValue
         val lien = art.getLink
-
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
         val imageList: util.List[SyndEnclosureImpl] = art.getEnclosures.asInstanceOf[util.List[SyndEnclosureImpl]]
 
@@ -82,34 +81,29 @@ class Child extends Actor {
           ""
         }
         val nouvelArticle = Article(titre, auteur, description, new DateTime(date), lien, site, image)
-        val bool = Article.create(nouvelArticle)
-        if (bool) {
-          val annotatorTitre: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre) // annotation du titre
-          val annotatorAuteur: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(auteur) // annotation de l'auteur
-          val annotatorDescription: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(description) // annotation de la description
+        val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description + auteur)
 
-          // on concatène les trois listes
-          val allResources: Future[List[ResourceDbPedia]] = annotatorTitre.zip(annotatorDescription)
-                                                                          .zip(annotatorAuteur)
-                                                                          .map(x => x._1._1 ::: x._1._2 ::: x._2)
-
-          // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
-          // on renvoie le premier élément et la taille de la liste (quantité dans tag)
-          val uniqueResources: Future[Map[ResourceDbPedia, Int]] = allResources.map(el => {
-            val mapByUri: Map[String, List[ResourceDbPedia]] = el.groupBy(_.uri)
-            mapByUri.map(el => {
-              (el._2.head, el._2.size)
-            })
+        // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
+        // on renvoie le premier élément et la taille de la liste (quantité dans tag)
+        val uniqueResources: Future[Map[ResourceDbPedia, Int]] = allResources.map(el => {
+          val mapByUri: Map[String, List[ResourceDbPedia]] = el.groupBy(_.uri)
+          mapByUri.map(el => {
+            (el._2.head, el._2.size)
           })
-          // on crée l'entité et le tag associé au nouvel article créé
-          uniqueResources.map(liste => liste.map(el => {
-            val entite = new Entite(el._1.surfaceForm, el._1.uri)
+        })
+
+        // on crée l'entité et le tag associé au nouvel article créé
+        uniqueResources.map(liste => liste.map(el => {
+          val bool = Article.create(nouvelArticle)
+
+          if (bool) {
+            val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
             if (!Entite.get(el._1.uri).isDefined) {
               Entite.create(entite)
             }
             Tag.create(nouvelArticle, entite, el._2)
             el._1.types.split(",").map(typeEl => {
-              if(typeEl != "") {
+              if (typeEl != "") {
                 val nouveauType = new Type(typeEl)
                 if (!Type.get(typeEl).isDefined) {
                   Type.create(nouveauType)
@@ -117,11 +111,8 @@ class Child extends Actor {
                 APourType.create(entite, nouveauType)
               }
             })
-          }))
-        }
-        else {
-          Logger.debug("article non inséré")
-        }
+          }
+        }))
       }
   }
 }
