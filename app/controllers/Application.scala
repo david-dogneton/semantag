@@ -76,7 +76,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.setQuantite(utilisateur, entite, -3)
-            Logger.debug("result test set quantité appréciation entité : "+result)
+            Logger.debug("result test set quantité appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -371,7 +371,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
     Ok(views.html.index())
   }
 
-  def incrementerNbCoeurs = Action {
+  def incremrNbCoeurs = Action {
     val result = Utilisateur.incrementerNbCoeurs("mail1Change@test.com")
     Logger.debug("result test incrémenter nb coeurs : " + result)
     Ok(views.html.index())
@@ -396,7 +396,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
 
   def getNodeOfFrance = Action {
     val result: List[(String, String)] = Country.getNodesOfFrance()
-    result.foreach(el=> Logger.debug("el : "+el))
+    result.foreach(el => Logger.debug("el : " + el))
     Ok(views.html.index())
   }
 

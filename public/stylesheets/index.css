@@ -81,11 +81,12 @@
     clear: both;
     margin: 0em 0em;
     color: rgba(0, 0, 0, 0.75);
-    font-size:1.2em;
+    font-size:1.0em;
+    line-height:1.2;
 }
 
 .ui.five.items > .item {
-    min-height: 600px;
+    min-height: 550px;
 }
 /*
 .ui.items .item > a > .content > .description p {
