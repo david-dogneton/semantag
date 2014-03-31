@@ -12,15 +12,17 @@ import play.api.Logger
 object FluxRss {
 
   def miseAJourBddSites = {
-    var listeSites : List[Site]= List()
     val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv","utf-8")
     val iter: Iterator[Array[String]] = src.getLines().map(_.split(";"))
-    while(iter.hasNext){
-      val currentline = iter.next()
-      val site = Site(currentline(1),currentline(0),currentline(2))
-      listeSites=listeSites.::(site)
-    }
+//    while(iter.hasNext){
+//      val currentline = iter.next()
+//      val site = Site(currentline(1),currentline(0),currentline(2))
+//      listeSites=listeSites.::(site)
+//    }
 
+    val listeSites = iter.map(el => {
+      Site(el(1),el(0),el(2))
+    }).toList
     Logger.debug("taille liste " + listeSites.size)
 
     src.close()
@@ -39,13 +41,13 @@ object FluxRss {
   //Mise à jour des sites DEJA existants en BDD
   def misAJourTousSites() : Int= {
     val listeSites =Site.getAll()
-    var nombreArtAdd =0
     if(listeSites.size!=0){
-      listeSites.foreach(
-        site => nombreArtAdd= nombreArtAdd+ misAJourSite(site)
-      )
+      listeSites.map(
+        site => misAJourSite(site)
+      ).foldLeft(0)(_ + _)
+    } else {
+      0
     }
-    nombreArtAdd
   }
 
 
@@ -72,11 +74,12 @@ object FluxRss {
 
       //Manip avec un iterator pour récuperer une liste "Scala" plus facile pour la manip
       var listeFluxScala : List [SyndEntry] = List()
-      val ite =listeFluxCasted.iterator()
+      val ite: util.Iterator[SyndEntry] =listeFluxCasted.iterator()
       while(ite.hasNext){
         val tmp =ite.next()
         listeFluxScala=listeFluxScala.::(tmp)
       }
+
       Logger.debug("Nombre flux " + site.nom +"   "+listeFluxScala.size)
       listeFluxScala.foreach(
         art => {

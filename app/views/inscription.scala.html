@@ -1,43 +1,63 @@
-@()(implicit lang: Lang)
-@main("inscription")("inscription") {
-    @*<div class="ui page grid overview segment">*@
-    <form class="ui form segment" method="POST" action="@routes.LoginLogout.inscriptionsubmit">
-        <div class="field">
-            <label>Adresse E-mail</label>
-            <div class="ui left labeled icon input">
-                <input type="email" placeholder="Adresse e-mail" name="email">
-                <i class="user icon black"></i>
-                <div class="ui corner label">
-                    <i class="icon asterisk"></i>
-                </div>
+@()(implicit lang: Lang,flash: Flash,request :RequestHeader)
+    @main("inscription")("inscription") {
+        @if(flash.get("success").isDefined){
+            <div class="ui bottom attached success message">
+                <i class="checkmark icon"></i>
+                @flash.get("success").get
             </div>
-        </div>
-        <div class="field">
-            <label>Mot de passe</label>
-            <div class="ui left labeled icon input">
-                <input type="password" placeholder="Mot de passe" name="password">
-                <i class="lock icon red "></i>
-                <div class="ui corner label">
-                    <i class="icon asterisk"></i>
-                </div>
-            </div>
-        </div>
-        <div class="field">
-            <label>Pseudo</label>
-            <div class="ui left labeled icon input">
-                <input type="text" placeholder="Pseudonyme" name="pseudo">
-                <i class="user icon black "></i>
-                <div class="ui corner label">
-                    <i class="icon asterisk"></i>
-                </div>
-            </div>
-        </div>
-        <div class="ui error message">
-            <div class="header">We noticed some issues</div>
-        </div>
-        <input type="submit" class="ui blue submit button" value="Se connecter">
-    </form>
 
-    @*</div>*@
-    <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
-}
+        }
+
+
+        <div class="ui grid segment">
+            <div class=" sixteen   wide column">
+                <div class="ui two column center  grid">
+                    <div class="column">
+
+                        @*<div class="ui segment">*@
+
+
+                            <form class="ui form fluid segment" method="POST" action="@routes.LoginLogout.inscriptionsubmit">
+                                <div class="field">
+                                    <label>Adresse E-mail</label>
+                                    <div class="ui left labeled icon input">
+                                        <input type="email" placeholder="Adresse e-mail" name="email">
+                                        <i class="user icon black"></i>
+                                        <div class="ui corner label">
+                                            <i class="icon asterisk"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Mot de passe</label>
+                                    <div class="ui left labeled icon input">
+                                        <input type="password" placeholder="Mot de passe" name="password">
+                                        <i class="lock icon red "></i>
+                                        <div class="ui corner label">
+                                            <i class="icon asterisk"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Pseudo</label>
+                                    <div class="ui left labeled icon input">
+                                        <input type="text" placeholder="Pseudonyme" name="pseudo">
+                                        <i class="user icon black "></i>
+                                        <div class="ui corner label">
+                                            <i class="icon asterisk"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui error message">
+                                    <div class="header">We noticed some issues</div>
+                                </div>
+                                <input type="submit" class="ui blue submit button" value="Se connecter">
+                            </form>
+                        @*</div>*@
+                    </div>
+                </div>
+            </div>
+
+            </div>
+            <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
+    }

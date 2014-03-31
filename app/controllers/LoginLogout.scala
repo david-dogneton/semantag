@@ -27,8 +27,8 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
 
   val inscriptionForm = Form(
     mapping(
-      "email" -> text,
-      "password" -> text,
+      "email" -> nonEmptyText,
+      "password" -> nonEmptyText,
       "pseudo"->text
     ){
       (email, password,pseudo) =>Utilisateur(email,password,pseudo)
@@ -104,7 +104,7 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
           Logger.debug("Compte bien renseigné")
           Utilisateur.create(admin)
           Logger.debug("Compte bien crée")
-          Redirect(routes.Application.mapage)
+          Redirect(routes.LoginLogout.inscription).flashing("success" -> "Vous êtes maintenant membre de SEMANTAG !")
 //          if(admin.id.isDefined){
 //            Accounts.update(admin.id.get,admin)
 //            Redirect(routes.Application.admin).flashing("success"->"Administrateur mis à jour avec succès")
