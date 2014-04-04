@@ -39,8 +39,43 @@ object Tag {
         "urlEnt" -> entite.url)().toList
 
     result match {
-      case Nil=> -1
-      case head::tail => head[BigDecimal]("quantite").toInt
+      case Nil => -1
+      case head :: tail => head[BigDecimal]("quantite").toInt
     }
+  }
+
+  def getTagsOfArticles(article: Article): List[(Entite, Int)] = {
+
+    Cypher(
+      """
+         match (article: Article {url : {urlArt}})-[r:tag]-(entite: Entite)
+         return entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions,
+                r.quantite;
+      """
+    ).on("urlArt" -> article.url)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal,
+      quantite: BigDecimal) =>
+        (new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt),
+          quantite.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
   }
 }
