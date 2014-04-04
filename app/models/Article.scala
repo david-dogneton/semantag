@@ -1,7 +1,7 @@
 package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeUtils, DateTime}
 
 /**
  * Created by Administrator on 17/03/14.
@@ -30,7 +30,7 @@ object Article {
   def create(article: Article): Boolean = {
 
     val dt = new DateTime(article.date)
-    val dateF: Long = dt.getMillis
+    val dateF: Long = DateTimeUtils.currentTimeMillis()
 
     Cypher(
       """

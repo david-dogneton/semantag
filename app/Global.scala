@@ -21,37 +21,39 @@ object Global extends GlobalSettings {
     Neo4jREST.setServer("localhost", 7474, "/db/data/")
     Logger.info("Application has started")
 
-    Akka.system.scheduler
-      .scheduleOnce(
-        Duration.create(0,TimeUnit.MILLISECONDS)
-        ,
-        new Runnable() {
-          override def run()= {
-            Logger.debug("ON START" + System.currentTimeMillis())
-            Logger.debug("Mise à jour de la BDD de sites ...")
-            FluxRss.miseAJourBddSites
-          }
-        })
+//    Akka.system.scheduler
+//      .scheduleOnce(
+//        Duration.create(0,TimeUnit.MILLISECONDS)
+//        ,
+//        new Runnable() {
+//          override def run()= {
+//            Logger.debug("ON START" + System.currentTimeMillis())
+//            Logger.debug("Mise à jour de la BDD de sites ...")
+//            FluxRss.miseAJourBddSites
+//          }
+//        })
 
    val nbActors = 1000
     val system = ActorSystem("InsertionSiteArticle")
     val master = system.actorOf(Props(new Master(nbActors)), name = "master")
 
-    Akka.system.scheduler
-      .schedule(
-        Duration.create(0,TimeUnit.SECONDS),
-        Duration.create(5, TimeUnit.MINUTES),
-        new Runnable() {
-          override def run()= {
-            Logger.debug("===============================================")
-            Logger.debug("Toutes les 5 minutes : mise à jour " + System.currentTimeMillis())
-            //val nbnewsart=FluxRss.misAJourTousSites()
-            master ! Compute
-            //Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
-            Logger.debug("===============================================")
-          }
-        }
-      )
+//    Akka.system.scheduler
+//      .schedule(
+//        Duration.create(0,TimeUnit.SECONDS),
+//        Duration.create(5, TimeUnit.MINUTES),
+//        new Runnable() {
+//          override def run()= {
+//            Logger.debug("===============================================")
+//            Logger.debug("Toutes les 5 minutes : mise à jour " + System.currentTimeMillis())
+//            //val nbnewsart=FluxRss.misAJourTousSites()
+//            master ! Compute
+//            //Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
+//            Logger.debug("===============================================")
+//          }
+//        }
+//      )
+
+    /**************************************************/
 
 //    Akka.system.scheduler
 //      .schedule(
