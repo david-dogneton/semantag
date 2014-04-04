@@ -1,6 +1,6 @@
 package models
 
-import org.anormcypher.Cypher
+import org.anormcypher.{CypherRow, Cypher}
 
 /**
  * Created by Administrator on 19/03/14.

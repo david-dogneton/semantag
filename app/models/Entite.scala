@@ -45,13 +45,13 @@ object Entite {
     val result: List[Entite] = Cypher(
       """
         Match (entite:Entite) where entite.url = {url}
-        return  entite.nom as nom,
-                entite.url as url,
-                entite.apparitionsJour as apparitionsJour,
-                entite.apparitionsSemaine as apparitionsSemaine,
-                entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
-                entite.apparitionsMois as apparitionsMois,
-                entite.apparitions as apparitions;
+        return  entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions;
       """).on("url" -> url)().collect {
       case CypherRow(nom: String,
       url: String,

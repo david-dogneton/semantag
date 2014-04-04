@@ -21,7 +21,7 @@ case class Article(titre: String,
                    totalEtoiles: Int = 0,
                    nbEtoiles: Int = 0,
                    nbCoeurs: Int = 0
-                   ) {
+                    ) {
 
 }
 
@@ -133,11 +133,75 @@ object Article {
     }
   }
 
+  def getLastArticle() = {
+
+    val result: List[Article] = Cypher(
+      """
+        Match (article:Article)--(site:Site)
+                return  article.titre as titre,
+                        article.auteur as auteur,
+                        article.description as description,
+                        article.date as date,
+                        article.url as url,
+                        site.url as urlSite,
+                        article.image as image,
+                        article.consultationsJour as consultationsJour,
+                        article.consultationsSemaine as consultationsSemaine,
+                        article.consultationsSemaineDerniere as consultationsSemaineDerniere,
+                        article.consultationsMois as consultationsMois,
+                        article.consultations as consultations,
+                        article.totalEtoiles as totalEtoiles,
+                        article.nbEtoiles as nbEtoiles,
+                        article.nbCoeurs as nbCoeurs
+                				ORDER BY date DESC
+                        LIMIT 50;
+      """)().collect {
+      case CypherRow(titre: String,
+                      auteur: String,
+                      description: String,
+                      date: String,
+                      url: String,
+                      urlSite: String,
+                      image: String,
+                      consultationsJour: BigDecimal,
+                      consultationsSemaine: BigDecimal,
+                      consultationsSemaineDerniere: BigDecimal,
+                      consultationsMois: BigDecimal,
+                      consultations: BigDecimal,
+                      totalEtoiles: BigDecimal,
+                      nbEtoiles: BigDecimal,
+                      nbCoeurs: BigDecimal) =>
+        val siteOpt = Site.get(urlSite)
+        siteOpt match {
+          case Some(site) => new Article(
+            titre,
+            auteur,
+            description,
+            new DateTime(date),
+            url,
+            new Site(urlSite, site.nom, site.typeSite),
+            image,
+            consultationsJour.toInt,
+            consultationsSemaine.toInt,
+            consultationsSemaineDerniere.toInt,
+            consultationsMois.toInt,
+            consultations.toInt,
+            totalEtoiles.toInt,
+            nbEtoiles.toInt,
+            nbCoeurs.toInt)
+          case None => throw new NoSuchElementException("Pas de site pour cette article")
+        }
+      case _ => throw new IllegalArgumentException("Mauvais format de l'article")
+    }.toList
+
+    result
+  }
+
   def deleteArticle(url: String) = {
 
     val result: Boolean = Cypher(
       """
-        Match (article:Article) where article.url = {url} delete article;
+Match (article:Article) where article.url = {url} delete article;
       """).on("url" -> url).execute()
 
     println("result : " + result)

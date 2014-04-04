@@ -184,4 +184,11 @@ class TestArticle extends FunSuite with ShouldMatchers {
   //    val article = Article.deleteArticle("url 1")
   //    println("article : "+article)
   //  }
+
+  test("getAllArticle") {
+    val list = Article.getLastArticle()
+    list.foreach(println)
+    println("list : "+list.size)
+  }
+
 }

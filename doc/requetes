@@ -1,2 +1,8 @@
 recupère les sites qui n'ont pas d'articles :
 MATCH (a:`Site`) where not (a)<-[:`appartient`]-() RETURN a
+
+récupère tous les articles qui ont pour type sport
+MATCH (a:Article)-[r:`tag`]->(e1:Entite)-[ap:`aPourType`]->(t:Type) where t.denomination = "DBpedia:Sport" return distinct a,e1,t
+
+récupères les articles liées au type "artist"
+MATCH (a:Article)-[r:`tag`]->(e1:Entite)-[ap:`aPourType`]->(t:Type)<-[ap2:`aPourType`]-(e2:Entite)<-[r2:`tag`]-(c:Article) where t.denomination = "DBpedia:Artist" return distinct a,e1,t,e2,c
