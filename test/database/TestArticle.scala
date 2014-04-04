@@ -191,4 +191,9 @@ class TestArticle extends FunSuite with ShouldMatchers {
     println("list : "+list.size)
   }
 
+  test("getArticle") {
+    val art = Article.getArticle("http://www.science.gouv.fr/fr/actualites/bdd/res/4937/plato-un-telescope-spatial-pour-decouvrir-des-systemes-planetaires-semblables-au-notre/")
+    println("art : "+art)
+  }
+
 }
