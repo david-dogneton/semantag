@@ -77,7 +77,6 @@ class Child extends Actor {
 
       //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
       if ( !Article.getArticle(art.getLink).isDefined) {
-
         val titre = art.getTitle
         val auteur = art.getAuthor
         val date = art.getPublishedDate
@@ -105,13 +104,16 @@ class Child extends Actor {
         })
 
         // on crée l'entité et le tag associé au nouvel article créé
-        uniqueResources.map(liste => liste.map(el => {
-          val bool = Article.create(nouvelArticle)
+        val bool = Article.create(nouvelArticle)
 
-          if (bool) {
+        if (bool) {
+          uniqueResources.map(liste => liste.map(el => {
+
             val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
             if (!Entite.get(el._1.uri).isDefined) {
               Entite.create(entite)
+            } else {
+              // augmenter l'apparition
             }
             Tag.create(nouvelArticle, entite, el._2)
             el._1.types.split(",").map(typeEl => {
@@ -123,8 +125,11 @@ class Child extends Actor {
                 APourType.create(entite, nouveauType)
               }
             })
-          }
-        }))
+            EstLie.getLinkedArticles(nouvelArticle).map(el => EstLie.create(el._1, el._2, el._3))
+          }))
+        } else {
+          Logger.debug("article : "+nouvelArticle)
+        }
       }
   }
 }
@@ -141,15 +146,16 @@ class Master(nbActors: Int) extends Actor {
   def traitementSite(listeSites: List[Site], res: Int): Int = {
 
     listeSites match {
-      case Nil => res + 1
+      case Nil => Logger.debug("Nombre flux Totaux: " + res)
+        res
       case head :: tail =>
-        misAJourSite(head)
+        val nbFlux = misAJourSite(head)
         Logger.debug("Nombre flux RAJOUTE" + head.nom + "   " + res)
-        traitementSite(tail, res + 1)
+        traitementSite(tail, nbFlux + res)
     }
   }
 
-  def misAJourSite(site: Site) = {
+  def misAJourSite(site: Site): Int = {
     import java.net.URL
     import com.sun.syndication.io.{XmlReader, SyndFeedInput}
     import com.sun.syndication.feed.synd.SyndFeed
@@ -176,20 +182,19 @@ class Master(nbActors: Int) extends Actor {
         val tmp = ite.next()
         listeFluxScala = listeFluxScala.::(tmp)
       }
-      Logger.debug("Nombre flux " + site.nom + "   " + listeFluxScala.size)
       listeFluxScala.foreach(
         art => smallestMailBoxRouter ! Work(art, site)
       )
-    }
-    catch {
+      listeFluxScala.size
+    } catch {
       case ex: Exception =>
         ex.printStackTrace()
         println("ERROR: " + ex.getMessage)
+        0
     }
-
-    if (!ok) {
-      Logger.debug("FeedReader reads and prints any RSS/Atom feed type.")
-      Logger.debug("The first parameter must be the URL of the feed to read.")
-    }
+    //    if (!ok) {
+    //      Logger.debug("FeedReader reads and prints any RSS/Atom feed type.")
+    //      Logger.debug("The first parameter must be the URL of the feed to read.")
+    //    }
   }
 }
