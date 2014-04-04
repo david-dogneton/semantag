@@ -1,7 +1,8 @@
 package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
-import org.joda.time.{DateTimeUtils, DateTime}
+
+import org.joda.time.{DateTimeUtils, Duration, DateTime}
 
 /**
  * Created by Administrator on 17/03/14.
@@ -30,7 +31,10 @@ object Article {
   def create(article: Article): Boolean = {
 
     val dt = new DateTime(article.date)
-    val dateF: Long = DateTimeUtils.currentTimeMillis()
+
+    val milis: Long = dt.getMillis
+    val duration = Duration.millis(milis)
+    val dateF = DateTimeUtils.getDurationMillis(duration)
 
     Cypher(
       """
@@ -156,7 +160,7 @@ object Article {
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
-                				ORDER BY date DESC
+                				ORDER BY date
                         LIMIT 50;
       """)().collect {
       case CypherRow(titre: String,
