@@ -10,6 +10,7 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
+import java.util.Date
 
 /**
  * Created by Romain on 20/03/14.
@@ -47,21 +48,35 @@ object FluxRss {
     Logger.debug("/*/*/*/*/*/*/*/*/*/*/*/")
     val system = ActorSystem("InsertionSiteArticle")
     val master = system.actorOf(Props(new Master(nbActors)), name = "master")
-    master ! Process
+    master ! Compute
   }
 }
 
-case object Process
+case object Compute
 
 case class Work(article: SyndEntry, site: Site)
 
 class Child extends Actor {
 
-  def receive = {
+  def getLastFlux(art: SyndEntry): Boolean = {
+    val dateArticle = art.getPublishedDate
+    val dateJoda = new DateTime(dateArticle)
+    val dateNowMinusOne= DateTime.now().minusHours(1)
+
+    if(dateJoda.isAfter(dateNowMinusOne)){
+      true
+    } else {
+      false
+    }
+  }
+  def receive: PartialFunction[Any, Unit] = {
     case Work(art, site) =>
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
-      if (!Article.getArticle(art.getLink).isDefined) {
+
+
+      //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
+      if ( !Article.getArticle(art.getLink).isDefined) {
 
         val titre = art.getTitle
         val auteur = art.getAuthor
@@ -119,7 +134,7 @@ class Master(nbActors: Int) extends Actor {
   val smallestMailBoxRouter = context.actorOf(Props[Child].withRouter(SmallestMailboxRouter(nbActors)), name = "workerRouter")
 
   def receive = {
-    case Process => traitementSite(Site.getAll(), 0)
+    case Compute => traitementSite(Site.getAll(), 0)
   }
 
 

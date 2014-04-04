@@ -2,8 +2,9 @@
  * Created by Administrator on 15/03/14.
  */
 
+import akka.actor.{Props, ActorSystem}
 import java.util.concurrent.TimeUnit
-import models.FluxRss
+import models.{Compute, Master, FluxRss}
 import org.joda.time.DateTime
 import play.api._
 import org.anormcypher._
@@ -32,8 +33,9 @@ object Global extends GlobalSettings {
           }
         })
 
-
-
+   val nbActors = 1000
+    val system = ActorSystem("InsertionSiteArticle")
+    val master = system.actorOf(Props(new Master(nbActors)), name = "master")
 
     Akka.system.scheduler
       .schedule(
@@ -43,12 +45,28 @@ object Global extends GlobalSettings {
           override def run()= {
             Logger.debug("===============================================")
             Logger.debug("Toutes les 5 minutes : mise à jour " + System.currentTimeMillis())
-            val nbnewsart=FluxRss.misAJourTousSites()
-            Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
+            //val nbnewsart=FluxRss.misAJourTousSites()
+            master ! Compute
+            //Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
             Logger.debug("===============================================")
           }
         }
       )
+
+//    Akka.system.scheduler
+//      .schedule(
+//        Duration.create(0,TimeUnit.SECONDS),
+//        Duration.create(5, TimeUnit.MINUTES),
+//        new Runnable() {
+//          override def run()= {
+//            Logger.debug("===============================================")
+//            Logger.debug("Toutes les 5 minutes : mise à jour " + System.currentTimeMillis())
+//            val nbnewsart=FluxRss.misAJourTousSites()
+//            Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
+//            Logger.debug("===============================================")
+//          }
+//        }
+//      )
 
 
   }
