@@ -29,6 +29,9 @@ object Article {
 
   def create(article: Article): Boolean = {
 
+    val dt = new DateTime(article.date)
+    val dateF: Long = dt.getMillis
+
     Cypher(
       """
         match (site : Site)
@@ -53,7 +56,7 @@ object Article {
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
         "description" -> article.description,
-        "date" -> article.date.toString(),
+        "date" -> dateF,
         "url" -> article.url,
         "image" -> article.image,
         "consultationsJour" -> article.consultationsJour,
@@ -96,7 +99,7 @@ object Article {
         case CypherRow(titre: String,
         auteur: String,
         description: String,
-        date: String,
+        date: BigDecimal,
         url: String,
         urlSite: String,
         image: String,
@@ -114,7 +117,7 @@ object Article {
               titre,
               auteur,
               description,
-              new DateTime(date),
+              new DateTime(date.toLong),
               url,
               new Site(urlSite, site.nom, site.typeSite),
               image,
@@ -159,7 +162,7 @@ object Article {
       case CypherRow(titre: String,
                       auteur: String,
                       description: String,
-                      date: String,
+                      date: BigDecimal,
                       url: String,
                       urlSite: String,
                       image: String,
@@ -177,7 +180,7 @@ object Article {
             titre,
             auteur,
             description,
-            new DateTime(date),
+            new DateTime(date.toLong),
             url,
             new Site(urlSite, site.nom, site.typeSite),
             image,
