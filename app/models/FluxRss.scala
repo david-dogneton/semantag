@@ -101,18 +101,19 @@ class Child extends Actor {
 
             val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
             if (!Entite.get(el._1.uri).isDefined) {
-              Entite.create(entite)
+              Tag.createTagAndEntity(nouvelArticle, entite, el._2)
             } else {
               // augmenter l'apparition
+              Tag.create(nouvelArticle, entite, el._2)
             }
-            Tag.create(nouvelArticle, entite, el._2)
             el._1.types.split(",").map(typeEl => {
               if (typeEl != "") {
                 val nouveauType = new Type(typeEl)
                 if (!Type.get(typeEl).isDefined) {
-                  Type.create(nouveauType)
+                  APourType.createTypeAndRel(entite, nouveauType)
+                } else {
+                  APourType.create(entite, nouveauType)
                 }
-                APourType.create(entite, nouveauType)
               }
             })
             EstLie.getLinkedArticles(nouvelArticle).map(el => EstLie.create(el._1, el._2, el._3))

@@ -16,13 +16,41 @@ object Tag {
       """
          match (article: Article), (entite: Entite)
          where article.url = {urlArt} and entite.url = {urlEnt}
-         create (article)-[r:tag {quantite : {quantite}}]->(entite)
+         create (article)<-[r:tag {quantite : {quantite}}]-(entite)
       """
     ).on("urlArt" -> article.url,
         "urlEnt" -> entite.url,
         "quantite" -> quantite
       ).execute()
   }
+
+  def createTagAndEntity(article: Article, entite: Entite, quantite: Int): Boolean = {
+    Cypher(
+      """
+         match (article: Article)
+         where article.url = {urlArt}
+         create (article)<-[r:tag {quantite : {quantite}}]-(entite: Entite{
+                 nom: {nom},
+                 url: {urlEnt},
+                 apparitionsJour: {apparitionsJour},
+                 apparitionsSemaine: {apparitionsSemaine},
+                 apparitionsSemaineDerniere: {apparitionsSemaineDerniere},
+                 apparitionsMois: {apparitionsMois},
+                 apparitions: {apparitions}
+                })
+      """
+    ).on("urlArt" -> article.url,
+        "quantite" -> quantite,
+        "nom" -> entite.nom,
+        "urlEnt" -> entite.url,
+        "apparitionsJour" -> entite.apparitionsJour,
+        "apparitionsSemaine" -> entite.apparitionsSemaine,
+        "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
+        "apparitionsMois" -> entite.apparitionsMois,
+        "apparitions" -> entite.apparitions
+      ).execute()
+  }
+
 
   def create(tag: Tag): Boolean = {
     create(tag.article, tag.entite, tag.quantite)

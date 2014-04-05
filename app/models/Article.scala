@@ -29,10 +29,11 @@ object Article {
 
   def create(article: Article): Boolean = {
 
-    val dt = new DateTime(article.date)
-    val milis: Long = dt.getMillis
-    val duration = Duration.millis(milis)
-    val dateF = DateTimeUtils.getDurationMillis(duration)
+//    val dt = new DateTime(article.date)
+//    val milis: Long = dt.getMillis
+//    val duration = Duration.millis(milis)
+//    val dateF = DateTimeUtils.getDurationMillis(duration)
+    val dateF = article.date.toString()
 
     Cypher(
       """
@@ -101,7 +102,7 @@ object Article {
         case CypherRow(titre: String,
         auteur: String,
         description: String,
-        date: BigDecimal,
+        date: String,
         url: String,
         urlSite: String,
         image: String,
@@ -119,7 +120,7 @@ object Article {
               titre,
               auteur,
               description,
-              new DateTime(date.toLong),
+              new DateTime(date),
               url,
               new Site(urlSite, site.nom, site.typeSite),
               image,
@@ -158,13 +159,13 @@ object Article {
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
-                				ORDER BY date
+                				ORDER BY article.date DESC
                         LIMIT 50;
       """)().collect {
       case CypherRow(titre: String,
                       auteur: String,
                       description: String,
-                      date: BigDecimal,
+                      date: String,
                       url: String,
                       urlSite: String,
                       image: String,
@@ -182,7 +183,7 @@ object Article {
             titre,
             auteur,
             description,
-            new DateTime(date.toLong),
+            new DateTime(date),
             url,
             new Site(urlSite, site.nom, site.typeSite),
             image,
