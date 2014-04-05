@@ -1,4 +1,4 @@
-@()(implicit lang: Lang)
+@()(implicit user: Option[Utilisateur], lang: Lang)
 @main(Messages("presentation.title"))("presentation") {
 <h2 class="ui center aligned header" style="margin-top:50px">@Messages("presentation.header")</h2>
 <div class="ui page grid overview segment" style="min-height:490px">

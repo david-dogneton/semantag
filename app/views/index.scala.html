@@ -1,4 +1,4 @@
-@()(implicit lang: Lang)
+@()(implicit user: Option[Utilisateur], lang: Lang)
 @main(Messages("index.title"))("accueil") {
 <div class="ui grid" ng-controller="NewsRenderer">
     <div class="two wide column">

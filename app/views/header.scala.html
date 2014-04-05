@@ -1,4 +1,4 @@
-@(page:String)(implicit lang: Lang)
+@(page:String)(implicit user: Option[Utilisateur], lang: Lang)
 <div class="ui inverted huge teal block header" id="header">
     <div class="ui inverted menu" style="background:none">
         <a href="@routes.Application.index()">
@@ -52,10 +52,21 @@
                     <a class="item">@Messages("header.stats.fromBeginning")</a>
                 </div>
             </div>
-            <div class="item">
-                <div class="ui teal button">@Messages("header.subscribe")</div>
-                <div class="ui button">@Messages("header.connect")</div>
-            </div>
+            @user match {
+                case Some(usr) => {
+                    <div class="item">
+                     <p>Vous êtes connecté en tant que @usr.pseudo</p>
+                     <a href="@routes.LoginLogout.logout" class="ui red button" > Se déconnecter !</a>
+                    </div>
+                }
+                case None => {
+                    <div class="item">
+                       <div class="ui teal button"> <a  style="color :white;" href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
+                        <div class="ui button"><a  style="none;" href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
+                    </div>
+                }
+            }
+
         </div>
     </div>
 </div>

@@ -1,7 +1,8 @@
 package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
-import org.joda.time.{DateTimeUtils, Duration, DateTime}
+
+import org.joda.time.DateTime
 
 /**
  * Created by Administrator on 17/03/14.
@@ -159,7 +160,7 @@ object Article {
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
-                				ORDER BY article.date DESC
+                				ORDER BY date DESC
                         LIMIT 50;
       """)().collect {
       case CypherRow(titre: String,
