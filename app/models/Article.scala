@@ -160,7 +160,7 @@ object Article {
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
-                				ORDER BY date
+                				ORDER BY date DESC
                         LIMIT 50;
       """)().collect {
       case CypherRow(titre: String,
