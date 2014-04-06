@@ -19,7 +19,7 @@ object AnnotatorWS {
 
     val result = WS.url(fr)
       .withHeaders(("Accept", "application/json"), ("Accept", "application/xml"), ("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
-      .post("&text=" + text)
+      .post("&text=" + text+"&support=-1")
 
     result.map(response => {
       if (response.status == 200) {
