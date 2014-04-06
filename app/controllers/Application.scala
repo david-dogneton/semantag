@@ -65,8 +65,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getArt = StackAction {
     implicit request =>
 
+      Logger.debug("avant")
       val listeArt: List[Article] = Article.getLastArticle
-
+      Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/tag._1.nom/*, tag._1.url*/)/*(*/

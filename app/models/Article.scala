@@ -161,7 +161,7 @@ object Article {
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
                 				ORDER BY date DESC
-                        LIMIT 50;
+                        LIMIT 30;
       """)().collect {
       case CypherRow(titre: String,
                       auteur: String,
