@@ -1,0 +1,35 @@
+@()(implicit user: Option[Utilisateur], lang: Lang)
+@main(Messages("index.title"))("accueil") {
+<div class="ui grid" ng-controller="NewsRenderer">
+    <div class="two wide column">
+        <div class="sixteen wide column">
+            <h3 class="ui header">Domaine</h3>
+            <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
+            <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
+            </div>
+        </div>
+    </div>
+    <div class="eleven wide column">
+
+        <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
+    </div>
+    <div class="three wide column">
+        <h3 class="ui header">Top du jour</h3>
+        <div class="ui divided ordered list">
+            <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                <img class="ui avatar image" src="{{item['image']}}" alt="">
+                <div class="content">
+                    <a class="header">{{item['nom']}}</a>
+                    <div class="description">{{item['type']}}</div>
+                    <div class="detail">{{item['nombre']}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
+}

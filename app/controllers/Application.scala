@@ -37,8 +37,8 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       import routes.javascript._
       Ok(
         Routes.javascriptRouter("jsRoutes")(
-          controllers.routes.javascript.Application.getArt
-          //Users.get
+         controllers.routes.javascript.Application.getArt,
+         controllers.routes.javascript.Application.getDomaines
         )
       ).as("text/javascript")
   }
@@ -49,6 +49,18 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       Ok(views.html.mapage())
   }
 
+  def getDomaines = StackAction {
+    implicit request =>
+
+      val listeDomaines: List[Site] = Site.getTypes()
+
+      val res: List[JsObject] = listeDomaines.map(site => {
+       Json.obj("nom" -> site.typeSite
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
   // Router.JavascriptReverseRoute
   def getArt = StackAction {
     implicit request =>
@@ -56,7 +68,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val listeArt: List[Article] = Article.getLastArticle
 
       val res: List[JsObject] = listeArt.map(art => {
-        val dateF: String = art.date.dayOfMonth() + "-" + art.date.monthOfYear() + "-" + art.date.year()
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/tag._1.nom/*, tag._1.url*/)/*(*/
         Json.obj("url" -> art.url,
           "titre" -> art.titre,
@@ -535,13 +547,17 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     implicit request =>
       FluxRss.misAJourTousSites()
       Ok(views.html.index())
-
   }
 
   def miseAJourSites = StackAction {
     implicit request =>
       FluxRss.miseAJourBddSites
       Ok(views.html.index())
+  }
+
+  def entite = StackAction {
+    implicit request =>
+      Ok(views.html.entite())
   }
 
 }

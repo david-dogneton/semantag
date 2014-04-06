@@ -6,7 +6,7 @@
             <h3 class="ui header">Domaine</h3>
             <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
             <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
-                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine">{{domaine}}</a>
+                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
             </div>
         </div>
     </div>
