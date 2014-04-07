@@ -13,13 +13,13 @@ import models.ResourceDbPedia
 object AnnotatorWS {
 
   private final val production: String = "http://spotlight.dbpedia.org/rest/annotate"
-  private final val fr: String = "http://spotlight.sztaki.hu:2225/rest/annotate"
+  private final val fr: String = "http://localhost:2222/rest/annotate"
 
   def annotate(text: String): Future[List[ResourceDbPedia]] = {
 
     val result = WS.url(fr)
       .withHeaders(("Accept", "application/json"), ("Accept", "application/xml"), ("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"))
-      .post("&text=" + text)
+      .post("&text=" + text+"&support=-1")
 
     result.map(response => {
       if (response.status == 200) {
@@ -32,6 +32,7 @@ object AnnotatorWS {
             (JsPath \ "@similarityScore").read[String] and
             (JsPath \ "@percentageOfSecondRank").read[String]
           ).tupled
+
         val resources = (response.json \ "Resources").as[List[(String, String, String, String, String, String, String)]]
         resources.map(resource => ResourceDbPedia(resource._1, resource._2.toInt, resource._3, resource._4, resource._5.toInt, resource._6.toDouble, resource._7.toDouble))
       } else {

@@ -1,6 +1,6 @@
 package models
 
-import org.anormcypher.{CypherRow, Cypher}
+import org.anormcypher.{CypherResultRow, CypherRow, Cypher}
 
 /**
  * Created by Administrator on 18/03/14.
@@ -45,13 +45,13 @@ object Entite {
     val result: List[Entite] = Cypher(
       """
         Match (entite:Entite) where entite.url = {url}
-        return  entite.nom as nom,
-                entite.url as url,
-                entite.apparitionsJour as apparitionsJour,
-                entite.apparitionsSemaine as apparitionsSemaine,
-                entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
-                entite.apparitionsMois as apparitionsMois,
-                entite.apparitions as apparitions;
+        return  entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions;
       """).on("url" -> url)().collect {
       case CypherRow(nom: String,
       url: String,
@@ -112,4 +112,57 @@ object Entite {
       case _ => Some(result)
     }
   }
+
+  def lesPlusTaggesDuJour(): List[Entite] = {
+    Cypher(
+      """
+        Match (entite:Entite)
+        return  entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions
+        ORDER BY entite.apparitionsJour DESC
+        Limit 5;
+      """)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+  }
+
+  def incrApparitions(entite : Entite): Stream[CypherResultRow] = {
+    Cypher(
+      """
+        Match (entite:Entite) where entite.url = {url}
+        set entite.apparitionsJour = entite.apparitionsJour + 1,
+            entite.apparitionsSemaine = entite.apparitionsSemaine + 1,
+            entite.apparitionsSemaineDerniere = entite.apparitionsSemaineDerniere + 1,
+            entite.apparitionsMois = entite.apparitionsMois + 1,
+            entite.apparitions = entite.apparitions + 1
+        return  entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions;
+      """).on("url" -> entite.url)()
+  }
+
+
 }

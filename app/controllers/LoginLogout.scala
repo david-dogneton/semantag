@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc.{Action, Controller}
-import jp.t2v.lab.play2.auth.{OptionalAuthElement, LoginLogout}
+import jp.t2v.lab.play2.auth._
 import models.{Utilisateur, Permission}
 import play.api.data.Form
 import play.api._
@@ -16,15 +16,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object LoginLogout extends Controller with LoginLogout with OptionalAuthElement with AuthConfigImpl {
   val loginForm = Form(
     mapping(
-      "email" -> text,
-      "password" -> text,
-      "pseudo"->text
+      "email" -> nonEmptyText,
+      "password" -> nonEmptyText
     ){
-      (email, password,pseudo) =>Utilisateur(email,password,pseudo)
+      (email, password) =>Utilisateur(email,password,"")
     }{
-      utilisateur => Some(utilisateur.mail,utilisateur.mdp,utilisateur.pseudo)
+      utilisateur => Some(utilisateur.mail,utilisateur.mdp)
     }
   )
+
 
   def connexion = StackAction {
     implicit request =>
@@ -49,7 +49,8 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       loginForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Formulaire connexion mal rempli")
-          Future.successful(BadRequest("Non"))
+//          Future.successful(BadRequest("Non."))
+          Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Les champs ne sont pas renseignés correctement !"))
         },
         user => {
           Logger.debug("Formulaire connexion bien rempli")
@@ -70,8 +71,17 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       )
   }
 
-
-
+  val inscriptionForm = Form(
+    mapping(
+      "email" -> nonEmptyText,
+      "password" -> nonEmptyText,
+      "pseudo"->text
+    ){
+      (email, password,pseudo) =>Utilisateur(email,password,pseudo)
+    }{
+      utilisateur => Some(utilisateur.mail,utilisateur.mdp,utilisateur.pseudo)
+    }
+  )
 
 
   def inscription =StackAction{
@@ -85,27 +95,28 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       Ok(views.html.inscription())
     }
   }
-  def inscriptionsubmit = Action{
+  def inscriptionsubmit = StackAction{
     implicit request =>
-      loginForm.bindFromRequest.fold(
+      inscriptionForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Compte mal renseigné")
           Logger.debug(s"Bad registration !! : ${formWithErrors}")
-          Ok(views.html.inscription())
+          //BadRequest(views.html.inscription())
+          Redirect(routes.LoginLogout.inscription).flashing("error" -> "Les champs sont mal renseignés  !")
         },
         admin => {
           Logger.debug("Compte bien renseigné")
+         // val mayBeUser: Option[Utilisateur] = Utilisateur.get(admin.mail)
+         // if (mayBeUser.isDefined) {
+         //   Logger.debug("Compte déjà existant ")
+          //  Redirect(routes.LoginLogout.inscription).flashing("error" -> "Ce compte mail est déjà associé à un compte SEMANTAG !")
+          //}
+         // else{
+          Logger.debug("Compte non existant !")
           Utilisateur.create(admin)
           Logger.debug("Compte bien crée")
-          Redirect(routes.Application.mapage)
-//          if(admin.id.isDefined){
-//            Accounts.update(admin.id.get,admin)
-//            Redirect(routes.Application.admin).flashing("success"->"Administrateur mis à jour avec succès")
-//          }
-//          else {
-//            Accounts.insert(admin)
-//            Redirect(routes.Application.admin).flashing("success"->"Administrateur inséré avec succès")
-//          }
+          Redirect(routes.LoginLogout.inscription).flashing("success" -> "Vous êtes maintenant membre de SEMANTAG !")
+
         }
       )
   }

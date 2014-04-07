@@ -10,23 +10,20 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
+import java.util.Date
 
 /**
  * Created by Romain on 20/03/14.
  */
 object FluxRss {
 
-  def miseAJourBddSites() = {
-    var listeSites: List[Site] = List()
-    val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv", "utf-8")
+
+  def miseAJourBddSites = {
+    val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv","utf-8")
     val iter: Iterator[Array[String]] = src.getLines().map(_.split(";"))
-
-    while (iter.hasNext) {
-      val currentline = iter.next()
-      val site = Site(currentline(1), currentline(0), currentline(2))
-      listeSites = listeSites.::(site)
-    }
-
+    val listeSites = iter.map(el => {
+      Site(el(1),el(0),el(2))
+    }).toList
     Logger.debug("taille liste " + listeSites.size)
 
     src.close()
@@ -46,32 +43,45 @@ object FluxRss {
   private final val nbActors = 1000
 
   //Mise à jour des sites DEJA existants en BDD
+
   def misAJourTousSites() = {
     Logger.debug("/*/*/*/*/*/*/*/*/*/*/*/")
     val system = ActorSystem("InsertionSiteArticle")
     val master = system.actorOf(Props(new Master(nbActors)), name = "master")
-    master ! Process
+    master ! Compute
   }
 }
 
-case object Process
+case object Compute
 
 case class Work(article: SyndEntry, site: Site)
 
 class Child extends Actor {
 
-  def receive = {
+  def getLastFlux(art: SyndEntry): Boolean = {
+    val dateArticle = art.getPublishedDate
+    val dateJoda = new DateTime(dateArticle)
+    val dateNowMinusOne= DateTime.now().minusHours(1)
+
+    if(dateJoda.isAfter(dateNowMinusOne)){
+      true
+    } else {
+      false
+    }
+  }
+  def receive: PartialFunction[Any, Unit] = {
     case Work(art, site) =>
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
-      if (!Article.getArticle(art.getLink).isDefined) {
 
+
+      //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
+      if ( !Article.getArticle(art.getLink).isDefined) {
         val titre = art.getTitle
         val auteur = art.getAuthor
         val date = art.getPublishedDate
         val description = art.getDescription.getValue
         val lien = art.getLink
-
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
         val imageList: util.List[SyndEnclosureImpl] = art.getEnclosures.asInstanceOf[util.List[SyndEnclosureImpl]]
 
@@ -82,45 +92,44 @@ class Child extends Actor {
           ""
         }
         val nouvelArticle = Article(titre, auteur, description, new DateTime(date), lien, site, image)
-        val bool = Article.create(nouvelArticle)
-        if (bool) {
-          val annotatorTitre: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre) // annotation du titre
-          val annotatorAuteur: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(auteur) // annotation de l'auteur
-          val annotatorDescription: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(description) // annotation de la description
+        val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description + auteur)
 
-          // on concatène les trois listes
-          val allResources: Future[List[ResourceDbPedia]] = annotatorTitre.zip(annotatorDescription)
-                                                                          .zip(annotatorAuteur)
-                                                                          .map(x => x._1._1 ::: x._1._2 ::: x._2)
-
-          // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
-          // on renvoie le premier élément et la taille de la liste (quantité dans tag)
-          val uniqueResources: Future[Map[ResourceDbPedia, Int]] = allResources.map(el => {
-            val mapByUri: Map[String, List[ResourceDbPedia]] = el.groupBy(_.uri)
-            mapByUri.map(el => {
-              (el._2.head, el._2.size)
-            })
+        // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
+        // on renvoie le premier élément et la taille de la liste (quantité dans tag)
+        val uniqueResources: Future[Map[ResourceDbPedia, Int]] = allResources.map(el => {
+          val mapByUri: Map[String, List[ResourceDbPedia]] = el.groupBy(_.uri)
+          mapByUri.map(el => {
+            (el._2.head, el._2.size)
           })
-          // on crée l'entité et le tag associé au nouvel article créé
+        })
+
+        // on crée l'entité et le tag associé au nouvel article créé
+        val bool = Article.create(nouvelArticle)
+
+        if (bool) {
           uniqueResources.map(liste => liste.map(el => {
-            val entite = new Entite(el._1.surfaceForm, el._1.uri)
+
+            val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
             if (!Entite.get(el._1.uri).isDefined) {
-              Entite.create(entite)
+              Tag.createTagAndEntity(nouvelArticle, entite, el._2)
+            } else {
+              Tag.create(nouvelArticle, entite, el._2)
+              Entite.incrApparitions(entite)
             }
-            Tag.create(nouvelArticle, entite, el._2)
             el._1.types.split(",").map(typeEl => {
-              if(typeEl != "") {
+              if (typeEl != "") {
                 val nouveauType = new Type(typeEl)
                 if (!Type.get(typeEl).isDefined) {
-                  Type.create(nouveauType)
+                  APourType.createTypeAndRel(entite, nouveauType)
+                } else {
+                  APourType.create(entite, nouveauType)
                 }
-                APourType.create(entite, nouveauType)
               }
             })
+            EstLie.getLinkedArticles(nouvelArticle).map(el => EstLie.create(el._1, el._2, el._3))
           }))
-        }
-        else {
-          Logger.debug("article non inséré")
+        } else {
+          Logger.debug("article : "+nouvelArticle)
         }
       }
   }
@@ -131,22 +140,23 @@ class Master(nbActors: Int) extends Actor {
   val smallestMailBoxRouter = context.actorOf(Props[Child].withRouter(SmallestMailboxRouter(nbActors)), name = "workerRouter")
 
   def receive = {
-    case Process => traitementSite(Site.getAll(), 0)
+    case Compute => traitementSite(Site.getAll(), 0)
   }
 
 
   def traitementSite(listeSites: List[Site], res: Int): Int = {
 
     listeSites match {
-      case Nil => res + 1
+      case Nil => Logger.debug("Nombre flux Totaux: " + res)
+        res
       case head :: tail =>
-        misAJourSite(head)
+        val nbFlux = misAJourSite(head)
         Logger.debug("Nombre flux RAJOUTE" + head.nom + "   " + res)
-        traitementSite(tail, res + 1)
+        traitementSite(tail, nbFlux + res)
     }
   }
 
-  def misAJourSite(site: Site) = {
+  def misAJourSite(site: Site): Int = {
     import java.net.URL
     import com.sun.syndication.io.{XmlReader, SyndFeedInput}
     import com.sun.syndication.feed.synd.SyndFeed
@@ -166,26 +176,26 @@ class Master(nbActors: Int) extends Actor {
       val listeFluxCasted: util.List[SyndEntry] = listeFlux.asInstanceOf[util.List[SyndEntry]]
 
       //Manip avec un iterator pour récuperer une liste "Scala" plus facile pour la manip
+
       var listeFluxScala: List[SyndEntry] = List()
       val ite = listeFluxCasted.iterator()
       while (ite.hasNext) {
         val tmp = ite.next()
         listeFluxScala = listeFluxScala.::(tmp)
       }
-      Logger.debug("Nombre flux " + site.nom + "   " + listeFluxScala.size)
       listeFluxScala.foreach(
         art => smallestMailBoxRouter ! Work(art, site)
       )
-    }
-    catch {
+      listeFluxScala.size
+    } catch {
       case ex: Exception =>
         ex.printStackTrace()
         println("ERROR: " + ex.getMessage)
+        0
     }
-
-    if (!ok) {
-      Logger.debug("FeedReader reads and prints any RSS/Atom feed type.")
-      Logger.debug("The first parameter must be the URL of the feed to read.")
-    }
+    //    if (!ok) {
+    //      Logger.debug("FeedReader reads and prints any RSS/Atom feed type.")
+    //      Logger.debug("The first parameter must be the URL of the feed to read.")
+    //    }
   }
 }
