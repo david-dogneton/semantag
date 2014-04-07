@@ -5,20 +5,24 @@ import org.anormcypher.{CypherRow, Cypher}
 /**
  * Created by Administrator on 20/03/14.
  */
-case class Type(denomination: String) {
+case class Type(denomination: String, id : Int = -1) {
 
 }
 
 object Type {
 
-  def create(typeT : Type): Boolean = {
+  def create(typeT : Type): Option[Type] = {
     Cypher(
       """
         create (type: Type {
           denomination: {denomination}
         })
+        return ID(type)
       """
-    ).on("denomination" -> typeT.denomination).execute()
+    ).on("denomination" -> typeT.denomination)().collect {
+      case CypherRow(id: BigDecimal) => Some(new Type(typeT.denomination, id.toInt))
+      case _ => None
+    }.head
   }
 
   def get(denomination : String): Option[Type] = {
