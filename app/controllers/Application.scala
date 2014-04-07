@@ -70,7 +70,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         success = { url =>
           Logger.debug("URL OKAY ")
           Logger.debug("URL TEST " + url)
-          val article: Option[Article] = Article.getArticle(url)
+          val article: Option[Article] = Article.getByUrl(url)
           if (article.isDefined) {
 
             Ok(views.html.visualisationarticle(article.get))

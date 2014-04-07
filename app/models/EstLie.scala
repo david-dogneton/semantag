@@ -51,7 +51,7 @@ object EstLie {
 
     Cypher(
       """
-        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(article) = {id}
+        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {id}
         return distinct a.url, c.url, r.quantite, r2.quantite
       """).on("id" -> article.id)().collect {
       case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
