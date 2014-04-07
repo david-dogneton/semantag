@@ -1,7 +1,6 @@
 package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
-
 import org.joda.time.DateTime
 
 /**
@@ -213,5 +212,59 @@ Match (article:Article) where article.url = {url} delete article;
 
     println("result : " + result)
     result
+  }
+
+
+
+  def getEntitesLiees(article: Article): Option[List[Entite]] = {
+    val result: List[Entite] = Cypher(
+      """
+        match (entite: Entite)-[r:tag]-(article: Article {url : {urlArticle}})
+                return entite.nom as nom,
+                  entite.url as url,
+                  entite.apparitionsJour as apparitionsJour,
+                  entite.apparitionsSemaine as apparitionsSemaine,
+                  entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
+                  entite.apparitionsMois as apparitionsMois,
+                  entite.apparitions as apparitions;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
+  }
+
+  def getDomainesLies(article: Article): Option[List[Domaine]] = {
+    val result: List[Domaine] = Cypher(
+      """
+        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
+                return domaine.nom as nom;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String) =>
+        new Domaine(nom)
+      case _ => throw new IllegalArgumentException("Mauvais format du domaine")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
   }
 }

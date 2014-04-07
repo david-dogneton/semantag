@@ -26,10 +26,25 @@ object Utilisateur {
   }
 
   def get(adresseMail: String): Option[Utilisateur] = {
-    val result: CypherRow = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} return n.mail as mail, n.mdp as mdp, n.pseudo as pseudo, n.nbCoeurs as nbCoeurs;").on("mailDonne" -> adresseMail).apply().head
+    val result: List[Utilisateur] = Cypher(
+      """
+        Match (n:Utilisateur)
+        where n.mail = {mailDonne}
+        return n.mail as mail,
+          n.mdp as mdp,
+          n.pseudo as pseudo,
+          n.nbCoeurs as nbCoeurs;
+        """).on("mailDonne" -> adresseMail)().collect{
+      case CypherRow(mail: String,
+      mdp: String,
+      pseudo: String,
+      nbCoeurs: BigDecimal) =>
+      new Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
+      case _ => throw new Exception("Utilisateur not found")
+    }.toList
     result match {
-      case CypherRow(mail : String, mdp : String, pseudo : String, nbCoeurs : BigDecimal) => Some(Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt))
-      case _ => None
+      case Nil => None
+      case head :: tail => Some(head)
     }
   }
 
@@ -87,5 +102,7 @@ object Utilisateur {
     val result: Boolean = Cypher( "Match (n:Utilisateur) where n.mail = {mailDonne} delete n;").on("mailDonne" -> adresseMail).execute()
     result
   }
+
+
 
 }

@@ -40,6 +40,6 @@ GET         /createAppreciationDomaine        controllers.Application.createAppr
 GET         /deleteUser                       controllers.Application.deleteUser
 GET         /createEntite                     controllers.Application.createEntite
 GET         /createAppreciationEntite         controllers.Application.createAppreciationEntite
-GET         /testBDD                          controllers.Application.getRecommandation
+GET         /testBDD                          controllers.Application.getUser
 GET         /annotation/test                  controllers.Application.test
 GET         /presentation                     controllers.Application.presentation
