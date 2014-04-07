@@ -11,6 +11,10 @@
         </div>
     </div>
     <div class="eleven wide column">
+        <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
+            Récupération des articles les plus récents...
+            <div class="ui active center loader"></div>
+        </div>
         <div class="ui five items">
             <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
                 <a class="like ui corner label">
@@ -39,10 +43,13 @@
                 </div>
 
                 <p>
-                    <i class="tags icon"></i>
-                    <a href=""><span style="padding:2px;margin:2px;font-size:11px" ng-repeat="tag in item['tags']" class="ui label">
-                            {{tag}}
-                        </span> </a>
+                    <i class="tags icon"></i><!--
+                        <span style="padding:2px;margin:2px;font-size:11px"  class="ui label">-->
+                              <form style="margin:0px" ng-repeat="tag in item['tags']" action="@routes.Application.entite" method="POST">
+                                  <input type="hidden" name="urlarticle" value="{{tag.url}}">
+                                  <input class="ui mini button" style="padding:2px;margin:2px;font-size:11px" type="submit" value="{{tag.nom}}">
+                              </form>
+                       <!-- </span>-->
                 </p>
                 <p ng-show="item['lies']>1">
                     <a href=""> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
@@ -59,13 +66,18 @@
     </div>
     <div class="three wide column">
         <h3 class="ui header">Top du jour</h3>
+        <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
+            <div  class="ui active center loader"></div>
+        </div>
         <div class="ui divided ordered list">
             <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                <img class="ui avatar image" src="{{item['image']}}" alt="">
+                <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
                 <div class="content">
-                    <a class="header">{{item['nom']}}</a>
+                    <form action="@routes.Application.entite" method="POST">
+                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
+                        <input class="ui mini hover teal button" type="submit" value="{{item['nom']}} ({{item['nombre']}})">
+                    </form>
                     <div class="description">{{item['type']}}</div>
-                    <div class="detail">{{item['nombre']}}</div>
                 </div>
             </div>
         </div>

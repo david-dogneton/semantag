@@ -1,28 +1,123 @@
-@()(implicit user: Option[Utilisateur], lang: Lang)
-@main(Messages("index.title"))("accueil") {
+@(nom: String, thumb: String, thumbDescription: String, description: String, lienWiki: String, uriDBpedia: String)(implicit user: Option[Utilisateur], lang: Lang)
+@main(Messages("entity.title"))("entité") {
+<!--<script type="text/javascript">
+    function EntityNewsRenderer ($scope) {
+        var uri = "@uriDBpedia";
+        $http.post('/getArticlesDe').param(uri).success(function (data) {
+            console.dir(data);
+            $scope.tops.items=data.liste;
+        }).error(function (err) {
+                    console.log("err : " + err);
+                });
+    }
+</script>-->
 <div class="ui grid" ng-controller="NewsRenderer">
-    <div class="two wide column">
-        <div class="sixteen wide column">
-            <h3 class="ui header">Domaine</h3>
-            <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
-            <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
-                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
+    <div class="three wide column">
+        <div class="ui one items">
+            <div class="item">
+                <div class="image">
+                    <img src="@thumb">
+                    <a class="like ui corner label">
+                        <i class="like icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">@thumbDescription</div>
+                    <p class="description"></p>
+                    <div class="extra">
+                        <i class="heart icon"></i> {{item['coeurs']}} 1560
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="ten wide column">
+        <div class="ui piled segment">
+            <h2>@nom</h2>
+            DBpedia : <a target="_blank" href="@uriDBpedia">@uriDBpedia</a>
+            <br/>
+            Wikipédia : <a target="_blank" href="@lienWiki">@lienWiki</a>
+            <p>@description</p>
+    </div>
+
+        <div class="ui five connected items">
+            <div class="item">
+                <div class="image">
+                    <img src="/images/demo/highres4.jpg">
+                    <a class="star ui corner label">
+                        <i class="star icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">Cute Dog</div>
+                    <p class="description">This dog has some things going for it. Its pretty cute and looks like it'd be fun to cuddle up with.</p>
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="/images/demo/highres5.jpg">
+                    <a class="star ui corner label">
+                        <i class="star icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">Faithful Dog</div>
+                    <p class="description">Sometimes its more important to have a dog you know you can trust. But not every dog is trustworthy, you can tell by looking at its smile.</p>
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="/images/demo/highres3.jpg">
+                    <a class="star ui corner label">
+                        <i class="star icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">Silly Dog</div>
+                    <p class="description">Silly dogs can be quite fun to have as companions. You never know what kind of ridiculous thing they will do.</p>
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="/images/demo/highres2.jpg">
+                    <a class="star ui corner label">
+                        <i class="star icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">Happy Dog</div>
+                    <p class="description">Happy dogs are pretty interesting if you are an unhappy person.</p>
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="/images/demo/highres.jpg">
+                    <a class="star ui corner label">
+                        <i class="star icon"></i>
+                    </a>
+                </div>
+                <div class="content">
+                    <div class="name">Quiet Dog</div>
+                    <p class="description">A quiet dog is nice if you dont like a lot of upkeep for your dogs.</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="eleven wide column">
-
-        <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
-    </div>
     <div class="three wide column">
         <h3 class="ui header">Top du jour</h3>
+        <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
+            <div  class="ui active center loader"></div>
+        </div>
         <div class="ui divided ordered list">
             <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                <img class="ui avatar image" src="{{item['image']}}" alt="">
+                <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
                 <div class="content">
-                    <a class="header">{{item['nom']}}</a>
+                    <form action="@routes.Application.entite" method="POST">
+                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
+                        <input class="ui mini hover teal button" type="submit" value="{{item['nom']}} ({{item['nombre']}})"></a>
+                    </form>
                     <div class="description">{{item['type']}}</div>
-                    <div class="detail">{{item['nombre']}}</div>
                 </div>
             </div>
         </div>

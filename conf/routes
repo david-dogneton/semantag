@@ -7,6 +7,7 @@ GET         /                                 controllers.Application.index
 GET         /jsRoutes                         controllers.Application.javascriptRoutes
 GET         /getart                           controllers.Application.getArt
 GET         /getDomaines                      controllers.Application.getDomaines
+GET         /getTop                             controllers.Application.getTop
 GET         /majsites                         controllers.Application.miseAJourSites
 GET         /majflux                          controllers.Application.miseAJourFlux
 
@@ -14,7 +15,7 @@ GET         /connexion                        controllers.LoginLogout.connexion
 POST        /authenticate                     controllers.LoginLogout.authenticate
 GET         /mapage                           controllers.Application.mapage
 GET         /logout                           controllers.LoginLogout.logout
-GET         /entite                           controllers.Application.entite
+POST         /entite                           controllers.Application.entite
 
 GET         /inscription                      controllers.LoginLogout.inscription
 POST        /inscriptionsubmit                controllers.LoginLogout.inscriptionsubmit
