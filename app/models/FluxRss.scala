@@ -116,8 +116,8 @@ class Child extends Actor {
             if (!Entite.get(el._1.uri).isDefined) {
               Tag.createTagAndEntity(nouvelArticle, entite, el._2)
             } else {
-              // augmenter l'apparition
               Tag.create(nouvelArticle, entite, el._2)
+              Entite.incrApparitions(entite)
             }
             el._1.types.split(",").map(typeEl => {
               if (typeEl != "") {
