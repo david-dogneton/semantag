@@ -1,6 +1,7 @@
 package models
 
 import org.anormcypher.{CypherRow, Cypher}
+import org.joda.time.DateTime
 
 /**
  * Created by Administrator on 19/03/14.
@@ -117,5 +118,72 @@ object Tag {
           quantite.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
+  }
+
+  def getArticlesLies(entite: Entite, nbMax: Int): Option[List[(Article, Int)]] = {
+    val result: List[(Article, Int)] = Cypher(
+      """
+        match (entite: Entite {url : {urlEntite}})-[r:tag]-(article: Article)
+                return  article.titre as titre,
+                  article.auteur as auteur,
+                  article.description as description,
+                  article.date as date,
+                  article.url as url,
+                  site.url as urlSite,
+                  article.image as image,
+                  article.consultationsJour as consultationsJour,
+                  article.consultationsSemaine as consultationsSemaine,
+                  article.consultationsSemaineDerniere as consultationsSemaineDerniere,
+                  article.consultationsMois as consultationsMois,
+                  article.consultations as consultations,
+                  article.totalEtoiles as totalEtoiles,
+                  article.nbEtoiles as nbEtoiles,
+                  article.nbCoeurs as nbCoeurs,
+                  tag.quantite as quantiteTag
+                order by r.quantite
+                limit {nbArticles};
+      """).on("urlEntite" -> entite.url, "nbArticles" -> nbMax)().collect {
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      quantite: BigDecimal) =>
+        val siteOpt = Site.get(urlSite)
+        siteOpt match {
+          case Some(site) => (new Article(
+            titre,
+            auteur,
+            description,
+            new DateTime(date),
+            url,
+            new Site(urlSite, site.nom, site.typeSite),
+            image,
+            consultationsJour.toInt,
+            consultationsSemaine.toInt,
+            consultationsSemaineDerniere.toInt,
+            consultationsMois.toInt,
+            consultations.toInt,
+            totalEtoiles.toInt,
+            nbEtoiles.toInt,
+            nbCoeurs.toInt), quantite.toInt)
+          case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+        }
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
   }
 }

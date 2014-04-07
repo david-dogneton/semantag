@@ -453,7 +453,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def getUser = StackAction {
     implicit request =>
-      val resultOpt = Utilisateur.get("mail1Change@test.com")
+      val resultOpt = Utilisateur.get("mail3@test.com")
       resultOpt match {
         case Some(result) =>
           Logger.debug("result test get user : " + result)
