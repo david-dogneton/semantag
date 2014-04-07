@@ -1,6 +1,7 @@
 package models
 
 import org.anormcypher.Cypher
+import scala.BigDecimal
 
 /**
  * Created with IntelliJ IDEA.
@@ -153,6 +154,53 @@ object AppreciationEntite {
     ).on("mailUser" -> user.mail,
       "urlEnt" -> entite.url).execute()
     result
+  }
+
+  def majAvecCreate(note: Note): Boolean = {
+    var entitesOpt = Article.getEntitesLiees(note.article)
+    entitesOpt match {
+      case Some(entites) => {
+        entites.map(elt => {
+          var appreciationEntiteOpt = AppreciationEntite.get(note.utilisateur, elt)
+          appreciationEntiteOpt match {
+            case Some(appreciationEntite) => {
+              AppreciationEntite.setQuantite(note.utilisateur, elt, note.nbEtoiles)
+              if (note.aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
+            }
+            case None => {
+              var nbCoeurs = 0
+              if(note.aCoeur) nbCoeurs = 1
+              AppreciationEntite.create(new AppreciationEntite(note.utilisateur, elt, note.nbEtoiles, nbCoeurs))
+            }
+          }
+        })
+      }
+      case None => throw new Exception("Liste d'entités non trouvée")
+    }
+    false
+  }
+
+  def majSansCreate(note: Note, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false): Boolean = {
+    var entitesOpt = Article.getEntitesLiees(note.article)
+    entitesOpt match {
+      case Some(entites) => {
+        entites.map(elt => {
+          var appreciationEntiteOpt = AppreciationEntite.get(note.utilisateur, elt)
+          appreciationEntiteOpt match {
+            case Some(appreciationEntite) => {
+              AppreciationEntite.setQuantite(note.utilisateur, elt, changementNbEtoiles)
+              if (setCoeur) {
+                if(aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
+                else AppreciationEntite.decrNbCoeurs(note.utilisateur, elt)
+              }
+            }
+            case None => throw new Exception("AppreciationEntite non trouvée")
+          }
+        })
+      }
+      case None => throw new Exception("Liste d'entités non trouvée")
+    }
+    false
   }
 
 

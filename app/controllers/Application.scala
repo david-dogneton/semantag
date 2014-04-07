@@ -14,7 +14,7 @@ import jp.t2v.lab.play2.auth.AuthenticationElement
 import scala.Some
 
 
-object Application extends Controller  with AuthenticationElement with AuthConfigImpl {
+object Application extends Controller with AuthenticationElement with AuthConfigImpl {
 
   def index = Action {
     implicit request => Ok(views.html.index())
@@ -26,13 +26,13 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
 
   def create = Action {
     val result = Country.create()
-    Logger.debug("result : "+result)
+    Logger.debug("result : " + result)
     Ok(views.html.index())
   }
 
   def createEntite = Action {
     val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
-    Logger.debug("result test create entité : "+result)
+    Logger.debug("result test create entité : " + result)
     Ok(views.html.index())
   }
 
@@ -44,7 +44,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.create(AppreciationEntite(utilisateur, entite, 4, 3))
-            Logger.debug("result test create appréciation entité : "+result)
+            Logger.debug("result test create appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -60,7 +60,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.get(utilisateur, entite)
-            Logger.debug("result test create appréciation entité : "+result)
+            Logger.debug("result test create appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -92,7 +92,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.incrNbCoeurs(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : "+result)
+            Logger.debug("result test set quantité appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -108,7 +108,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.setFavori(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : "+result)
+            Logger.debug("result test set quantité appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -124,7 +124,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
         entiteOpt match {
           case Some(entite) =>
             val result = AppreciationEntite.estFavori(utilisateur, entite)
-            Logger.debug("result test set quantité appréciation entité : "+result)
+            Logger.debug("result test set quantité appréciation entité : " + result)
           case None => println("entiteOpt not found")
         }
       case None => println("utilisateurOpt not found")
@@ -337,16 +337,41 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
   }
 
   def createUser = Action {
-    val result = Utilisateur.create(Utilisateur("mail2@test.com", "mdpTest2", "pseudoTest2"))
-    Logger.debug("result test create user : "+result)
+    val result = Utilisateur.create(Utilisateur("mail3@test.com", "mdpTest2", "pseudoTest2"))
+    Logger.debug("result test create user : " + result)
     Ok(views.html.index())
   }
 
   def getUser = Action {
-    val resultOpt = Utilisateur.get("mail1Change@test.com")
+    val resultOpt = Utilisateur.get("mail598@test.com")
     resultOpt match {
       case Some(result) =>
         Logger.debug("result test get user : " + result)
+      case None => println("Utilisateur not found.")
+    }
+    Ok(views.html.index())
+  }
+
+  def getEntite = Action {
+    val resultOpt = Entite.get("http://quartsDeFinale.com")
+    resultOpt match {
+      case Some(result) =>
+        Logger.debug("result test get entité : " + result)
+      case None => println("Entité not found.")
+    }
+    Ok(views.html.index())
+  }
+
+  def getListeEntites = Action {
+    val resultOpt = Utilisateur.get("mail1@test.com")
+    resultOpt match {
+      case Some(result) => {
+        val resultListeOpt = Entite.getTopEntites(result, 5)
+        resultListeOpt match {
+          case Some(resultListe) => Logger.debug("result test get liste entités : "+ resultListe)
+          case None => println("Liste d'entités not found.")
+        }
+      }
       case None => println("Utilisateur not found.")
     }
     Ok(views.html.index())
@@ -401,10 +426,9 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
   }
 
 
-
   def getAllNodes = Action {
     val result: List[(String, String, Double)] = Country.getAllCountries()
-    result.foreach(el=> Logger.debug("el : "+el))
+    result.foreach(el => Logger.debug("el : " + el))
     Ok(views.html.index())
   }
 
@@ -419,7 +443,7 @@ object Application extends Controller  with AuthenticationElement with AuthConfi
 
   }
 
-  def miseAJourSites= Action {
+  def miseAJourSites = Action {
     FluxRss.miseAJourBddSites
     Ok(views.html.index())
   }
