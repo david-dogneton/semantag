@@ -49,13 +49,45 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       Ok(views.html.mapage())
   }
 
+
+  val urlForm = Form(
+    single(
+      "urlarticle" -> nonEmptyText
+    )
+  )
+
+
+  def displayArt = StackAction{
+    implicit request =>
+
+      urlForm.bindFromRequest.fold(
+        hasErrors = { form =>
+          Logger.debug("BUG URL ")
+          Redirect(routes.Application.index)
+        },
+        success = { url =>
+          Logger.debug("URL OKAY ")
+          Logger.debug("URL TEST " + url)
+          val article: Option[Article] = Article.getArticle(url)
+          if (article.isDefined) {
+            val listeLiaisons: List[(String, String, Double)] = EstLie.getLinkedArticles(article.get)
+            val listeArticles: List[Article] = listeLiaisons.map( elt  => Article.getArticle(elt._2).get )
+            Ok(views.html.visualisationarticle(article.get,listeArticles))
+          }else{Ok("")}
+
+        })
+  }
+
+
+
+
   // Router.JavascriptReverseRoute
   def getArt = StackAction {
     implicit request =>
 
-      Logger.debug("avant")
+    // Logger.debug("avant")
       val listeArt: List[Article] = Article.getLastArticle
-      Logger.debug("apres")
+      // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.dayOfMonth() + "-" + art.date.monthOfYear() + "-" + art.date.year()
         val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/tag._1.nom/*, tag._1.url*/)/*(*/
@@ -73,7 +105,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "lies" -> EstLie.getLinkedArticles(art).size
         )
       })
-      Logger.debug("RES " +res )
+      // Logger.debug("RES " +res )
       Ok(Json.obj("liste"->res))
 
     //      val art = Article.getArticle("http://www.lemonde.fr/proche-orient/article/2014/03/31/israel-l-ancien-premier-ministre-ehoud-olmert-reconnu-coupable-de-corruption_4392663_3218.html#xtor=RSS-3208")

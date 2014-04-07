@@ -145,6 +145,8 @@ function NewsRenderer($scope, $http) {
     }).error(function (err) {
             console.log("err : " + err);
     });
+
+
     $scope.limite = 5;
     $scope.filtrage = [];
     $scope.filtrage['domaine'] = "";

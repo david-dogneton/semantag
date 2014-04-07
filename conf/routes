@@ -9,6 +9,8 @@ GET         /getart                           controllers.Application.getArt
 GET         /majsites                         controllers.Application.miseAJourSites
 GET         /majflux                          controllers.Application.miseAJourFlux
 
+POST         /displayart                  controllers.Application.displayArt
+
 GET         /connexion                        controllers.LoginLogout.connexion
 POST        /authenticate                     controllers.LoginLogout.authenticate
 GET         /mapage                           controllers.Application.mapage
