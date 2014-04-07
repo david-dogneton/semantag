@@ -57,7 +57,7 @@ trait AuthConfigImpl extends AuthConfig with Controller{
     Future.successful(Redirect(routes.LoginLogout.connexion))
 
   def authorizationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[SimpleResult] =
-    Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Ce compte n'existe pas."))
+    Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Ce compte n'existe pas, ou le mot de passe est incorrect !"))
 
   def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = Future.successful {
     (user, authority) match {

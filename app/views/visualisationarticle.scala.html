@@ -15,46 +15,64 @@
         @*</div>*@
 
         <div class="row">
-            <div class="sixteen wide column">
 
-                <div class="item">
-                    <div class="ui segment">
+            @*<div class="sixteen wide column">*@
+
+                @*<div class="item ui segment">*@
+
+
+                    @*<div class="ui segment">*@
+                    <div class="ui grid page column">
+                    <div class="row">
+                        <div class="sixteen wide column">
                         <h3 class="ui right floated corner header label" style="font-weight:bold;">
                             <div class="text">@article.site.nom </div>
                         </h3>
                         <h3 class="ui left floated header" style="font-weight:bold;">
-                            <a href="@article.url" target="_blank">
-                        @article.titre
-                            </a>
+
+                            <div class="content">
+                                <a href="@article.url" target="_blank">
+                                @article.titre
+                                </a>
+                                <div class="sub header">
+
+                                    <div class="meta">@article.date.dayOfMonth().get() / @article.date.monthOfYear().get() / @article.date.year().get()
+                                        à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</div>
+                                    <div class="ui  label" style="margin-top:5px">@article.site.typeSite</div>
+                                </div>
+                            </div>
                         </h3>
-
-
-                        <div class="image" style="margin-right:20px; margin-left: 40px;">
-                            <img src="@article.image">
-                        </div>
-
-                    </div>
-                    <div class="ui  label" style="margin-top:5px">@article.site.typeSite</div>
-                    <div class="meta" style="float:none">@article.date.dayOfMonth().get() / @article.date.monthOfYear().get() / @article.date.year().get()
-                        à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</div>
-                    <div class="content">
-
-                        <p style="font-weight:bold">@article.site.nom</p>
-                        <p class="description">@article.description</p>
-                        <a class="like ui label">
-                            <i class="like icon"></i>  J'aime cet Article !
-                        </a>
-                        <div class="extra">
-                            <i class="unhide icon"></i> @article.consultationsJour |
-                            <i class="heart icon"></i> @article.nbCoeurs |
-                            <i class="star icon"></i> @article.nbEtoiles
                         </div>
                     </div>
+                    <div class="row">
+                        <div class=" eight wide column">
+                        @*<div class="image" style="margin-right:20px; margin-left: 40px;">*@
+                            @*<img src="@article.image">*@
+                        @*</div>*@
+                            <img class="ui medium image" src="@article.image">
+                        </div>
+                        @*</div>*@
+                        <div class=" eight wide column">
+                        <div class="content">
 
-                </div>
+                            <p style="font-weight:bold">@article.site.nom</p>
+                            <p class="description">@article.description</p>
+                            <a class="like ui label">
+                                <i class="like icon"></i>  J'aime cet Article !
+                            </a>
+                            <div class="extra">
+                                <i class="unhide icon"></i> @article.consultationsJour |
+                                <i class="heart icon"></i> @article.nbCoeurs |
+                                <i class="star icon"></i> @article.nbEtoiles
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                @*</div>*@
 
 
-            </div>
+            @*</div>*@
         </div>
         <div class="row">
             <div class="sixteen wide column">
