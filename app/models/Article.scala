@@ -90,7 +90,7 @@ object Article {
     }.head
   }
 
-  def getById(id: BigDecimal): Option[Article] = {
+  def getById(id: Int): Option[Article] = {
 
     val result: List[CypherResultRow] = Cypher(
       """

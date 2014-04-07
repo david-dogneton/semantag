@@ -54,7 +54,7 @@ object Entite {
     }.head
   }
 
-  def getById(id: BigDecimal): Option[Entite] = {
+  def getById(id: Int): Option[Entite] = {
 
     val result: List[Entite] = Cypher(
       """

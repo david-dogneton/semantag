@@ -13,13 +13,14 @@ case class Tag(article: Article, entite: Entite, quantite: Int) {
 object Tag {
 
   def create(article: Article, entite: Entite, quantite: Int): Boolean = {
+
     Cypher(
       """
          match (article: Article), (entite: Entite)
-         where ID(article) = id and ID(entite)= {idEntite}
+         where ID(article) = {idArticle} and ID(entite) = {idEntite}
          create (article)<-[r:tag {quantite : {quantite}}]-(entite)
       """
-    ).on("id" -> article.id,
+    ).on("idArticle" -> article.id,
         "idEntite" -> entite.id,
         "quantite" -> quantite
       ).execute()

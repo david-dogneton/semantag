@@ -59,25 +59,27 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   )
 
 
-  def displayArt = StackAction{
+  def displayArt = StackAction {
     implicit request =>
 
       urlForm.bindFromRequest.fold(
-        hasErrors = { form =>
-          Logger.debug("BUG URL ")
-          Redirect(routes.Application.index)
+        hasErrors = {
+          form =>
+            Logger.debug("BUG URL ")
+            Redirect(routes.Application.index)
         },
-        success = { url =>
-          Logger.debug("URL OKAY ")
-          Logger.debug("URL TEST " + url)
-          val article: Option[Article] = Article.getByUrl(url)
-          if (article.isDefined) {
+        success = {
+          url =>
+            Logger.debug("URL OKAY ")
+            Logger.debug("URL TEST " + url)
+            val article: Option[Article] = Article.getByUrl(url)
+            if (article.isDefined) {
 
-            Ok(views.html.visualisationarticle(article.get))
-          }else{
-            Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
+              Ok(views.html.visualisationarticle(article.get))
+            } else {
+              Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
 
-          }
+            }
 
         })
   }
@@ -101,7 +103,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.dayOfMonth() + "-" + art.date.monthOfYear() + "-" + art.date.year()
-        val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/tag._1.nom/*, tag._1.url*/)/*(*/
+        val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/ tag._1.nom /*, tag._1.url*/) /*(*/
         Json.obj("url" -> art.url,
           "titre" -> art.titre,
           "description" -> art.description,
@@ -110,15 +112,14 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "consultationsJour" -> art.consultationsJour,
           "coeurs" -> art.nbCoeurs,
           "domaine" -> art.site.typeSite,
-          "tags"-> tags,
-          "note" ->art.nbEtoiles,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
           "date" -> dateF,
           "lies" -> EstLie.getLinkedArticles(art).size
         )
       })
       // Logger.debug("RES " +res )
-      Ok(Json.obj("liste"->res))
-
+      Ok(Json.obj("liste" -> res))
 
 
   }
