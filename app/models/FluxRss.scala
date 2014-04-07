@@ -10,7 +10,6 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
-import java.util.Date
 
 /**
  * Created by Romain on 20/03/14.
@@ -19,10 +18,10 @@ object FluxRss {
 
 
   def miseAJourBddSites = {
-    val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv","utf-8")
+    val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv", "utf-8")
     val iter: Iterator[Array[String]] = src.getLines().map(_.split(";"))
     val listeSites = iter.map(el => {
-      Site(el(1),el(0),el(2))
+      Site(el(1), el(0), el(2))
     }).toList
     Logger.debug("taille liste " + listeSites.size)
 
@@ -61,14 +60,15 @@ class Child extends Actor {
   def getLastFlux(art: SyndEntry): Boolean = {
     val dateArticle = art.getPublishedDate
     val dateJoda = new DateTime(dateArticle)
-    val dateNowMinusOne= DateTime.now().minusHours(1)
+    val dateNowMinusOne = DateTime.now().minusHours(1)
 
-    if(dateJoda.isAfter(dateNowMinusOne)){
+    if (dateJoda.isAfter(dateNowMinusOne)) {
       true
     } else {
       false
     }
   }
+
   def receive: PartialFunction[Any, Unit] = {
     case Work(art, site) =>
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
@@ -76,7 +76,8 @@ class Child extends Actor {
 
 
       //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
-      if ( !Article.getArticle(art.getLink).isDefined) {
+      if (!Article.getByUrl(art.getLink).isDefined) {
+
         val titre = art.getTitle
         val auteur = art.getAuthor
         val date = art.getPublishedDate
@@ -107,33 +108,36 @@ class Child extends Actor {
         })
 
         // on crée l'entité et le tag associé au nouvel article créé
-        val bool = Article.create(nouvelArticle)
+        val articleInsertedOpt = Article.create(nouvelArticle)
+        articleInsertedOpt match {
+          case Some(articleInserted) =>
 
-        if (bool) {
-          uniqueResources.map(liste => liste.map(el => {
-
+            uniqueResources.map(liste => liste.map(el => {
             val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
-            if (!Entite.get(el._1.uri).isDefined) {
-              Tag.createTagAndEntity(nouvelArticle, entite, el._2)
+            val entiteOpt = Entite.getByUrl(el._1.uri)
+            val entiteWithId: Entite = if (!entiteOpt.isDefined) {
+              Tag.createTagAndEntity(articleInserted, entite, el._2).get
             } else {
-              Tag.create(nouvelArticle, entite, el._2)
-              Entite.incrApparitions(entite)
+              val entiteRecupere = entiteOpt.get
+              Tag.create(articleInserted, entiteRecupere, el._2)
+              Entite.incrApparitions(entiteRecupere)
+              entiteRecupere
             }
             el._1.types.split(",").map(typeEl => {
               if (typeEl != "") {
                 val nouveauType = new Type(typeEl)
                 if (!Type.get(typeEl).isDefined) {
-                  APourType.createTypeAndRel(entite, nouveauType)
+                  APourType.createTypeAndRel(entiteWithId, nouveauType)
                 } else {
-                  APourType.create(entite, nouveauType)
+                  APourType.create(entiteWithId, nouveauType)
                 }
               }
             })
-            EstLie.getLinkedArticles(nouvelArticle).map(el => EstLie.create(el._1, el._2, el._3))
           }))
-        } else {
-          Logger.debug("article : "+nouvelArticle)
+          EstLie.getLinkedArticles(articleInserted).map(el => EstLie.create(el._1, el._2, el._3))
+          case None =>
         }
+
       }
   }
 }
