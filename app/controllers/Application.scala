@@ -15,16 +15,13 @@ import play.api.libs.json.{JsObject, Json}
 
 
 object Application extends Controller with OptionalAuthElement with LoginLogout with AuthConfigImpl {
-  val urlForm = Form(
-    single(
-      "urlarticle" -> nonEmptyText
-    )
-  )
 
   def javascriptRoutes = Action {
     implicit request =>
       Ok(
         Routes.javascriptRouter("jsRoutes")(
+          controllers.routes.javascript.Application.getArt,
+          controllers.routes.javascript.Application.displayLinkedArt
           controllers.routes.javascript.Application.getArt,
           controllers.routes.javascript.Application.getDomaines,
           controllers.routes.javascript.Application.getTop
@@ -37,6 +34,47 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     // implicit val maybeUser: Option[User] = Some(loggedIn)
       Ok(views.html.mapage())
   }
+
+
+  val urlForm = Form(
+    single(
+      "urlarticle" -> nonEmptyText
+    )
+  )
+
+
+  def displayArt = StackAction{
+    implicit request =>
+
+      urlForm.bindFromRequest.fold(
+        hasErrors = { form =>
+          Logger.debug("BUG URL ")
+          Redirect(routes.Application.index)
+        },
+        success = { url =>
+          Logger.debug("URL OKAY ")
+          Logger.debug("URL TEST " + url)
+          val article: Option[Article] = Article.getByUrl(url)
+          if (article.isDefined) {
+
+            Ok(views.html.visualisationarticle(article.get))
+          }else{
+            Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
+
+          }
+
+        })
+  }
+
+  def displayLinkedArt = StackAction {
+    implicit request =>
+
+
+      Ok("")
+
+
+  }
+
 
   def getTop= StackAction {
     implicit request =>
@@ -70,9 +108,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getArt = StackAction {
     implicit request =>
 
-      Logger.debug("avant")
+    // Logger.debug("avant")
       val listeArt: List[Article] = Article.getLastArticle
-      Logger.debug("apres")
+      // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
@@ -91,28 +129,10 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "lies" -> EstLie.getLinkedArticles(art).size
         )
       })
-      Logger.debug("RES " +res )
+      // Logger.debug("RES " +res )
       Ok(Json.obj("liste"->res))
 
-    //      val art = Article.getArticle("http://www.lemonde.fr/proche-orient/article/2014/03/31/israel-l-ancien-premier-ministre-ehoud-olmert-reconnu-coupable-de-corruption_4392663_3218.html#xtor=RSS-3208")
-    //      Logger.debug("Test article " + art.get.date + "  ..." + art.get.titre)
-    //
-    //
-    //      Ok(Json.obj("url" -> art.get.url,
-    //        "titre"->art.get.titre,
-    //        "description"->art.get.description,
-    //        "site"->art.get.site.nom,
-    //        "image"->art.get.image,
-    //        "consultationsJour" -> art.get.consultationsJour,
-    //        "coeurs"->art.get.nbCoeurs,
-    //         "domaine" -> art.get.site.typeSite,
-    //         //tags A FAIRE,
-    //         // Note a faire,
-    //         "date" ->dateF
-    //
-    //
-    //          //lies
-    //         ))
+
 
   }
 
@@ -145,7 +165,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def createAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -162,7 +182,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail1@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -179,7 +199,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def setQuantiteAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail1@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -196,7 +216,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def setNbCoeursAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail1@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -213,7 +233,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def setFavoriAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail1@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -230,7 +250,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def estFavoriAppreciationEntite = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val entiteOpt = Entite.get("http://quartsDeFinale.com")
+      val entiteOpt = Entite.getByUrl("http://quartsDeFinale.com")
       utilisateurOpt match {
         case Some(utilisateur) =>
           entiteOpt match {
@@ -254,7 +274,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def createNote = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -271,7 +291,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def createConsultation = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -288,7 +308,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def createRecommandation = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -305,7 +325,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getNote = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -322,7 +342,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getConsultation = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -339,7 +359,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getRecommandation = StackAction {
     implicit request =>
       val utilisateurOpt = Utilisateur.get("mail2@test.com")
-      val articleOpt = Article.getArticle("http://magness.fr/blablabla")
+      val articleOpt = Article.getByUrl("http://magness.fr/blablabla")
       utilisateurOpt match {
         case Some(utilisateur) =>
           articleOpt match {
@@ -471,7 +491,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def getUser = StackAction {
     implicit request =>
-      val resultOpt = Utilisateur.get("mail1Change@test.com")
+      val resultOpt = Utilisateur.get("mail3@test.com")
       resultOpt match {
         case Some(result) =>
           Logger.debug("result test get user : " + result)

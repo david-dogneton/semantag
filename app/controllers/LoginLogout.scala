@@ -49,7 +49,6 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       loginForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Formulaire connexion mal rempli")
-//          Future.successful(BadRequest("Non."))
           Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Les champs ne sont pas renseignés correctement !"))
         },
         user => {
@@ -101,22 +100,21 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
         formWithErrors => {
           Logger.debug("Compte mal renseigné")
           Logger.debug(s"Bad registration !! : ${formWithErrors}")
-          //BadRequest(views.html.inscription())
           Redirect(routes.LoginLogout.inscription).flashing("error" -> "Les champs sont mal renseignés  !")
         },
         admin => {
           Logger.debug("Compte bien renseigné")
-         // val mayBeUser: Option[Utilisateur] = Utilisateur.get(admin.mail)
-         // if (mayBeUser.isDefined) {
-         //   Logger.debug("Compte déjà existant ")
-          //  Redirect(routes.LoginLogout.inscription).flashing("error" -> "Ce compte mail est déjà associé à un compte SEMANTAG !")
-          //}
-         // else{
+          val mayBeUser: Option[Utilisateur] = Utilisateur.get(admin.mail)
+         if (mayBeUser.isDefined) {
+         Logger.debug("Compte déjà existant ")
+         Redirect(routes.LoginLogout.inscription).flashing("error" -> "Ce compte mail est déjà associé à un compte SEMANTAG !")
+         }
+        else{
           Logger.debug("Compte non existant !")
           Utilisateur.create(admin)
           Logger.debug("Compte bien crée")
           Redirect(routes.LoginLogout.inscription).flashing("success" -> "Vous êtes maintenant membre de SEMANTAG !")
-
+        }
         }
       )
   }

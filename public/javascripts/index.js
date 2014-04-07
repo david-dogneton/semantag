@@ -137,25 +137,13 @@ function NewsRenderer($scope, $http) {
 
 
     $http.get('/getart').success(function (data) {
+        console.log("data : " + data);
         console.dir(data);
         $scope.news.items=data.liste;
 
     }).error(function (err) {
             console.log("err : " + err);
-        });
-
-    $scope.domaines = {
-        "items":[]
-        // ["International", "France", "Cinéma", "Séries", "Santé", "Sport", "Sciences"]
-    };
-
-    $http.get('/getDomaines').success(function (data) {
-        console.dir(data);
-        $scope.domaines.items=data.liste;
-
-    }).error(function (err) {
-            console.log("err : " + err);
-        });
+    });
     $scope.limite = 5;
     $scope.filtrage = [];
     $scope.filtrage['domaine'] = "";

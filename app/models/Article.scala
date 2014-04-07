@@ -1,7 +1,6 @@
 package models
 
 import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
-
 import org.joda.time.DateTime
 
 /**
@@ -21,19 +20,16 @@ case class Article(titre: String,
                    consultations: Int = 0,
                    totalEtoiles: Int = 0,
                    nbEtoiles: Int = 0,
-                   nbCoeurs: Int = 0
+                   nbCoeurs: Int = 0,
+                   id: Int = -1
                     ) {
 
 }
 
 object Article {
 
-  def create(article: Article): Boolean = {
+  def create(article: Article): Option[Article] = {
 
-//    val dt = new DateTime(article.date)
-//    val milis: Long = dt.getMillis
-//    val duration = Duration.millis(milis)
-//    val dateF = DateTimeUtils.getDurationMillis(duration)
     val dateF = article.date.toString()
 
     Cypher(
@@ -56,6 +52,7 @@ object Article {
           nbEtoiles: {nbEtoiles},
           nbCoeurs: {nbCoeurs}
         })-[r: appartient]->(site)
+        return id(article);
       """
     ).on("titre" -> article.titre,
         "auteur" -> article.auteur,
@@ -72,10 +69,97 @@ object Article {
         "nbEtoiles" -> article.nbEtoiles,
         "nbCoeurs" -> article.nbCoeurs,
         "urlSite" -> article.site.url
-      ).execute()
+      )().collect {
+      case CypherRow(id: BigDecimal) => Some(new Article(article.titre,
+        article.auteur,
+        article.description,
+        new DateTime(dateF),
+        article.url,
+        article.site,
+        article.image,
+        article.consultationsJour,
+        article.consultationsSemaine,
+        article.consultationsSemaineDerniere,
+        article.consultationsMois,
+        article.consultations,
+        article.totalEtoiles,
+        article.nbEtoiles,
+        article.nbCoeurs,
+        id.toInt))
+      case _ => None
+    }.head
   }
 
-  def getArticle(url: String): Option[Article] = {
+  def getById(id: BigDecimal): Option[Article] = {
+
+    val result: List[CypherResultRow] = Cypher(
+      """
+        Match (article:Article)--(site:Site)
+        where ID(article) = {id}
+        return  article.titre as titre,
+                article.auteur as auteur,
+                article.description as description,
+                article.date as date,
+                article.url as url,
+                site.url as urlSite,
+                article.image as image,
+                article.consultationsJour as consultationsJour,
+                article.consultationsSemaine as consultationsSemaine,
+                article.consultationsSemaineDerniere as consultationsSemaineDerniere,
+                article.consultationsMois as consultationsMois,
+                article.consultations as consultations,
+                article.totalEtoiles as totalEtoiles,
+                article.nbEtoiles as nbEtoiles,
+                article.nbCoeurs as nbCoeurs,
+                ID(article);
+      """).on("id" -> id)().toList
+
+    result match {
+      case Nil => None
+      case head :: tail => head match {
+        case CypherRow(titre: String,
+        auteur: String,
+        description: String,
+        date: String,
+        url: String,
+        urlSite: String,
+        image: String,
+        consultationsJour: BigDecimal,
+        consultationsSemaine: BigDecimal,
+        consultationsSemaineDerniere: BigDecimal,
+        consultationsMois: BigDecimal,
+        consultations: BigDecimal,
+        totalEtoiles: BigDecimal,
+        nbEtoiles: BigDecimal,
+        nbCoeurs: BigDecimal,
+        id: BigDecimal) =>
+          val siteOpt = Site.get(urlSite)
+          siteOpt match {
+            case Some(site) => Some(new Article(
+              titre,
+              auteur,
+              description,
+              new DateTime(date),
+              url,
+              new Site(urlSite, site.nom, site.typeSite),
+              image,
+              consultationsJour.toInt,
+              consultationsSemaine.toInt,
+              consultationsSemaineDerniere.toInt,
+              consultationsMois.toInt,
+              consultations.toInt,
+              totalEtoiles.toInt,
+              nbEtoiles.toInt,
+              nbCoeurs.toInt,
+              id.toInt))
+            case None => None
+          }
+        case _ => throw new IllegalArgumentException("Mauvais format de l'article")
+      }
+    }
+  }
+
+  def getByUrl(url: String): Option[Article] = {
 
     val result: List[CypherResultRow] = Cypher(
       """
@@ -94,7 +178,8 @@ object Article {
                 article.consultations as consultations,
                 article.totalEtoiles as totalEtoiles,
                 article.nbEtoiles as nbEtoiles,
-                article.nbCoeurs as nbCoeurs;
+                article.nbCoeurs as nbCoeurs,
+                ID(article);
       """).on("url" -> url)().toList
 
     result match {
@@ -114,7 +199,8 @@ object Article {
         consultations: BigDecimal,
         totalEtoiles: BigDecimal,
         nbEtoiles: BigDecimal,
-        nbCoeurs: BigDecimal) =>
+        nbCoeurs: BigDecimal,
+        id: BigDecimal) =>
           val siteOpt = Site.get(urlSite)
           siteOpt match {
             case Some(site) => Some(new Article(
@@ -132,7 +218,8 @@ object Article {
               consultations.toInt,
               totalEtoiles.toInt,
               nbEtoiles.toInt,
-              nbCoeurs.toInt))
+              nbCoeurs.toInt,
+              id.toInt))
             case None => None
           }
         case _ => throw new IllegalArgumentException("Mauvais format de l'article")
@@ -159,25 +246,27 @@ object Article {
                         article.consultations as consultations,
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
-                        article.nbCoeurs as nbCoeurs
+                        article.nbCoeurs as nbCoeurs,
+                        ID(article)
                 				ORDER BY date DESC
                         LIMIT 30;
       """)().collect {
       case CypherRow(titre: String,
-                      auteur: String,
-                      description: String,
-                      date: String,
-                      url: String,
-                      urlSite: String,
-                      image: String,
-                      consultationsJour: BigDecimal,
-                      consultationsSemaine: BigDecimal,
-                      consultationsSemaineDerniere: BigDecimal,
-                      consultationsMois: BigDecimal,
-                      consultations: BigDecimal,
-                      totalEtoiles: BigDecimal,
-                      nbEtoiles: BigDecimal,
-                      nbCoeurs: BigDecimal) =>
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal) =>
         val siteOpt = Site.get(urlSite)
         siteOpt match {
           case Some(site) => new Article(
@@ -195,7 +284,8 @@ object Article {
             consultations.toInt,
             totalEtoiles.toInt,
             nbEtoiles.toInt,
-            nbCoeurs.toInt)
+            nbCoeurs.toInt,
+            id.toInt)
           case None => throw new NoSuchElementException("Pas de site pour cette article")
         }
       case _ => throw new IllegalArgumentException("Mauvais format de l'article")
@@ -204,14 +294,68 @@ object Article {
     result
   }
 
-  def deleteArticle(url: String) = {
+  def delete(id: BigDecimal) = {
 
     val result: Boolean = Cypher(
       """
-Match (article:Article) where article.url = {url} delete article;
-      """).on("url" -> url).execute()
+Match (article:Article) where ID(article) = {id} delete article;
+      """).on("id" -> id).execute()
 
     println("result : " + result)
     result
+  }
+
+
+
+  def getEntitesLiees(article: Article): Option[List[Entite]] = {
+    val result: List[Entite] = Cypher(
+      """
+        match (entite: Entite)-[r:tag]-(article: Article {url : {urlArticle}})
+                return entite.nom as nom,
+                  entite.url as url,
+                  entite.apparitionsJour as apparitionsJour,
+                  entite.apparitionsSemaine as apparitionsSemaine,
+                  entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
+                  entite.apparitionsMois as apparitionsMois,
+                  entite.apparitions as apparitions;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
+  }
+
+  def getDomainesLies(article: Article): Option[List[Domaine]] = {
+    val result: List[Domaine] = Cypher(
+      """
+        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
+                return domaine.nom as nom;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String) =>
+        new Domaine(nom)
+      case _ => throw new IllegalArgumentException("Mauvais format du domaine")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
   }
 }

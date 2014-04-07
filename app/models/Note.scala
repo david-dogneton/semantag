@@ -24,6 +24,7 @@ object Note {
       "nbEtoiles" -> note.nbEtoiles,
       "aCoeur" -> note.aCoeur
     ).execute()
+    AppreciationEntite.majAvecCreate(note)
   }
 
   def get(user: Utilisateur, article: Article): Option[Note] = {
