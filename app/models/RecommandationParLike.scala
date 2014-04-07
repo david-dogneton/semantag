@@ -21,7 +21,7 @@ object RecommandationParLike {
         urlArticle: {urlArticle},
         urlEntite: {urlEntite},
         mailUser: {mailUser}});
-                                        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
+        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
 
     if (resultCreate) {
       val otherResult: Boolean = Cypher(
