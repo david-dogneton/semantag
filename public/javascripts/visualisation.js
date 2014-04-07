@@ -18,16 +18,16 @@ function NewsRenderer($scope, $http) {
 
 
 
-    $http.get( { url : "get",
-        method : "GET",
-        params: { tonParam : saValeur }
-    }).
-        success(function(data, status){
-            // et c'est le GG
-        }).
-        error(function(data, status) {
-            // dommage
-        });
+//    $http.get( { url : "get",
+//        method : "GET",
+//        params: { tonParam : saValeur }
+//    }).
+//        success(function(data, status){
+//            // et c'est le GG
+//        }).
+//        error(function(data, status) {
+//            // dommage
+//        });
 
     $scope.limite = 5;
 

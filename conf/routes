@@ -6,10 +6,12 @@
 GET         /                                 controllers.Application.index
 GET         /jsRoutes                         controllers.Application.javascriptRoutes
 GET         /getart                           controllers.Application.getArt
+GET         /displaylinkedart                     controllers.Application.displayLinkedArt
+
 GET         /majsites                         controllers.Application.miseAJourSites
 GET         /majflux                          controllers.Application.miseAJourFlux
 
-POST         /displayart                  controllers.Application.displayArt
+POST        /displayart                       controllers.Application.displayArt
 
 GET         /connexion                        controllers.LoginLogout.connexion
 POST        /authenticate                     controllers.LoginLogout.authenticate

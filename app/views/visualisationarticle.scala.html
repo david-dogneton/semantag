@@ -1,73 +1,118 @@
-@(article : Article, listeArticlesLies : List[Article])(implicit user: Option[Utilisateur], lang: Lang)
+@(article:Article)(implicit user: Option[Utilisateur], lang: Lang)
 @main("visualisation-article")("visualisation-article") {
 
 
-    <h1>@article.titre</h1>
-    @for(art <-listeArticlesLies){
-        <h6>@art.titre</h6>
+    @*<h1>@article.titre</h1>*@
+    @* @for(art <-listeArticlesLies){*@
+    @*<h6>@art.titre</h6>*@
 
 
-    }
+    @*}*@
 
-    <div class="ui grid" ng-controller="NewsRenderer">
-        <div class="two wide column">
+    <div class="ui grid  page segment column center" ng-controller="NewsRenderer">
+        @*<div class="two wide column">*@
 
-        </div>
-        <div class="eleven wide column">
-            <div class="ui five items">
-                <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
+        @*</div>*@
 
-                    <a href="{{item['url']}}" target="_blank">
-                        <div class="image">
-                            <img src="{{item['image']}}">
-                            <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
+        <div class="row">
+            <div class="sixteen wide column">
+
+                <div class="item">
+                    <div class="ui segment">
+                        <h3 class="ui right floated corner header label" style="font-weight:bold;">
+                            <div class="text">@article.site.nom </div>
+                        </h3>
+                        <h3 class="ui left floated header" style="font-weight:bold;">
+                            <a href="@article.url" target="_blank">
+                        @article.titre
+                            </a>
+                        </h3>
+
+
+                        <div class="image" style="margin-right:20px; margin-left: 40px;">
+                            <img src="@article.image">
                         </div>
-                    </a>
 
-                    <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                    </div>
+                    <div class="ui  label" style="margin-top:5px">@article.site.typeSite</div>
+                    <div class="meta" style="float:none">@article.date.dayOfMonth().get() / @article.date.monthOfYear().get() / @article.date.year().get()
+                        à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</div>
                     <div class="content">
-                        <a href="{{item['url']}}" target="_blank">
-                            <div class="name">{{item['titre']}}</div>
+
+                        <p style="font-weight:bold">@article.site.nom</p>
+                        <p class="description">@article.description</p>
+                        <a class="like ui label">
+                            <i class="like icon"></i>  J'aime cet Article !
                         </a>
-                        <p style="font-weight:bold">{{item['site']}}</p>
-                        <p class="description">{{item['description']}}</p>
                         <div class="extra">
-                            <i class="unhide icon"></i> {{item['consultationsJour']}} |
-                            <i class="heart icon"></i> {{item['coeurs']}} |
-                            <i class="star icon"></i> {{item['note']}}
+                            <i class="unhide icon"></i> @article.consultationsJour |
+                            <i class="heart icon"></i> @article.nbCoeurs |
+                            <i class="star icon"></i> @article.nbEtoiles
                         </div>
                     </div>
 
-                    <p>
-                        <i class="tags icon"></i>
-                        <a href=""><span style="padding:2px;margin:2px;font-size:11px" ng-repeat="tag in item['tags']" class="ui label">
-                            {{tag}}
-                        </span> </a>
-                    </p>
-                    <p ng-show="item['lies']>1">
-                <form action="@routes.Application.displayArt" method="POST">
-                    <input type="hidden" name="urlarticle" value="{{item['url']}}">
-                    <input type="submit" class="add icon" value="{{item['lies']}} articles liés à ce sujet">
-                    @*<a href="/displayart/{{item["url"]}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
-                    @*<a href="#"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
-                </form>
-                    </p>
-                    <p ng-show="item['lies']==1">
-                        <a href=""> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
-                    </p>
-                    <p ng-show="item['lies']==0">
-                        <i class="add icon"></i>Pas d'article lié à ce sujet.
-                    </p>
                 </div>
-            </div>
-            <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
-        </div>
-        <div class="three wide column">
 
+
+            </div>
         </div>
+        <div class="row">
+            <div class="sixteen wide column">
+                <div class="ui five items">
+                    <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+
+                        <a href="{{item['url']}}" target="_blank">
+                            <div class="image">
+                                <img src="{{item['image']}}">
+                                <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
+                            </div>
+                        </a>
+
+                        <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                        <div class="content">
+                            <a href="{{item['url']}}" target="_blank">
+                                <div class="name">{{item['titre']}}</div>
+                            </a>
+                            <p style="font-weight:bold">{{item['site']}}</p>
+                            <p class="description">{{item['description']}}</p>
+                            <div class="extra">
+                                <i class="unhide icon"></i> {{item['consultationsJour']}} |
+                                <i class="heart icon"></i> {{item['coeurs']}} |
+                                <i class="star icon"></i> {{item['note']}}
+                            </div>
+                        </div>
+
+                        <p>
+                            <i class="tags icon"></i>
+                            <a href=""><span style="padding:2px;margin:2px;font-size:11px" ng-repeat="tag in item['tags']" class="ui label">
+                                {{tag}}
+                            </span> </a>
+                        </p>
+                        <p ng-show="item['lies']>1">
+                    <form action="@routes.Application.displayArt" method="POST">
+                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
+                        <i class="add icon"></i> <input type="submit" class="add icon" value="{{item['lies']}} articles liés à ce sujet">
+                        @*<a href="/displayart/{{item["url"]}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
+                        @*<a href="#"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
+                    </form>
+                        </p>
+                        <p ng-show="item['lies']==1">
+                            <a href=""> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                        </p>
+                        <p ng-show="item['lies']==0">
+                            <i class="add icon"></i>Pas d'article lié à ce sujet.
+                        </p>
+                    </div>
+                </div>
+                <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
+            </div>
+        </div>
+        @*<div class="three wide column">*@
+
+        @*</div>*@
     </div>
 
     @*<link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>*@

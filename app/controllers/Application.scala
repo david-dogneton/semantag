@@ -37,7 +37,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       import routes.javascript._
       Ok(
         Routes.javascriptRouter("jsRoutes")(
-          controllers.routes.javascript.Application.getArt
+          controllers.routes.javascript.Application.getArt,
+          controllers.routes.javascript.Application.displayLinkedArt
+
           //Users.get
         )
       ).as("text/javascript")
@@ -70,15 +72,24 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           Logger.debug("URL TEST " + url)
           val article: Option[Article] = Article.getArticle(url)
           if (article.isDefined) {
-            val listeLiaisons: List[(String, String, Double)] = EstLie.getLinkedArticles(article.get)
-            val listeArticles: List[Article] = listeLiaisons.map( elt  => Article.getArticle(elt._2).get )
-            Ok(views.html.visualisationarticle(article.get,listeArticles))
-          }else{Ok("")}
+
+            Ok(views.html.visualisationarticle(article.get))
+          }else{
+            Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
+
+          }
 
         })
   }
 
+  def displayLinkedArt = StackAction {
+    implicit request =>
 
+
+      Ok("")
+
+
+  }
 
 
   // Router.JavascriptReverseRoute
@@ -108,25 +119,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       // Logger.debug("RES " +res )
       Ok(Json.obj("liste"->res))
 
-    //      val art = Article.getArticle("http://www.lemonde.fr/proche-orient/article/2014/03/31/israel-l-ancien-premier-ministre-ehoud-olmert-reconnu-coupable-de-corruption_4392663_3218.html#xtor=RSS-3208")
-    //      Logger.debug("Test article " + art.get.date + "  ..." + art.get.titre)
-    //
-    //
-    //      Ok(Json.obj("url" -> art.get.url,
-    //        "titre"->art.get.titre,
-    //        "description"->art.get.description,
-    //        "site"->art.get.site.nom,
-    //        "image"->art.get.image,
-    //        "consultationsJour" -> art.get.consultationsJour,
-    //        "coeurs"->art.get.nbCoeurs,
-    //         "domaine" -> art.get.site.typeSite,
-    //         //tags A FAIRE,
-    //         // Note a faire,
-    //         "date" ->dateF
-    //
-    //
-    //          //lies
-    //         ))
+
 
   }
 
