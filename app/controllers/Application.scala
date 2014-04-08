@@ -2,7 +2,8 @@ package controllers
 
 
 import models._
-import models.database.Country
+import models.database.{Country}
+import scala.Some
 import org.joda.time.DateTime
 import scala.Some
 import controllers.sparql.SparqlQueryExecuter
@@ -44,25 +45,27 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   )
 
 
-  def displayArt = StackAction{
+  def displayArt = StackAction {
     implicit request =>
 
       urlForm.bindFromRequest.fold(
-        hasErrors = { form =>
-          Logger.debug("BUG URL ")
-          Redirect(routes.Application.index)
+        hasErrors = {
+          form =>
+            Logger.debug("BUG URL ")
+            Redirect(routes.Application.index)
         },
-        success = { url =>
-          Logger.debug("URL OKAY ")
-          Logger.debug("URL TEST " + url)
-          val article: Option[Article] = Article.getByUrl(url)
-          if (article.isDefined) {
+        success = {
+          url =>
+            Logger.debug("URL OKAY ")
+            Logger.debug("URL TEST " + url)
+            val article: Option[Article] = Article.getByUrl(url)
+            if (article.isDefined) {
 
-            Ok(views.html.visualisationarticle(article.get))
-          }else{
-            Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
+              Ok(views.html.visualisationarticle(article.get))
+            } else {
+              Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
 
-          }
+            }
 
         })
   }
@@ -162,6 +165,8 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val listeArt: List[Article] = Article.getLastArticle
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
+        val dateF: String = art.date.dayOfMonth() + "-" + art.date.monthOfYear() + "-" + art.date.year()
+        val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/ tag._1.nom /*, tag._1.url*/) /*(*/
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
           "nom" -> tag._1.nom)))
@@ -173,6 +178,8 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "consultationsJour" -> art.consultationsJour,
           "coeurs" -> art.nbCoeurs,
           "domaine" -> art.site.typeSite,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
           "tags"-> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
