@@ -143,8 +143,7 @@ object Entite {
   }
 
   def lesPlusTaggesDuJour(): List[Entite] = {
-
-    val result = getEntites(""->"", "", "ORDER BY entite.apparitionsJour DESC Limit 30;").toList
+    val result = getEntites(""->"", "", "ORDER BY entite.apparitionsJour DESC Limit 5;").toList
     result.map(_.get)
   }
 

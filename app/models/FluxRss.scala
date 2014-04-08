@@ -74,15 +74,18 @@ class Child extends Actor {
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
 
-      //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
-      if (!Article.getByUrl(art.getLink).isDefined) {
+      if (getLastFlux(art) && !Article.getByUrl(art.getLink).isDefined) {
+//      if (!Article.getByUrl(art.getLink).isDefined) {
 
         val titre = art.getTitle
         val auteur = art.getAuthor
         val date = art.getPublishedDate
-        var description = art.getDescription.getValue
-        if (description.indexOf("<img") != -1) {
-          description = description.substring(0, description.indexOf("<img"))
+        val descriptionValue = art.getDescription.getValue
+        val descriptionIndex = descriptionValue.indexOf("<img")
+        val description = if (descriptionIndex != -1) {
+          descriptionValue.substring(0, descriptionIndex)
+        } else {
+          descriptionValue
         }
         val lien = art.getLink
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images

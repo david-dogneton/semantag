@@ -30,6 +30,7 @@ object Article {
 
   def create(article: Article): Option[Article] = {
 
+    Console.println("..... log create")
     val dateF = article.date.toString()
 
     Cypher(
