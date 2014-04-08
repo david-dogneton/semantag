@@ -57,4 +57,14 @@ object EstLie {
       case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
     }.toList
   }
+  def getLinkedArticlesById(id : Int): List[(String, String, Double)] = {
+
+    Cypher(
+      """
+        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {id}
+        return distinct a.url, c.url, r.quantite, r2.quantite
+      """).on("id" ->id)().collect {
+      case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
+    }.toList
+  }
 }

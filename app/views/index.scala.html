@@ -50,12 +50,12 @@
                     <!-- </span>-->
                     </p>
                     <p ng-show="item['lies']>1">
-                    <form action="@routes.Application.displayArt" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
-                        <input type="submit" class="add icon" value="{{item['lies']}} articles liés à ce sujet">
-                        @*<a href="/displayart/{{item["url"]}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
+                    @*<form action="@routes.Application.displayArt" method="POST">*@
+                        @*<input type="hidden" name="urlarticle" value="{{item['url']}}">*@
+                        @*<input type="submit" class="add icon" value="{{item['lies']}} articles liés à ce sujet">*@
+                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
                         @*<a href="#"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
-                    </form>
+                    @*</form>*@
                     </p>
                     <p ng-show="item['lies']==1">
                         <a href=""> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
