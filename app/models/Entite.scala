@@ -105,6 +105,15 @@ object Entite {
       result.head
   }
 
+  def rechercheDansNom(rechercheUtilisateur : String): List[Entite] = {
+    val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
+    val result: List[Option[Entite]] = getEntites("param" -> critereRecherche , "where lower(entite.nom) =~ {param} ",";").toList
+    result map {
+      case Some(entite) => entite
+      case None => throw new NoSuchElementException("article vide")
+    }
+  }
+
   def getTopEntites(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
     val result: List[Entite] = Cypher(
       """
@@ -143,7 +152,7 @@ object Entite {
   }
 
   def lesPlusTaggesDuJour(): List[Entite] = {
-    val result = getEntites(""->"", "", "ORDER BY entite.apparitionsJour DESC Limit 5;").toList
+    val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit 5;").toList
     result.map(_.get)
   }
 

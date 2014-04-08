@@ -48,14 +48,31 @@ object EstLie {
 //    }
 //  }
 
-  def   getLinkedArticles(article : Article): List[(String, String, Double)] = {
+  def getLinkedArticles(article : Article): List[(String, String, Double)] = {
 
-    Cypher(
+    val result = Cypher(
       """
         MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {idArticle}
         return distinct a.url, c.url, r.quantite, r2.quantite;
       """).on("idArticle" -> article.id)().collect {
       case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
     }.toList
+    // groupe par tag
+//    result.groupBy(_._2).map(el => {
+//      val newRate = el._2.map(_._3).foldLeft(0.0)(_ + _)
+//      (el._2.head._1, el._2.head._1, newRate)
+//    }).toList
+    result
+  }
+
+  def countLinkedArticles(article : Article) : Int = {
+    Cypher(
+      """
+        MATCH (a:Article)-[r:`estLie`]->(b:Article) where ID(a) = {idArticle}
+        return count(r);
+      """).on("idArticle" -> article.id)().collect {
+      case CypherRow(count : BigDecimal) => count.toInt
+      case _ => -1
+    }.head
   }
 }

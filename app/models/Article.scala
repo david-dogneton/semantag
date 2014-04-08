@@ -30,7 +30,6 @@ object Article {
 
   def create(article: Article): Option[Article] = {
 
-    Console.println("..... log create")
     val dateF = article.date.toString()
 
     Cypher(
@@ -168,16 +167,27 @@ object Article {
 
   def getByUrl(url: String): Option[Article] = {
 
-    val stream = getArticles(("param" -> url), "where article.url = {param}", ";")
+    val stream = getArticles("param" -> url, "where article.url = {param}", ";")
     if(stream.isEmpty)
       None
     else
       stream.head
   }
 
+
+  def rechercheDansTitre(rechercheUtilisateur  : String): List[Article] = {
+
+    val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
+    val result: List[Option[Article]] = getArticles("param" -> critereRecherche , "where lower(article.titre) =~ {param} ",";").toList
+    result map {
+      case Some(article) => article
+      case None => throw new NoSuchElementException("article vide")
+    }
+  }
+
   def getLastArticle(): List[Article] = {
 
-    val result = getArticles(("" -> ""), "", "ORDER BY article.date DESC LIMIT 30;").toList
+    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 30;").toList
     result.map(_.get)
   }
 

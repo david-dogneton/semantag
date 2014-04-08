@@ -112,7 +112,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                       "tags"-> tags,
                       "note" ->art._1.nbEtoiles,
                       "date" -> dateF,
-                      "lies" -> EstLie.getLinkedArticles(art._1).size
+                      "lies" -> EstLie.countLinkedArticles(art._1)
                     )
                   })
                   Logger.debug("RENVOIT RES get by tag :"+res)
@@ -181,7 +181,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "tags"-> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
-          "lies" -> EstLie.getLinkedArticles(art).size
+          "lies" -> EstLie.countLinkedArticles(art)
         )
       })
       // Logger.debug("RES " +res )

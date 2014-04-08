@@ -10,6 +10,7 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
+import java.util.Date
 
 /**
  * Created by Romain on 20/03/14.
@@ -74,12 +75,18 @@ class Child extends Actor {
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
 
-      if (getLastFlux(art) && !Article.getByUrl(art.getLink).isDefined) {
-//      if (!Article.getByUrl(art.getLink).isDefined) {
+      if (/*getLastFlux(art) &&*/ !Article.getByUrl(art.getLink).isDefined) {
+        //      if (!Article.getByUrl(art.getLink).isDefined) {
 
         val titre = art.getTitle
         val auteur = art.getAuthor
-        val date = art.getPublishedDate
+        val date = new DateTime(art.getPublishedDate)
+        val dateValid = if (date.isAfter(DateTime.now())) {
+          DateTime.now()
+        } else {
+          date
+        }
+
         val descriptionValue = art.getDescription.getValue
         val descriptionIndex = descriptionValue.indexOf("<img")
         val description = if (descriptionIndex != -1) {
@@ -97,7 +104,7 @@ class Child extends Actor {
         } else {
           ""
         }
-        val nouvelArticle = Article(titre, auteur, description, new DateTime(date), lien, site, image)
+        val nouvelArticle = Article(titre, auteur, description, dateValid, lien, site, image)
         val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description)
 
         // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
@@ -108,7 +115,6 @@ class Child extends Actor {
             (el._2.head, el._2.size)
           })
         })
-
         // on crée l'entité et le tag associé au nouvel article créé
         val articleInsertedOpt = Article.create(nouvelArticle)
         articleInsertedOpt match {
@@ -175,7 +181,7 @@ class Master(nbActors: Int) extends Actor {
     var ok: Boolean = false
 
     Logger.debug("SITE :" + site.nom + site.typeSite)
-    Logger.debug("SITE :" + site.url + ", "+site.id)
+    Logger.debug("SITE :" + site.url + ", " + site.id)
     try {
       val feedUrl: URL = new URL(site.url)
       val input: SyndFeedInput = new SyndFeedInput()
