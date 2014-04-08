@@ -151,7 +151,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                       "tags"-> tags,
                       "note" ->art._1.nbEtoiles,
                       "date" -> dateF,
-                      "lies" -> EstLie.getLinkedArticles(art._1).size
+                      "lies" -> EstLie.countLinkedArticles(art._1)
                     )
                   })
                   Logger.debug("RENVOIT RES get by tag :"+res)
@@ -222,7 +222,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "tags"-> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
-          "lies" -> EstLie.getLinkedArticles(art).size
+          "lies" -> EstLie.countLinkedArticles(art)
         )
       })
       // Logger.debug("RES " +res )
@@ -468,7 +468,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def createArticle = StackAction {
     implicit request =>
-      val siteOpt = Site.get("www.magness.fr")
+      val siteOpt = Site.getByUrl("www.magness.fr")
       siteOpt match {
         case Some(site) =>
           val result = Article.create(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "http://magness.fr/blablabla", site))
