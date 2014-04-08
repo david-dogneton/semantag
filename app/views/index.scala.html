@@ -23,7 +23,8 @@
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
-                        <img src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
                         <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
                 </a>
