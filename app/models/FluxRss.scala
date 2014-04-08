@@ -10,6 +10,7 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
+import java.util.Date
 
 /**
  * Created by Romain on 20/03/14.
@@ -28,7 +29,7 @@ object FluxRss {
     src.close()
     listeSites.foreach(
       site => {
-        if (!Site.get(site.url).isDefined) {
+        if (!Site.getByUrl(site.url).isDefined) {
           Site.create(site)
           Logger.debug("Le site n'existe pas INSERTION " + site.url)
         }
@@ -74,16 +75,24 @@ class Child extends Actor {
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
 
-
-      //if (getLastFlux(art) && !Article.getArticle(art.getLink).isDefined) {
-      if (!Article.getByUrl(art.getLink).isDefined) {
+      if (/*getLastFlux(art) &&*/ !Article.getByUrl(art.getLink).isDefined) {
+        //      if (!Article.getByUrl(art.getLink).isDefined) {
 
         val titre = art.getTitle
         val auteur = art.getAuthor
-        val date = art.getPublishedDate
-        var description = art.getDescription.getValue
-        if(description.indexOf("<img") != -1) {
-          description = description.substring(0,description.indexOf("<img"))
+        val date = new DateTime(art.getPublishedDate)
+        val dateValid = if (date.isAfter(DateTime.now())) {
+          DateTime.now()
+        } else {
+          date
+        }
+
+        val descriptionValue = art.getDescription.getValue
+        val descriptionIndex = descriptionValue.indexOf("<img")
+        val description = if (descriptionIndex != -1) {
+          descriptionValue.substring(0, descriptionIndex)
+        } else {
+          descriptionValue
         }
         val lien = art.getLink
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
@@ -95,8 +104,8 @@ class Child extends Actor {
         } else {
           ""
         }
-        val nouvelArticle = Article(titre, auteur, description, new DateTime(date), lien, site, image)
-        val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description + auteur)
+        val nouvelArticle = Article(titre, auteur, description, dateValid, lien, site, image)
+        val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description)
 
         // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
         // on renvoie le premier élément et la taille de la liste (quantité dans tag)
@@ -106,35 +115,36 @@ class Child extends Actor {
             (el._2.head, el._2.size)
           })
         })
-
         // on crée l'entité et le tag associé au nouvel article créé
         val articleInsertedOpt = Article.create(nouvelArticle)
         articleInsertedOpt match {
           case Some(articleInserted) =>
 
-            uniqueResources.map(liste => liste.map(el => {
-            val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
-            val entiteOpt = Entite.getByUrl(el._1.uri)
-            val entiteWithId: Entite = if (!entiteOpt.isDefined) {
-              Tag.createTagAndEntity(articleInserted, entite, el._2).get
-            } else {
-              val entiteRecupere = entiteOpt.get
-              Tag.create(articleInserted, entiteRecupere, el._2)
-              Entite.incrApparitions(entiteRecupere)
-              entiteRecupere
-            }
-            el._1.types.split(",").map(typeEl => {
-              if (typeEl != "") {
-                val nouveauType = new Type(typeEl)
-                if (!Type.get(typeEl).isDefined) {
-                  APourType.createTypeAndRel(entiteWithId, nouveauType)
+            uniqueResources.map(liste => {
+              liste.map(el => {
+                val entite = new Entite(el._1.surfaceForm, el._1.uri, el._2, el._2, el._2, el._2, el._2)
+                val entiteOpt = Entite.getByUrl(el._1.uri)
+                val entiteWithId: Entite = if (!entiteOpt.isDefined) {
+                  Tag.createTagAndEntity(articleInserted, entite, el._2).get
                 } else {
-                  APourType.create(entiteWithId, nouveauType)
+                  val entiteRecupere = entiteOpt.get
+                  Tag.create(articleInserted, entiteRecupere, el._2)
+                  Entite.incrApparitions(entiteRecupere)
+                  entiteRecupere
                 }
-              }
+                el._1.types.split(",").map(typeEl => {
+                  if (typeEl != "") {
+                    val nouveauType = new Type(typeEl)
+                    if (!Type.get(typeEl).isDefined) {
+                      APourType.createTypeAndRel(entiteWithId, nouveauType)
+                    } else {
+                      APourType.create(entiteWithId, nouveauType)
+                    }
+                  }
+                })
+              })
+              EstLie.getLinkedArticles(articleInserted).map(el => EstLie.create(el._1, el._2, el._3))
             })
-          }))
-          EstLie.getLinkedArticles(articleInserted).map(el => EstLie.create(el._1, el._2, el._3))
           case None =>
         }
 
@@ -171,7 +181,7 @@ class Master(nbActors: Int) extends Actor {
     var ok: Boolean = false
 
     Logger.debug("SITE :" + site.nom + site.typeSite)
-    Logger.debug("SITE :" + site.url)
+    Logger.debug("SITE :" + site.url + ", " + site.id)
     try {
       val feedUrl: URL = new URL(site.url)
       val input: SyndFeedInput = new SyndFeedInput()

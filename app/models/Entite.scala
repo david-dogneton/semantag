@@ -54,11 +54,11 @@ object Entite {
     }.head
   }
 
-  def getById(id: Int): Option[Entite] = {
+  private def getEntites[A](args : (String, A), criteria: String, restriction: String): Stream[Option[Entite]] = {
 
-    val result: List[Entite] = Cypher(
+    Cypher(
       """
-        Match (entite:Entite) where ID(entite) = {id}
+        Match  (entite:Entite) """+criteria+"""
         return  entite.nom,
                 entite.url,
                 entite.apparitionsJour,
@@ -66,8 +66,8 @@ object Entite {
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
                 entite.apparitions,
-                ID(entite);
-      """).on("id" -> id)().collect {
+                ID(entite)
+      """+restriction).on(args)().collect {
       case CypherRow(nom: String,
       url: String,
       apparitionsJour: BigDecimal,
@@ -76,59 +76,41 @@ object Entite {
       apparitionsMois: BigDecimal,
       apparitions: BigDecimal,
       id: BigDecimal) =>
-        new Entite(nom,
+        Some(new Entite(nom,
           url,
           apparitionsJour.toInt,
           apparitionsSemaine.toInt,
           apparitionsSemaineDerniere.toInt,
           apparitionsMois.toInt,
           apparitions.toInt,
-          id.toInt)
-      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-    }.toList
-
-    result match {
-      case Nil => None
-      case head :: tail => Some(head)
+          id.toInt))
+      case _ => None
     }
   }
 
+  def getById(id: Int): Option[Entite] = {
+
+    val result = getEntites("param"-> id, "where ID(entite) = {param}",";")
+    if(result.isEmpty)
+      None
+    else
+      result.head
+  }
+
   def getByUrl(url: String): Option[Entite] = {
+    val result = getEntites("param"-> url, "where entite.url = {param}",";")
+    if(result.isEmpty)
+      None
+    else
+      result.head
+  }
 
-    val result: List[Entite] = Cypher(
-      """
-        Match (entite:Entite) where entite.url = {url}
-        return  entite.nom,
-                entite.url,
-                entite.apparitionsJour,
-                entite.apparitionsSemaine,
-                entite.apparitionsSemaineDerniere,
-                entite.apparitionsMois,
-                entite.apparitions,
-                ID(entite);
-      """).on("url" -> url)().collect {
-      case CypherRow(nom: String,
-      url: String,
-      apparitionsJour: BigDecimal,
-      apparitionsSemaine: BigDecimal,
-      apparitionsSemaineDerniere: BigDecimal,
-      apparitionsMois: BigDecimal,
-      apparitions: BigDecimal,
-      id: BigDecimal) =>
-        new Entite(nom,
-          url,
-          apparitionsJour.toInt,
-          apparitionsSemaine.toInt,
-          apparitionsSemaineDerniere.toInt,
-          apparitionsMois.toInt,
-          apparitions.toInt,
-          id.toInt)
-      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-    }.toList
-
-    result match {
-      case Nil => None
-      case head :: tail => Some(head)
+  def rechercheDansNom(rechercheUtilisateur : String): List[Entite] = {
+    val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
+    val result: List[Option[Entite]] = getEntites("param" -> critereRecherche , "where lower(entite.nom) =~ {param} ",";").toList
+    result map {
+      case Some(entite) => entite
+      case None => throw new NoSuchElementException("article vide")
     }
   }
 
@@ -170,38 +152,8 @@ object Entite {
   }
 
   def lesPlusTaggesDuJour(): List[Entite] = {
-    Cypher(
-      """
-        Match (entite:Entite)
-        return  entite.nom,
-                entite.url,
-                entite.apparitionsJour,
-                entite.apparitionsSemaine,
-                entite.apparitionsSemaineDerniere,
-                entite.apparitionsMois,
-                entite.apparitions,
-                ID(entite)
-        ORDER BY entite.apparitionsJour DESC
-        Limit 10;
-      """)().collect {
-      case CypherRow(nom: String,
-      url: String,
-      apparitionsJour: BigDecimal,
-      apparitionsSemaine: BigDecimal,
-      apparitionsSemaineDerniere: BigDecimal,
-      apparitionsMois: BigDecimal,
-      apparitions: BigDecimal,
-      id: BigDecimal) =>
-        new Entite(nom,
-          url,
-          apparitionsJour.toInt,
-          apparitionsSemaine.toInt,
-          apparitionsSemaineDerniere.toInt,
-          apparitionsMois.toInt,
-          apparitions.toInt,
-          id.toInt)
-      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-    }.toList
+    val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit 5;").toList
+    result.map(_.get)
   }
 
   def incrApparitions(entite : Entite): Stream[CypherResultRow] = {
@@ -223,6 +175,4 @@ object Entite {
                 ID(entite);
       """).on("id" -> entite.id)()
   }
-
-
 }
