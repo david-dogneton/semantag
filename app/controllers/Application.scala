@@ -33,7 +33,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def mapage = StackAction {
     implicit request =>
-    // implicit val maybeUser: Option[User] = Some(loggedIn)
       Ok(views.html.mapage())
   }
 
@@ -48,16 +47,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def displayArt(id : Int) = StackAction {
     implicit request =>
 
-//      urlForm.bindFromRequest.fold(
-//        hasErrors = {
-//          form =>
-//            Logger.debug("BUG URL ")
-//            Redirect(routes.Application.index)
-//        },
-//        success = {
-  //        url =>
             Logger.debug("URL OKAY ")
-           // Logger.debug("URL TEST " + url)
             val article: Option[Article] = Article.getById(id)
             if (article.isDefined) {
 
@@ -66,22 +56,10 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
               Redirect(routes.Application.index).flashing("error" -> "L'article à viualiser n'existe plus ! :o")
 
             }
-
-       // })
   }
 
   def displayLinkedArt(id : Int) = StackAction {
     implicit request =>
-//      urlForm.bindFromRequest.fold(
-//        hasErrors = {
-//          form =>
-//            Logger.debug("BUG URL ")
-//            Redirect(routes.Application.index)
-//        },
-//
-//        success = {
-//          url =>
-      //val listeLinked: List[(String, String, Double)]: = EstLie.getLinkedArticlesById(id)
       Logger.debug("TEST DISPLAY LINKED ART" + id)
        val listeLinked = EstLie.getLinkedArticlesById(id)
        val listeArt: List[Article] =listeLinked.map(elt=>{
@@ -91,7 +69,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
           "nom" -> tag._1.nom)))
-        Json.obj("url" -> art.url,
+        Json.obj(
+          "id"->art.id,
+          "url" -> art.url,
           "titre" -> art.titre,
           "description" -> art.description,
           "site" -> art.site.nom,
@@ -107,7 +87,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "lies" -> EstLie.getLinkedArticles(art).size
         )
       })
-      // Logger.debug("RES " +res )
       Ok(Json.obj("liste"->res))
 
 
