@@ -178,15 +178,13 @@ class TestArticle extends FunSuite with ShouldMatchers {
 //    assert(sites.size == request.size)
 //  }
 
-
-
   //  test("delete") {
   //    val article = Article.deleteArticle("url 1")
   //    println("article : "+article)
   //  }
 
   test("getLinkArticles") {
-    val art = Article.getArticle("http://www.science.gouv.fr/fr/actualites/bdd/res/4937/plato-un-telescope-spatial-pour-decouvrir-des-systemes-planetaires-semblables-au-notre/")
+    val art = Article.getByUrl("http://www.science.gouv.fr/fr/actualites/bdd/res/4937/plato-un-telescope-spatial-pour-decouvrir-des-systemes-planetaires-semblables-au-notre/")
     val list = EstLie.getLinkedArticles(art.get)
     list.foreach(println)
     println("list : "+list.size)

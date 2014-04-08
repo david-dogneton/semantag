@@ -5,11 +5,11 @@ import org.anormcypher.{CypherRow, Cypher}
 /**
  * Created by Administrator on 17/03/14.
  */
-case class Site(url: String, nom: String, typeSite: String) {}
+case class Site(url: String, nom: String, typeSite: String, id: Int = -1) {}
 
 object Site {
 
-  def create(site: Site): Boolean = {
+  def create(site: Site): Option[Site] = {
     Cypher(
       """
         create (site: Site{
@@ -17,29 +17,54 @@ object Site {
           nom: {nom},
           type: {type}
         })
+        return ID(site);
       """
     ).on("url" -> site.url,
         "nom" -> site.nom,
         "type" -> site.typeSite
-      ).execute()
+      )().collect {
+      case CypherRow(id : BigDecimal) => Some(new Site(site.url, site.nom, site.typeSite, id.toInt))
+      case _ => None
+    }.head
   }
 
-  def get(url: String): Option[Site] = {
+  def getById(id : Int): Option[Site] = {
 
     val result: List[Site] = Cypher(
       """
-        Match (site:Site) where site.url = {url}
-        return  site.url as url,
-                site.nom as nom,
-                site.type as type;
-      """).on("url" -> url)().collect {
-      case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)
+        Match (site:Site) where ID(site) = {id}
+        return  site.url,
+                site.nom,
+                site.type,
+                ID(site);
+      """).on("id" -> id)().collect {
+      case CypherRow(url: String, nom: String, typeSite: String, id: BigDecimal) => new Site(url, nom, typeSite, id.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format du site")
     }.toList
 
     result match {
       case Nil => None
-      case head::tail => Some(head)
+      case head :: tail => Some(head)
+    }
+  }
+
+  def getByUrl(url: String): Option[Site] = {
+
+    val result: List[Site] = Cypher(
+      """
+        Match (site:Site) where site.url = {url}
+        return  site.url,
+                site.nom,
+                site.type,
+                ID(site);
+      """).on("url" -> url)().collect {
+      case CypherRow(url: String, nom: String, typeSite: String, id: BigDecimal) => new Site(url, nom, typeSite, id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format du site")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head :: tail => Some(head)
     }
   }
 
@@ -50,16 +75,17 @@ object Site {
         Match (site:Site)
         return  site.url as url,
                 site.nom as nom,
-                site.type as type;
+                site.type as type,
+                ID(site);
       """)().collect {
-      case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)
+      case CypherRow(url: String, nom: String, typeSite: String, id: BigDecimal) => new Site(url, nom, typeSite, id.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format du site")
     }.toList
 
     result
   }
 
-  def delete(url : String): Boolean = {
+  def delete(url: String): Boolean = {
     val result: Boolean = Cypher(
       """
         Match (site:Site) where site.url = {url} delete site;

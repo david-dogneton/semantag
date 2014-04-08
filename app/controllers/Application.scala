@@ -363,7 +363,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def createArticle = StackAction {
     implicit request =>
-      val siteOpt = Site.get("www.magness.fr")
+      val siteOpt = Site.getByUrl("www.magness.fr")
       siteOpt match {
         case Some(site) =>
           val result = Article.create(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "http://magness.fr/blablabla", site))

@@ -12,6 +12,7 @@ case class EstLie(urlArticleA: String, urlArticleB: String, ponderation: Double)
 object EstLie {
 
   def create(urlA: String, urlB: String, ponderation: Double): Boolean = {
+
     Cypher(
       """
          match (articleA: Article), (articleB: Article)
@@ -47,13 +48,13 @@ object EstLie {
 //    }
 //  }
 
-  def getLinkedArticles(article : Article): List[(String, String, Double)] = {
+  def   getLinkedArticles(article : Article): List[(String, String, Double)] = {
 
     Cypher(
       """
-        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {id}
-        return distinct a.url, c.url, r.quantite, r2.quantite
-      """).on("id" -> article.id)().collect {
+        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {idArticle}
+        return distinct a.url, c.url, r.quantite, r2.quantite;
+      """).on("idArticle" -> article.id)().collect {
       case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
     }.toList
   }

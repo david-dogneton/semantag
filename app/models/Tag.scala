@@ -160,7 +160,7 @@ object Tag {
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
       quantite: BigDecimal) =>
-        val siteOpt = Site.get(urlSite)
+        val siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
           case Some(site) => (new Article(
             titre,
