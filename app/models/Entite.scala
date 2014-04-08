@@ -146,38 +146,6 @@ object Entite {
 
     val result = getEntites(""->"", "", "ORDER BY entite.apparitionsJour DESC Limit 30;").toList
     result.map(_.get)
-//    Cypher(
-//      """
-//        Match (entite:Entite)
-//        return  entite.nom,
-//                entite.url,
-//                entite.apparitionsJour,
-//                entite.apparitionsSemaine,
-//                entite.apparitionsSemaineDerniere,
-//                entite.apparitionsMois,
-//                entite.apparitions,
-//                ID(entite)
-//                ORDER BY entite.apparitionsJour DESC
-//                Limit 5;
-//      """)().collect {
-//      case CypherRow(nom: String,
-//      url: String,
-//      apparitionsJour: BigDecimal,
-//      apparitionsSemaine: BigDecimal,
-//      apparitionsSemaineDerniere: BigDecimal,
-//      apparitionsMois: BigDecimal,
-//      apparitions: BigDecimal,
-//      id: BigDecimal) =>
-//        new Entite(nom,
-//          url,
-//          apparitionsJour.toInt,
-//          apparitionsSemaine.toInt,
-//          apparitionsSemaineDerniere.toInt,
-//          apparitionsMois.toInt,
-//          apparitions.toInt,
-//          id.toInt)
-//      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-//    }.toList
   }
 
   def incrApparitions(entite : Entite): Stream[CypherResultRow] = {
