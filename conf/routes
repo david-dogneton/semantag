@@ -9,13 +9,14 @@ GET         /getart                           controllers.Application.getArt
 GET         /getDomaines                      controllers.Application.getDomaines
 GET         /getTop                           controllers.Application.getTop
 POST        /getArticlesByTag                 controllers.Application.getArticlesByTag
-GET         /displaylinkedart                 controllers.Application.displayLinkedArt
 
 GET         /majsites                         controllers.Application.miseAJourSites
 GET         /majflux                          controllers.Application.miseAJourFlux
 
-POST        /displayart                       controllers.Application.displayArt
+#POST        /displayart                       controllers.Application.displayArt
 
+GET        /displaylinkedart/:id                 controllers.Application.displayLinkedArt(id: Int)
+GET        /displayart/:id                    controllers.Application.displayArt(id: Int)
 GET         /connexion                        controllers.LoginLogout.connexion
 POST        /authenticate                     controllers.LoginLogout.authenticate
 GET         /mapage                           controllers.Application.mapage

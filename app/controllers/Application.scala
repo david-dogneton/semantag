@@ -45,20 +45,20 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   )
 
 
-  def displayArt = StackAction {
+  def displayArt(id : Int) = StackAction {
     implicit request =>
 
-      urlForm.bindFromRequest.fold(
-        hasErrors = {
-          form =>
-            Logger.debug("BUG URL ")
-            Redirect(routes.Application.index)
-        },
-        success = {
-          url =>
+//      urlForm.bindFromRequest.fold(
+//        hasErrors = {
+//          form =>
+//            Logger.debug("BUG URL ")
+//            Redirect(routes.Application.index)
+//        },
+//        success = {
+  //        url =>
             Logger.debug("URL OKAY ")
-            Logger.debug("URL TEST " + url)
-            val article: Option[Article] = Article.getByUrl(url)
+           // Logger.debug("URL TEST " + url)
+            val article: Option[Article] = Article.getById(id)
             if (article.isDefined) {
 
               Ok(views.html.visualisationarticle(article.get))
@@ -67,14 +67,53 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
             }
 
-        })
+       // })
   }
 
-  def displayLinkedArt = StackAction {
+  def displayLinkedArt(id : Int) = StackAction {
     implicit request =>
+//      urlForm.bindFromRequest.fold(
+//        hasErrors = {
+//          form =>
+//            Logger.debug("BUG URL ")
+//            Redirect(routes.Application.index)
+//        },
+//
+//        success = {
+//          url =>
+      //val listeLinked: List[(String, String, Double)]: = EstLie.getLinkedArticlesById(id)
+      Logger.debug("TEST DISPLAY LINKED ART" + id)
+       val listeLinked = EstLie.getLinkedArticlesById(id)
+       val listeArt: List[Article] =listeLinked.map(elt=>{
+          Article.getByUrl(elt._2).get
+       })
+      val res: List[JsObject] = listeArt.map(art => {
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
+        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
+          "nom" -> tag._1.nom)))
+        Json.obj("url" -> art.url,
+          "titre" -> art.titre,
+          "description" -> art.description,
+          "site" -> art.site.nom,
+          "image" -> art.image,
+          "consultationsJour" -> art.consultationsJour,
+          "coeurs" -> art.nbCoeurs,
+          "domaine" -> art.site.typeSite,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
+          "tags"-> tags,
+          "note" -> art.nbEtoiles,
+          "date" -> dateF,
+          "lies" -> EstLie.getLinkedArticles(art).size
+        )
+      })
+      // Logger.debug("RES " +res )
+      Ok(Json.obj("liste"->res))
 
 
-      Ok("")
+  //})
+
+
 
 
   }
@@ -168,7 +207,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
           "nom" -> tag._1.nom)))
-        Json.obj("url" -> art.url,
+        Json.obj(
+          "id" -> art.id,
+          "url" -> art.url,
           "titre" -> art.titre,
           "description" -> art.description,
           "site" -> art.site.nom,
