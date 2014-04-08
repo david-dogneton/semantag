@@ -182,7 +182,7 @@ object Entite {
                 entite.apparitions,
                 ID(entite)
         ORDER BY entite.apparitionsJour DESC
-        Limit 5;
+        Limit 10;
       """)().collect {
       case CypherRow(nom: String,
       url: String,

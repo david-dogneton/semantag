@@ -17,6 +17,9 @@ header.search=Find articles talking about...
 index.title=Semantag : semantic news
 index.header=What do we really talk about on the Web ?
 
+#VISUALISATION ENTITE
+entity.title=Semantag : Entity
+
 #PRESENTATION
 presentation.title=What is Semantag ?
 presentation.header=Semantag provide a semantic structuration and recommendation engine for Web articles.

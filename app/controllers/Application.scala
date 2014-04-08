@@ -1,46 +1,32 @@
 package controllers
 
 
-import play.api._
-import play.api.mvc._
-import com.sun.syndication.feed.synd.{SyndEnclosureImpl, SyndEntry}
-import java.util
-import models.database.Country
 import models._
 import models.database.{Country}
 import scala.Some
 import org.joda.time.DateTime
-import jp.t2v.lab.play2.auth.{OptionalAuthElement, AuthenticationElement}
 import scala.Some
-
-
-import play.api.mvc.{Action, Controller}
-import jp.t2v.lab.play2.auth._
-import play.api.data.Form
-import play.api._
-import play.api.mvc._
+import controllers.sparql.SparqlQueryExecuter
 import play.api.data._
 import play.api.data.Forms._
-import play.api.data.validation._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import play.core.Router
+import jp.t2v.lab.play2.auth._
+import play.api._
+import play.api.mvc._
 import play.api.libs.json.{JsObject, Json}
 
 
 object Application extends Controller with OptionalAuthElement with LoginLogout with AuthConfigImpl {
 
-
   def javascriptRoutes = Action {
     implicit request =>
-      import routes.javascript._
       Ok(
         Routes.javascriptRouter("jsRoutes")(
           controllers.routes.javascript.Application.getArt,
-          controllers.routes.javascript.Application.displayLinkedArt
-
-          //Users.get
+          controllers.routes.javascript.Application.displayLinkedArt,
+          controllers.routes.javascript.Application.getArt,
+          controllers.routes.javascript.Application.getDomaines,
+          controllers.routes.javascript.Application.getTop,
+          controllers.routes.javascript.Application.getArticlesByTag
         )
       ).as("text/javascript")
   }
@@ -93,6 +79,83 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   }
 
+  def getArticlesByTag = StackAction {
+    implicit request =>
+
+      urlForm.bindFromRequest.fold(
+        hasErrors = { form =>
+          Logger.debug("BUG URL get by tag")
+          Ok(Json.obj())
+        },
+        success = { url =>
+          Logger.debug("URL OKAY get by tag ")
+          Logger.debug("URL TEST get by tag" + url)
+          val tmp = Entite.getByUrl(url)
+          tmp match {
+            case Some(entite) =>
+              val listeTmp = Tag.getArticlesLies(entite,20)
+              Logger.debug("TAILLE LISTE get by tag " +listeTmp.size)
+              listeTmp match {
+                case Some(liste) =>
+                  val res: List[JsObject] = liste.map(art => {
+                    val dateF: String = art._1.date.year().get() + "-" + art._1.date.monthOfYear().get() + "-" +art._1.date.dayOfMonth().get()  + " "+art._1.date.hourOfDay().get()+":"+art._1.date.minuteOfHour().get()
+                    val tags: List[JsObject] = Tag.getTagsOfArticles(art._1).map(tag => (Json.obj("url" -> tag._1.url,
+                      "nom" -> tag._1.nom)))
+                    Json.obj("url" -> art._1.url,
+                      "titre" -> art._1.titre,
+                      "description" -> art._1.description,
+                      "site" -> art._1.site.nom,
+                      "image" -> art._1.image,
+                      "consultationsJour" -> art._1.consultationsJour,
+                      "coeurs" -> art._1.nbCoeurs,
+                      "domaine" -> art._1.site.typeSite,
+                      "tags"-> tags,
+                      "note" ->art._1.nbEtoiles,
+                      "date" -> dateF,
+                      "lies" -> EstLie.getLinkedArticles(art._1).size
+                    )
+                  })
+                  Logger.debug("RENVOIT RES get by tag :"+res)
+                  Logger.debug("FIN RENVOI RES:")
+                  Ok(Json.obj("liste"->res))
+                case None =>
+                  Logger.debug("NONE SUR lISTE get by tag ")
+                  Ok(Json.obj())
+              }
+            case None =>
+              Logger.debug("NONE SUR ENTITE get by tag ")
+              Ok(Json.obj())
+          }
+        })
+  }
+
+  def getTop= StackAction {
+    implicit request =>
+
+      val top: List[Entite] = Entite.lesPlusTaggesDuJour()
+
+      val res: List[JsObject] = top.map(entite => {
+        Json.obj("nom" -> entite.nom,
+          "nombre" -> entite.apparitionsJour,
+          "image" -> SparqlQueryExecuter.getImage(entite.url),
+          "url" -> entite.url
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
+
+  def getDomaines = StackAction {
+    implicit request =>
+
+      val listeDomaines: List[Site] = Site.getTypes()
+
+      val res: List[JsObject] = listeDomaines.map(site => {
+        Json.obj("nom" -> site.typeSite
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
 
   // Router.JavascriptReverseRoute
   def getArt = StackAction {
@@ -102,8 +165,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val listeArt: List[Article] = Article.getLastArticle
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
-        val dateF: String = art.date.dayOfMonth() + "-" + art.date.monthOfYear() + "-" + art.date.year()
-        val tags: List[String] = Tag.getTagsOfArticles(art).map(tag => /*(*/ tag._1.nom /*, tag._1.url*/) /*(*/
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
+        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
+          "nom" -> tag._1.nom)))
         Json.obj("url" -> art.url,
           "titre" -> art.titre,
           "description" -> art.description,
@@ -114,14 +178,14 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "domaine" -> art.site.typeSite,
           "tags" -> tags,
           "note" -> art.nbEtoiles,
+          "tags"-> tags,
+          "note" -> art.nbEtoiles,
           "date" -> dateF,
           "lies" -> EstLie.getLinkedArticles(art).size
         )
       })
       // Logger.debug("RES " +res )
-      Ok(Json.obj("liste" -> res))
-
-
+      Ok(Json.obj("liste"->res))
   }
 
   def index = StackAction {
@@ -562,7 +626,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     implicit request =>
       FluxRss.misAJourTousSites()
       Ok(views.html.index())
-
   }
 
   def miseAJourSites = StackAction {
@@ -570,5 +633,20 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       FluxRss.miseAJourBddSites
       Ok(views.html.index())
   }
+
+  def entite = StackAction {
+    implicit request =>
+      urlForm.bindFromRequest.fold(
+        hasErrors = { form =>
+          Logger.debug("BUG URL ")
+          Ok(views.html.index())
+        },
+        success = { url =>
+          Logger.debug("URL OKAY ")
+          Logger.debug("URL TEST " + url)
+          Ok(views.html.entite(SparqlQueryExecuter.getName(url), SparqlQueryExecuter.getImage(url), SparqlQueryExecuter.getImageDescription(url), SparqlQueryExecuter.getAbstract(url), SparqlQueryExecuter.getWikiLink(url), url))
+        })
+  }
+
 
 }
