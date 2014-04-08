@@ -141,4 +141,49 @@ object AppreciationDomaine {
   }
 
 
+  def majAvecCreate(note: Note) {
+    var domainesOpt = APourDomaine.getDomainesLies(note.article)
+    domainesOpt match {
+      case Some(domaines) => {
+        domaines.map(elt => {
+          var appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
+          appreciationDomaineOpt match {
+            case Some(appreciationDomaine) => {
+              if (note.aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
+            }
+            case None => {
+              var nbCoeurs = 0
+              if(note.aCoeur) nbCoeurs = 1
+              AppreciationDomaine.create(new AppreciationDomaine(note.utilisateur, elt, nbCoeurs))
+            }
+          }
+        })
+      }
+      case None => throw new Exception("Liste de domaines non trouvée")
+    }
+    false
+  }
+
+
+  def majSansCreate(note: Note, setCoeur: Boolean = false, aCoeur: Boolean = false) {
+    var domainesOpt = APourDomaine.getDomainesLies(note.article)
+    domainesOpt match {
+      case Some(domaines) => {
+        domaines.map(elt => {
+          var appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
+          appreciationDomaineOpt match {
+            case Some(appreciationDomaine) => {
+              if (setCoeur) {
+                if(aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
+                else AppreciationDomaine.decrNbCoeurs(note.utilisateur, elt)
+              }
+            }
+            case None => throw new Exception("AppreciationDomaine non trouvée")
+          }
+        })
+      }
+      case None => throw new Exception("Liste de domaines non trouvée")
+    }
+    false
+  }
 }

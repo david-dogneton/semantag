@@ -111,7 +111,7 @@ object Tag {
   def getArticlesLies(entite: Entite, nbMax: Int): Option[List[(Article, Int)]] = {
     val result: List[(Article, Int)] = Cypher(
       """
-        match (entite: Entite {url : {urlEntite}})-[r:tag]-(article: Article)
+        match (entite: Entite {url : {urlEntite}})-[r:tag]-(article: Article)--(site:Site)
                 return  article.titre as titre,
                   article.auteur as auteur,
                   article.description as description,
@@ -127,7 +127,7 @@ object Tag {
                   article.totalEtoiles as totalEtoiles,
                   article.nbEtoiles as nbEtoiles,
                   article.nbCoeurs as nbCoeurs,
-                  tag.quantite as quantiteTag
+                  r.quantite as quantiteTag
                 order by r.quantite
                 limit {nbArticles};
       """).on("urlEntite" -> entite.url, "nbArticles" -> nbMax)().collect {

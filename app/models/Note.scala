@@ -13,7 +13,7 @@ case class Note(utilisateur: Utilisateur, article: Article, nbEtoiles: Int, aCoe
 
 object Note {
   def create(note: Note): Boolean = {
-    Cypher(
+    val resultat = Cypher(
       """
          match (user: Utilisateur), (article: Article)
          where user.mail = {mailUser} and article.url = {urlArt}
@@ -25,6 +25,9 @@ object Note {
       "aCoeur" -> note.aCoeur
     ).execute()
     AppreciationEntite.majAvecCreate(note)
+    AppreciationDomaine.majAvecCreate(note)
+    AppreciationSite.majAvecCreate(note)
+    resultat
   }
 
   def get(user: Utilisateur, article: Article): Option[Note] = {
@@ -57,7 +60,12 @@ object Note {
 
     result match {
       case Nil => None
-      case head :: tail => Some(Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur")))
+      case head :: tail => {
+        var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
+        AppreciationEntite.majSansCreate(note, changementNbEtoiles)
+        AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
+        Some(note)
+      }
     }
   }
 
@@ -103,7 +111,13 @@ object Note {
 
         result match {
           case Nil => None
-          case head :: tail => Some(Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur")))
+          case head :: tail => {
+             var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
+            AppreciationEntite.majSansCreate(note, 0, true, aCoeur)
+            AppreciationDomaine.majSansCreate(note, true, aCoeur)
+            AppreciationSite.majSansCreate(note, false, 0, true, aCoeur)
+            Some(note)
+          }
         }
       }
     }

@@ -251,20 +251,4 @@ Match (article:Article) where article.url = {url} delete article;
     }
   }
 
-  def getDomainesLies(article: Article): Option[List[Domaine]] = {
-    val result: List[Domaine] = Cypher(
-      """
-        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
-                return domaine.nom as nom;
-      """).on("urlArticle" -> article.url)().collect {
-      case CypherRow(nom: String) =>
-        new Domaine(nom)
-      case _ => throw new IllegalArgumentException("Mauvais format du domaine")
-    }.toList
-
-    result match {
-      case Nil => None
-      case _ => Some(result)
-    }
-  }
 }

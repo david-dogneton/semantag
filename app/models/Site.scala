@@ -68,4 +68,25 @@ object Site {
     println("result : " + result)
     result
   }
+
+
+  def getTopSites(user: Utilisateur, nbSites: Int): Option[List[Site]] = {
+    val result: List[Site] = Cypher(
+      """
+        match (user: Utilisateur {mail : {mailUser}})-[r:appreciationSite]-(site: Site)
+                 return  site.url as url,
+                        site.nom as nom,
+                        site.type as type
+                 order by r.nbCoeurs
+                 limit {nbSites};
+      """).on("mailUser" -> user.mail, "nbSites" -> nbSites)().collect {
+      case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)
+      case _ => throw new IllegalArgumentException("Mauvais format du site")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
+  }
 }

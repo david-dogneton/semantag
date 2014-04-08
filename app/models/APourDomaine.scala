@@ -1,6 +1,6 @@
 package models
 
-import org.anormcypher.Cypher
+import org.anormcypher.{CypherRow, Cypher}
 
 /**
  * Created by Administrator on 20/03/14.
@@ -25,5 +25,23 @@ object APourDomaine {
 
   def create(aPourDomaine: APourDomaine): Boolean = {
      create(aPourDomaine.article, aPourDomaine.domaine)
+  }
+
+
+  def getDomainesLies(article: Article): Option[List[Domaine]] = {
+    val result: List[Domaine] = Cypher(
+      """
+        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
+                return domaine.nom as nom;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String) =>
+        new Domaine(nom)
+      case _ => throw new IllegalArgumentException("Mauvais format du domaine")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
   }
 }
