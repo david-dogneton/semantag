@@ -53,7 +53,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
-        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
+        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("id" -> tag._1.id,
           "nom" -> tag._1.nom)))
         Json.obj(
           "id" -> art.id,

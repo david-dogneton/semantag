@@ -95,13 +95,16 @@
                         <span ng-repeat="tag in item['tags']" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
                     </p>
                     <p ng-show="item['lies']>1">
-                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
+                        <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
-                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                        <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.
                     </p>
                     <p ng-show="item['lies']==0">
                         <i class="add icon"></i>Pas d'article lié à ce sujet.
+                    </p>
+                    <p>
+                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>
                     </p>
                 </div>
             </div>
