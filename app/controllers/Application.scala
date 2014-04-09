@@ -43,6 +43,38 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     )
   )
 
+  // Router.JavascriptReverseRoute
+  def getArt = StackAction {
+    implicit request =>
+
+    // Logger.debug("avant")
+      val listeArt: List[Article] = Article.getLastArticle
+      // Logger.debug("apres")
+      val res: List[JsObject] = listeArt.map(art => {
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
+        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
+          "nom" -> tag._1.nom)))
+        Json.obj(
+          "id" -> art.id,
+          "url" -> art.url,
+          "titre" -> art.titre,
+          "description" -> art.description,
+          "site" -> art.site.nom,
+          "image" -> art.image,
+          "consultationsJour" -> art.consultationsJour,
+          "coeurs" -> art.nbCoeurs,
+          "domaine" -> art.site.typeSite,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
+          "tags"-> tags,
+          "note" -> art.nbEtoiles,
+          "date" -> dateF,
+          "lies" -> EstLie.countLinkedArticles(art)
+        )
+      })
+      // Logger.debug("RES " +res )
+      Ok(Json.obj("liste"->res))
+  }
 
   def displayArt(id : Int) = StackAction {
     implicit request =>
@@ -84,7 +116,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "tags"-> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
-          "lies" -> EstLie.getLinkedArticles(art).size
+          "lies" -> EstLie.countLinkedArticles(art)
         )
       })
       Ok(Json.obj("liste"->res))
@@ -175,38 +207,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       Ok(Json.obj("liste"->res))
   }
 
-  // Router.JavascriptReverseRoute
-  def getArt = StackAction {
-    implicit request =>
 
-    // Logger.debug("avant")
-      val listeArt: List[Article] = Article.getLastArticle
-      // Logger.debug("apres")
-      val res: List[JsObject] = listeArt.map(art => {
-        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
-        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("url" -> tag._1.url,
-          "nom" -> tag._1.nom)))
-        Json.obj(
-          "id" -> art.id,
-          "url" -> art.url,
-          "titre" -> art.titre,
-          "description" -> art.description,
-          "site" -> art.site.nom,
-          "image" -> art.image,
-          "consultationsJour" -> art.consultationsJour,
-          "coeurs" -> art.nbCoeurs,
-          "domaine" -> art.site.typeSite,
-          "tags" -> tags,
-          "note" -> art.nbEtoiles,
-          "tags"-> tags,
-          "note" -> art.nbEtoiles,
-          "date" -> dateF,
-          "lies" -> EstLie.countLinkedArticles(art)
-        )
-      })
-      // Logger.debug("RES " +res )
-      Ok(Json.obj("liste"->res))
-  }
 
   def index = StackAction {
     implicit request =>

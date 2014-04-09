@@ -94,6 +94,7 @@ class Child extends Actor {
         } else {
           descriptionValue
         }
+
         val lien = art.getLink
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
         val imageList: util.List[SyndEnclosureImpl] = art.getEnclosures.asInstanceOf[util.List[SyndEnclosureImpl]]
