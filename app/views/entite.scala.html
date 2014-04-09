@@ -1,5 +1,5 @@
 @(nom: String, thumb: String, thumbDescription: String, description: String, lienWiki: String, uriDBpedia: String)(implicit user: Option[Utilisateur], lang: Lang)
-@main(Messages("entity.title"))("entité") {
+@main(Messages("Entité : "+ nom))("entité") {
 <script type="text/javascript">
     function EntityNewsRenderer($scope,$http) {
         var url = "@uriDBpedia";
@@ -92,23 +92,17 @@
                         <i class="star icon"></i> {{item['note']}}
                     </div>
                     <p>
-                        <!-- <i class="tags icon"></i>--><!--
-                        <span style="padding:2px;margin:2px;font-size:11px"  class="ui label">-->
-                    <form style="margin:0px" ng-repeat="tag in item['tags']" action="@routes.Application.entite" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{tag.url}}">
-                        <input class="ui mini button" style="padding:2px;margin:2px;font-size:11px" type="submit" value="{{tag.nom}}">
-                    </form>
-                    <!-- </span>-->
+                        <span ng-repeat="tag in item['tags']" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
                     </p>
                     <p ng-show="item['lies']>1">
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
                     </p>
                     <p ng-show="item['lies']==1">
-                       <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
-                                        </p>
-                  <p ng-show="item['lies']==0">
-                             <i class="add icon"></i>Pas d'article lié à ce sujet.
-                         </p>
+                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                    </p>
+                    <p ng-show="item['lies']==0">
+                        <i class="add icon"></i>Pas d'article lié à ce sujet.
+                    </p>
                 </div>
             </div>
         </div>
@@ -123,15 +117,14 @@
             <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
                 <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
                 <div class="content">
-                    <form action="@routes.Application.entite" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
-                        <input class="ui mini hover teal button" type="submit" value="{{item['nom']}} ({{item['nombre']}})"></a>
-                    </form>
+                    <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}} ({{item['nombre']}})</a>
                     <div class="description">{{item['type']}}</div>
                 </div>
+                <div class="description">{{item['type']}}</div>
             </div>
         </div>
     </div>
+</div>
 </div>
 <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
 <script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>

@@ -98,7 +98,8 @@ object Tag {
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
                 entite.apparitions,
-                r.quantite;
+                r.quantite,
+                ID(entite);
       """
     ).on("urlArt" -> article.url)().collect {
       case CypherRow(nom: String,
@@ -108,14 +109,16 @@ object Tag {
       apparitionsSemaineDerniere: BigDecimal,
       apparitionsMois: BigDecimal,
       apparitions: BigDecimal,
-      quantite: BigDecimal) =>
+      quantite: BigDecimal,
+      id: BigDecimal) =>
         (new Entite(nom,
           url,
           apparitionsJour.toInt,
           apparitionsSemaine.toInt,
           apparitionsSemaineDerniere.toInt,
           apparitionsMois.toInt,
-          apparitions.toInt),
+          apparitions.toInt,
+          id.toInt),
           quantite.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
