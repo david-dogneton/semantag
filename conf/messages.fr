@@ -17,6 +17,9 @@ header.search=Rechercher un article qui parle de...
 index.title=Semantag : l''actualité sémantique
 index.header=De quoi parle-on vraiment sur le Net ?
 
+#PAGE RESULTATS
+results.title=Résultats de la recherche
+
 #VISUALISATION ENTITE
 entity.title=Semantag : Entité
 

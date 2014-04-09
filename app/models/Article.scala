@@ -178,7 +178,7 @@ object Article {
   def rechercheDansTitre(rechercheUtilisateur  : String): List[Article] = {
 
     val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
-    val result: List[Option[Article]] = getArticles("param" -> critereRecherche , "where lower(article.titre) =~ {param} ",";").toList
+    val result: List[Option[Article]] = getArticles("param" -> critereRecherche , "where lower(article.titre) =~ {param} "," ORDER BY article.date DESC ;").toList
     result map {
       case Some(article) => article
       case None => throw new NoSuchElementException("article vide")

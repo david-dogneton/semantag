@@ -17,6 +17,9 @@ header.search=Find articles talking about...
 index.title=Semantag : semantic news
 index.header=What do we really talk about on the Web ?
 
+#PAGE RESULTATS
+results.title=Results
+
 #VISUALISATION ENTITE
 entity.title=Semantag : Entity
 

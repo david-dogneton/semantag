@@ -208,7 +208,7 @@ public class SparqlQueryExecuter {
 
     public static String getName(String uri) throws Exception {
         String img ="";
-        String requete = "select ?name {<"+uri+"> foaf:name ?name}";
+        String requete = "select ?name {<"+uri+"> rdfs:label ?name}";
         SparqlQueryExecuter e = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql");
         JSONArray uris = e.query(requete);
         if(uris.length()>0){
