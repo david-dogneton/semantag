@@ -93,7 +93,8 @@
                         <i class="star icon"></i> {{item['note']}}
                     </div>
                     <p>
-                        <span ng-repeat="tag in item['tags']" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                        <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                         </p>
                         <p ng-show="item['lies']>1">
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
