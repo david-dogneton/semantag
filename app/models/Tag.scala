@@ -190,4 +190,16 @@ object Tag {
       case _ => Some(result)
     }
   }
+
+  def getNombreArticlesLies(entite: Entite): Int = {
+    Cypher(
+      """
+        match (entite: Entite)-[r:tag]-(article: Article)--(site:Site)
+                where ID(entite) = {id}
+                return  count(r);
+      """).on("id" -> entite.id)().collect {
+      case CypherRow(count : BigDecimal) => count.toInt
+      case _ => -1
+    }.head
+  }
 }

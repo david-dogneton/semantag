@@ -1,12 +1,14 @@
 ﻿Libération;http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/58/;cinéma
 télérama;http://www.telerama.fr/rss/cinema.xml;cinéma
-Cinéma;http://rss.allocine.fr/ac/actualites/;cinéma
 Allociné sortie semaine;http://rss.allocine.fr/ac/cine/cettesemaine;cinéma
 Allociné toujours affiche;http://rss.allocine.fr/ac/cine/alaffiche;cinéma
 Allociné prochainement;http://rss.allocine.fr/ac/cine/prochainement;cinéma
-Allocné top consultations;http://rss.allocine.fr/ac/cine/topfilms;cinéma
-Allociné top consultations séries;http://rss.allocine.fr/ac/series/top;cinéma
-Allociné A la tv ce soir;http://rss.allocine.fr/ac/series/tvcesoir;cinéma
+Allociné - Toute l'actualité ciné et séries;http://rss.allocine.fr/ac/actualites;cinéma
+Allociné - Toute l'actualité people;http://rss.allocine.fr/ac/actualites/actupeople;cinéma
+Allociné - Actus ciné : Ca tourne !;http://rss.allocine.fr/ac/actualites/cine/catourne;cinéma
+Allociné - Actus ciné : Interviews;http://rss.allocine.fr/ac/actualites/cine/interviews;cinéma
+Allociné - Actus ciné : Vu sur le web;http://rss.allocine.fr/ac/actualites/cine/vusurleweb;cinéma
+Allociné - Les sorties de la semaine;http://rss.allocine.fr/ac/cine/cettesemaine;cinéma
 Première  Live;http://www.premiere.fr/var/premiere/storage/rss/live_actu.xml;cinéma
 première Cinéma;http://www.premiere.fr/var/premiere/storage/rss/cinema_actu.xml;cinéma
 Nouvel obs;http://cinema.nouvelobs.com/articles.rss;cinéma
