@@ -71,7 +71,7 @@ object Article {
       """
         match (site : Site)
         where ID(site) = {idSite}
-        create (article: Article {
+        create unique (article: Article {
           titre: {titre},
           auteur: {auteur},
           description: {description},
@@ -259,7 +259,7 @@ object Article {
    */
   def getLastArticle: List[Article] = {
 
-    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 30;").toList
+    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 40;").toList
     result.map(_.get)
   }
 

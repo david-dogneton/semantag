@@ -159,7 +159,8 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                     val dateF: String = art._1.date.year().get() + "-" + art._1.date.monthOfYear().get() + "-" +art._1.date.dayOfMonth().get()  + " "+art._1.date.hourOfDay().get()+":"+art._1.date.minuteOfHour().get()
                     val tags: List[JsObject] = Tag.getTagsOfArticles(art._1).map(tag => (Json.obj("id" -> tag._1.id,
                       "nom" -> tag._1.nom)))
-                    Json.obj("url" -> art._1.url,
+                    Json.obj(
+                      "id" -> art._1.id,
                       "titre" -> art._1.titre,
                       "description" -> art._1.description,
                       "site" -> art._1.site.nom,

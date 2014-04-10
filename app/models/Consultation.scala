@@ -57,6 +57,4 @@ object Consultation {
       "urlArt" -> article.url).execute()
     result
   }
-
-
 }

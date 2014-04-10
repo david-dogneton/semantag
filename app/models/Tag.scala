@@ -90,7 +90,8 @@ object Tag {
 
     Cypher(
       """
-         match (article: Article {url : {urlArt}})-[r:tag]-(entite: Entite)
+         match (article: Article)-[r:tag]-(entite: Entite)
+         where ID(article) = {id}
          return entite.nom,
                 entite.url,
                 entite.apparitionsJour,
@@ -101,7 +102,7 @@ object Tag {
                 r.quantite,
                 ID(entite);
       """
-    ).on("urlArt" -> article.url)().collect {
+    ).on("id" -> article.id)().collect {
       case CypherRow(nom: String,
       url: String,
       apparitionsJour: BigDecimal,
