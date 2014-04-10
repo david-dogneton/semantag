@@ -104,10 +104,12 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     implicit request =>
 
       Logger.debug("TEST DISPLAY LINKED ART" + id)
-      val listeLinked = EstLie.getLinkedArticlesById(id)
-      val listeArt: List[Article] =listeLinked.map(elt=>{
-        Article.getByUrl(elt._2).get
-      })
+//       val listeLinked = EstLie.getLinkedArticlesById(id)
+//       val listeArt: List[Article] =listeLinked.map(elt=>{
+//          Article.getByUrl(elt._2).get
+//       })
+
+      val listeArt = EstLie.getById(id)
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("id" -> tag._1.id,
@@ -456,7 +458,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val siteOpt = Site.getByUrl("www.magness.fr")
       siteOpt match {
         case Some(site) =>
-          val result = Article.create(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "http://magness.fr/blablabla", site))
+          val result = Article.insert(Article("Monuments Men : jusqu'au bout de l'ennui.", "Thib", "Ceci est la description de la critique de Monuments Men.", new DateTime(), "http://magness.fr/blablabla", site))
           Logger.debug("result test create article : " + result)
         case None => println("www.magness.fr not found.")
       }

@@ -61,7 +61,7 @@ class Child extends Actor {
   def getLastFlux(art: SyndEntry): Boolean = {
     val dateArticle = art.getPublishedDate
     val dateJoda = new DateTime(dateArticle)
-    val dateNowMinusOne = DateTime.now().minusHours(1)
+    val dateNowMinusOne = DateTime.now().minusMinutes(30)
 
     if (dateJoda.isAfter(dateNowMinusOne)) {
       true
@@ -75,7 +75,7 @@ class Child extends Actor {
       //On teste pour chaque article du site en cours de MAJ si le lien de l'article correspond à un lien d'un article en BDD
       //Si ce n'est pas le cas => insertion
 
-      if (/*getLastFlux(art) &&*/ !Article.getByUrl(art.getLink).isDefined) {
+      if (getLastFlux(art) && !Article.getByUrl(art.getLink).isDefined) {
         //      if (!Article.getByUrl(art.getLink).isDefined) {
 
         val titre = art.getTitle
@@ -117,7 +117,7 @@ class Child extends Actor {
           })
         })
         // on crée l'entité et le tag associé au nouvel article créé
-        val articleInsertedOpt = Article.create(nouvelArticle)
+        val articleInsertedOpt = Article.insert(nouvelArticle)
         articleInsertedOpt match {
           case Some(articleInserted) =>
 
@@ -144,7 +144,7 @@ class Child extends Actor {
                   }
                 })
               })
-              EstLie.getLinkedArticles(articleInserted).map(el => EstLie.create(el._1, el._2, el._3))
+              EstLie.getLinkedArticles(articleInserted).map(el => EstLie.create(el._1, el._2, el._4))
             })
           case None =>
         }

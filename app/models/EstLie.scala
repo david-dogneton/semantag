@@ -17,7 +17,8 @@ object EstLie {
       """
          match (articleA: Article), (articleB: Article)
          where articleA.url = {urlA} and articleB.url = {urlB}
-         create (articleA)-[r:estLie {ponderation : {ponderation}}]->(articleB)
+         create unique (articleA)-[r:estLie {ponderation : {ponderation}}]->(articleB),
+                (articleA)<-[r2:estLie {ponderation : {ponderation}}]-(articleB)
       """
     ).on("urlA" -> urlA,
         "urlB" -> urlB,
@@ -27,6 +28,7 @@ object EstLie {
   def create(articleA: Article, articleB: Article, ponderation: Double): Boolean = {
       create(articleA.url, articleB.url, ponderation)
   }
+
 
   def create(estLie: EstLie): Boolean = {
     create(estLie.urlArticleA, estLie.urlArticleB, estLie.ponderation)
@@ -48,21 +50,18 @@ object EstLie {
 //    }
 //  }
 
-  def getLinkedArticles(article : Article): List[(String, String, Double)] = {
+  def getById(id : Int): List[Article] = {
 
-    val result = Cypher(
-      """
-        MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {idArticle}
-        return distinct a.url, c.url, r.quantite, r2.quantite;
-      """).on("idArticle" -> article.id)().collect {
-      case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
-    }.toList
-    // groupe par tag
-//    result.groupBy(_._2).map(el => {
-//      val newRate = el._2.map(_._3).foldLeft(0.0)(_ + _)
-//      (el._2.head._1, el._2.head._1, newRate)
-//    }).toList
-    result
+    val result: List[Option[Article]] = Article.getArticles("param" -> id, "<-[r:estLie]-(articleToLinked: Article) where ID(articleToLinked) = {param}", "Order By r.ponderation DESC;").toList
+
+    result.map {
+      case Some(article) => article
+      case None => throw new NoSuchElementException("Pas d'article")
+    }
+  }
+
+  def getLinkedArticles(article : Article): List[(String, String, String, Double)] = {
+    getLinkedArticlesById(article.id)
   }
 
   def countLinkedArticles(article : Article) : Int = {
@@ -75,14 +74,25 @@ object EstLie {
       case _ => -1
     }.head
   }
-  def getLinkedArticlesById(id : Int): List[(String, String, Double)] = {
 
-    Cypher(
+  def getLinkedArticlesById(id : Int): List[(String, String, String, Double)] = {
+
+    val result: List[(String, String, String, Double)] = Cypher(
       """
         MATCH (a:Article)<-[r:`tag`]-(b:Entite)-[r2:`tag`]->(c:Article) where ID(a) = {id}
-        return distinct a.url, c.url, r.quantite, r2.quantite
+        return distinct a.url, c.url, b.url, r.quantite, r2.quantite
       """).on("id" ->id)().collect {
-      case CypherRow(urlA : String, urlB : String, quantiteA : BigDecimal, quantiteB : BigDecimal) => (urlA, urlB, (quantiteB / quantiteA).toDouble)
+      case CypherRow(urlA : String, urlB : String, urlEntite: String, quantiteA : BigDecimal, quantiteB : BigDecimal) =>
+        (urlA, urlB, urlEntite, if( quantiteA > quantiteB) (quantiteB / quantiteA).toDouble else (quantiteA / quantiteB).toDouble)
     }.toList
+
+    val mapByUrlB: Map[String, List[(String, String, String, Double)]] = result.filter(el => el._1 != el._2).groupBy(_._2)
+
+    mapByUrlB.map(el => {
+
+      val nouvelleNote : Double = el._2.map(_._4).foldLeft(0.0)(_ + _) / el._2.size
+      (el._2.head._1, el._1, el._2.head._3, nouvelleNote)
+    }).toList
   }
 }
+

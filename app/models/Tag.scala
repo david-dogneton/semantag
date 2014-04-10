@@ -143,6 +143,7 @@ object Tag {
                   article.totalEtoiles as totalEtoiles,
                   article.nbEtoiles as nbEtoiles,
                   article.nbCoeurs as nbCoeurs,
+                  ID(article),
                   r.quantite as quantiteTag
                 ORDER BY article.date DESC
                 limit {nbArticles};
@@ -162,6 +163,7 @@ object Tag {
       totalEtoiles: BigDecimal,
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
+      id : BigDecimal,
       quantite: BigDecimal) =>
         val siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
@@ -180,7 +182,8 @@ object Tag {
             consultations.toInt,
             totalEtoiles.toInt,
             nbEtoiles.toInt,
-            nbCoeurs.toInt), quantite.toInt)
+            nbCoeurs.toInt,
+            id.toInt), quantite.toInt)
           case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
         }
     }.toList
