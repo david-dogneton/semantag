@@ -21,7 +21,7 @@ object RecommandationParLike {
         urlArticle: {urlArticle},
         urlEntite: {urlEntite},
         mailUser: {mailUser}});
-                                        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
+        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
 
     if (resultCreate) {
       val otherResult: Boolean = Cypher(
@@ -97,10 +97,10 @@ object RecommandationParLike {
         var optionUser = Utilisateur.get(mailUser)
         optionUser match {
           case Some(user) => {
-            var optionArticle = Article.getArticle(urlArticle)
+            var optionArticle = Article.getByUrl(urlArticle)
             optionArticle match {
               case Some(article) => {
-                var optionEntite = Entite.get(urlEntite)
+                var optionEntite = Entite.getByUrl(urlEntite)
                 optionEntite match {
                   case Some(entite) => {
                     new RecommandationParLike(user, article, entite, ponderation.toInt)
@@ -135,7 +135,7 @@ object RecommandationParLike {
       """).on("mailUser" -> user.mail, "nbRecommandations" -> nbRecommandations)().collect {
       case CypherRow(ponderation: BigDecimal,
       urlArticle: String) => {
-        var optionArticle = Article.getArticle(urlArticle)
+        var optionArticle = Article.getByUrl(urlArticle)
         optionArticle match {
           case Some(article) => {
             new Recommandation(user, article, ponderation.toInt)

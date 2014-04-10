@@ -13,23 +13,24 @@ case class Tag(article: Article, entite: Entite, quantite: Int) {
 object Tag {
 
   def create(article: Article, entite: Entite, quantite: Int): Boolean = {
+
     Cypher(
       """
          match (article: Article), (entite: Entite)
-         where article.url = {urlArt} and entite.url = {urlEnt}
+         where ID(article) = {idArticle} and ID(entite) = {idEntite}
          create (article)<-[r:tag {quantite : {quantite}}]-(entite)
       """
-    ).on("urlArt" -> article.url,
-        "urlEnt" -> entite.url,
+    ).on("idArticle" -> article.id,
+        "idEntite" -> entite.id,
         "quantite" -> quantite
       ).execute()
   }
 
-  def createTagAndEntity(article: Article, entite: Entite, quantite: Int): Boolean = {
+  def createTagAndEntity(article: Article, entite: Entite, quantite: Int): Option[Entite] = {
     Cypher(
       """
          match (article: Article)
-         where article.url = {urlArt}
+         where ID(article) = {idArticle}
          create (article)<-[r:tag {quantite : {quantite}}]-(entite: Entite{
                  nom: {nom},
                  url: {urlEnt},
@@ -39,8 +40,9 @@ object Tag {
                  apparitionsMois: {apparitionsMois},
                  apparitions: {apparitions}
                 })
+         return ID(entite)
       """
-    ).on("urlArt" -> article.url,
+    ).on("idArticle" -> article.id,
         "quantite" -> quantite,
         "nom" -> entite.nom,
         "urlEnt" -> entite.url,
@@ -49,7 +51,18 @@ object Tag {
         "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
         "apparitionsMois" -> entite.apparitionsMois,
         "apparitions" -> entite.apparitions
-      ).execute()
+      )().collect {
+      case CypherRow(id: BigDecimal) =>
+        Some(new Entite(entite.nom,
+          entite.url,
+          entite.apparitionsJour,
+          entite.apparitionsSemaine,
+          entite.apparitionsSemaineDerniere,
+          entite.apparitionsMois,
+          entite.apparitions,
+          id.toInt))
+      case _ => None
+    }.head
   }
 
 
@@ -128,7 +141,7 @@ object Tag {
                   article.nbEtoiles as nbEtoiles,
                   article.nbCoeurs as nbCoeurs,
                   r.quantite as quantiteTag
-                order by r.quantite
+                ORDER BY article.date DESC
                 limit {nbArticles};
       """).on("urlEntite" -> entite.url, "nbArticles" -> nbMax)().collect {
       case CypherRow(titre: String,

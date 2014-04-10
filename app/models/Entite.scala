@@ -11,13 +11,15 @@ case class Entite(nom: String,
                   apparitionsSemaine: Int = 0,
                   apparitionsSemaineDerniere: Int = 0,
                   apparitionsMois: Int = 0,
-                  apparitions: Int = 0) {
+                  apparitions: Int = 0,
+                  id : Int = -1) {
 
 }
 
 object Entite {
 
-  def create(entite: Entite): Boolean = {
+  def create(entite: Entite): Option[Entite] = {
+
     Cypher(
       """
         create (entite: Entite{
@@ -29,18 +31,69 @@ object Entite {
           apparitionsMois: {apparitionsMois},
           apparitions: {apparitions}
         })
+        return id(entite);
       """
     ).on("nom" -> entite.nom,
-      "url" -> entite.url,
-      "apparitionsJour" -> entite.apparitionsJour,
-      "apparitionsSemaine" -> entite.apparitionsSemaine,
-      "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
-      "apparitionsMois" -> entite.apparitionsMois,
-      "apparitions" -> entite.apparitions
-    ).execute()
+        "url" -> entite.url,
+        "apparitionsJour" -> entite.apparitionsJour,
+        "apparitionsSemaine" -> entite.apparitionsSemaine,
+        "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
+        "apparitionsMois" -> entite.apparitionsMois,
+        "apparitions" -> entite.apparitions
+      )().collect {
+      case CypherRow(id: BigDecimal) =>
+        Some(new Entite(entite.nom,
+          entite.url,
+          entite.apparitionsJour,
+          entite.apparitionsSemaine,
+          entite.apparitionsSemaineDerniere,
+          entite.apparitionsMois,
+          entite.apparitions,
+          id.toInt))
+      case _ => None
+    }.head
   }
 
-  def get(url: String): Option[Entite] = {
+  def getById(id: Int): Option[Entite] = {
+
+    val result: List[Entite] = Cypher(
+      """
+        Match (entite:Entite) where ID(entite) = {id}
+        return  entite.nom,
+                entite.url,
+                entite.apparitionsJour,
+                entite.apparitionsSemaine,
+                entite.apparitionsSemaineDerniere,
+                entite.apparitionsMois,
+                entite.apparitions,
+                ID(entite);
+      """).on("id" -> id)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal,
+      id: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt,
+          id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head :: tail => Some(head)
+    }
+  }
+
+  def getByUrl(url: String): Option[Entite] = {
 
     val result: List[Entite] = Cypher(
       """
@@ -51,7 +104,8 @@ object Entite {
                 entite.apparitionsSemaine,
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
-                entite.apparitions;
+                entite.apparitions,
+                ID(entite);
       """).on("url" -> url)().collect {
       case CypherRow(nom: String,
       url: String,
@@ -59,14 +113,16 @@ object Entite {
       apparitionsSemaine: BigDecimal,
       apparitionsSemaineDerniere: BigDecimal,
       apparitionsMois: BigDecimal,
-      apparitions: BigDecimal) =>
+      apparitions: BigDecimal,
+      id: BigDecimal) =>
         new Entite(nom,
           url,
           apparitionsJour.toInt,
           apparitionsSemaine.toInt,
           apparitionsSemaineDerniere.toInt,
           apparitionsMois.toInt,
-          apparitions.toInt)
+          apparitions.toInt,
+          id.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
 
@@ -123,9 +179,10 @@ object Entite {
                 entite.apparitionsSemaine,
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
-                entite.apparitions
+                entite.apparitions,
+                ID(entite)
         ORDER BY entite.apparitionsJour DESC
-        Limit 5;
+        Limit 10;
       """)().collect {
       case CypherRow(nom: String,
       url: String,
@@ -133,14 +190,16 @@ object Entite {
       apparitionsSemaine: BigDecimal,
       apparitionsSemaineDerniere: BigDecimal,
       apparitionsMois: BigDecimal,
-      apparitions: BigDecimal) =>
+      apparitions: BigDecimal,
+      id: BigDecimal) =>
         new Entite(nom,
           url,
           apparitionsJour.toInt,
           apparitionsSemaine.toInt,
           apparitionsSemaineDerniere.toInt,
           apparitionsMois.toInt,
-          apparitions.toInt)
+          apparitions.toInt,
+          id.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
   }
@@ -148,7 +207,7 @@ object Entite {
   def incrApparitions(entite : Entite): Stream[CypherResultRow] = {
     Cypher(
       """
-        Match (entite:Entite) where entite.url = {url}
+        Match (entite:Entite) where ID(entite) = {id}
         set entite.apparitionsJour = entite.apparitionsJour + 1,
             entite.apparitionsSemaine = entite.apparitionsSemaine + 1,
             entite.apparitionsSemaineDerniere = entite.apparitionsSemaineDerniere + 1,
@@ -160,8 +219,9 @@ object Entite {
                 entite.apparitionsSemaine,
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
-                entite.apparitions;
-      """).on("url" -> entite.url)()
+                entite.apparitions,
+                ID(entite);
+      """).on("id" -> entite.id)()
   }
 
 

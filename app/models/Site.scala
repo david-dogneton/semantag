@@ -59,6 +59,20 @@ object Site {
     result
   }
 
+  def getTypes(): List[Site] = {
+
+    val result: List[Site] = Cypher(
+      """
+        Match (site:Site)
+        return distinct site.type as type;
+      """)().collect {
+      case CypherRow(typeSite: String) => new Site("", "", typeSite)
+      case _ => throw new IllegalArgumentException("Mauvais format du site")
+    }.toList
+
+    result
+  }
+
   def delete(url : String): Boolean = {
     val result: Boolean = Cypher(
       """

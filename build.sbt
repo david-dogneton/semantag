@@ -24,7 +24,8 @@ libraryDependencies ++= Seq(
   "org.json" % "json" % "20090211",
   "jp.t2v" %% "play2-auth"      % "0.11.0",
   "jp.t2v" %% "play2-auth-test" % "0.11.0" % "test",
-  "org.apache.httpcomponents" % "httpclient" % "4.2"
+  "org.apache.httpcomponents" % "httpclient" % "4.2",
+  "commons-httpclient" % "commons-httpclient" % "3.1"
 )
 
 play.Project.playScalaSettings

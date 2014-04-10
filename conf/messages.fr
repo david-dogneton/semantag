@@ -17,6 +17,9 @@ header.search=Rechercher un article qui parle de...
 index.title=Semantag : l''actualité sémantique
 index.header=De quoi parle-on vraiment sur le Net ?
 
+#VISUALISATION ENTITE
+entity.title=Semantag : Entité
+
 #PRESENTATION
 presentation.title=Semantag : le concept
 presentation.header=Semantag est un moteur d''analyse, de structuration et de recommandation sémantique d''articles du Web.
