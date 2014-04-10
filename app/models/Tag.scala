@@ -98,7 +98,8 @@ object Tag {
                 entite.apparitionsSemaineDerniere,
                 entite.apparitionsMois,
                 entite.apparitions,
-                r.quantite;
+                r.quantite,
+                ID(entite);
       """
     ).on("urlArt" -> article.url)().collect {
       case CypherRow(nom: String,
@@ -108,14 +109,16 @@ object Tag {
       apparitionsSemaineDerniere: BigDecimal,
       apparitionsMois: BigDecimal,
       apparitions: BigDecimal,
-      quantite: BigDecimal) =>
+      quantite: BigDecimal,
+      id: BigDecimal) =>
         (new Entite(nom,
           url,
           apparitionsJour.toInt,
           apparitionsSemaine.toInt,
           apparitionsSemaineDerniere.toInt,
           apparitionsMois.toInt,
-          apparitions.toInt),
+          apparitions.toInt,
+          id.toInt),
           quantite.toInt)
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
@@ -140,6 +143,7 @@ object Tag {
                   article.totalEtoiles as totalEtoiles,
                   article.nbEtoiles as nbEtoiles,
                   article.nbCoeurs as nbCoeurs,
+                  ID(article),
                   r.quantite as quantiteTag
                 ORDER BY article.date DESC
                 limit {nbArticles};
@@ -159,6 +163,7 @@ object Tag {
       totalEtoiles: BigDecimal,
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
+      id : BigDecimal,
       quantite: BigDecimal) =>
         val siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
@@ -177,7 +182,8 @@ object Tag {
             consultations.toInt,
             totalEtoiles.toInt,
             nbEtoiles.toInt,
-            nbCoeurs.toInt), quantite.toInt)
+            nbCoeurs.toInt,
+            id.toInt), quantite.toInt)
           case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
         }
     }.toList
@@ -186,5 +192,17 @@ object Tag {
       case Nil => None
       case _ => Some(result)
     }
+  }
+
+  def getNombreArticlesLies(entite: Entite): Int = {
+    Cypher(
+      """
+        match (entite: Entite)-[r:tag]-(article: Article)--(site:Site)
+                where ID(entite) = {id}
+                return  count(r);
+      """).on("id" -> entite.id)().collect {
+      case CypherRow(count : BigDecimal) => count.toInt
+      case _ => -1
+    }.head
   }
 }

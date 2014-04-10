@@ -5,7 +5,7 @@
         <div class="sixteen wide column">
             <h3 class="ui header">Domaine</h3>
             <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
-            <div class="sixteen wide column" ng-repeat="domaine in domaines['items']" style="font-family: 'Source Sans Pro'">
+            <div class="sixteen wide column" ng-repeat="domaine in domaines['items'] | orderBy:'nom'" style="font-family: 'Source Sans Pro'">
                 <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
             </div>
         </div>
@@ -23,7 +23,8 @@
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
-                        <img src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
                         <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
                 </a>
@@ -41,23 +42,20 @@
                         <i class="star icon"></i> {{item['note']}}
                     </div>
                     <p>
-                        <i class="tags icon"></i><!--
-                        <span style="padding:2px;margin:2px;font-size:11px"  class="ui label">-->
-                    <form style="margin:0px" ng-repeat="tag in item['tags']" action="@routes.Application.entite" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{tag.url}}">
-                        <input class="ui mini button" style="padding:2px;margin:2px;font-size:11px" type="submit" value="{{tag.nom}}">
-                    </form>
-                    <!-- </span>-->
+                        <i class="tags icon"></i>
+                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                        <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
-                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
+                        <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
-                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
+                        <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.
                     </p>
                     <p ng-show="item['lies']==0">
                         <i class="add icon"></i>Pas d'article lié à ce sujet.
                     </p>
+                    <p> <a href="/displayart/{{item['id']}}"><i class="add icon"></i>Voir plus</a></p>
                 </div>
             </div>
         </div>
@@ -72,10 +70,9 @@
             <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
                 <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
                 <div class="content">
-                    <form action="@routes.Application.entite" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{item['url']}}">
-                        <input class="ui mini hover teal button" type="submit" value="{{item['nom']}} ({{item['nombre']}})">
-                    </form>
+                        <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}} ({{item['nombre']}})</a>
+                        <div class="description">{{item['type']}}</div>
+                    </div>
                     <div class="description">{{item['type']}}</div>
                 </div>
             </div>

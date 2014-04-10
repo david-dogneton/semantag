@@ -90,7 +90,7 @@ object Site {
     val result: List[Site] = Cypher(
       """
         Match (site:Site)
-        return distinct site.type as type;
+        return distinct site.type as type ORDER BY site.type;
       """)().collect {
       case CypherRow(typeSite: String) => new Site("", "", typeSite)
       case _ => throw new IllegalArgumentException("Mauvais format du site")

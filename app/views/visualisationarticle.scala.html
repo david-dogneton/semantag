@@ -1,6 +1,8 @@
 @(article : Article)(implicit user: Option[Utilisateur], lang: Lang)
-@main("visualisationarticle_old")("visualisationarticle_old") {
+
+@main("Article : "+article.titre)("visualisationarticle") {
     <script type="text/javascript">
+
     function EntityNewsRenderer($scope,$http) {
     var id = "@article.id";
     $scope.limite = 5;
@@ -31,15 +33,10 @@
                     </div>
                     <div class="content">
                         <div class="ui center label" style="margin-top:5px">@article.site.typeSite</div>
-                        @*<p class="description"></p>*@
-                        @*<div class="extra">*@
-                            @*<i class="heart icon"></i> {{item['coeurs']}} 1560*@
-                        @*</div>*@
-                        <div class="ui labeled icon button">
+                        <div class="ui labeled icon button" style="margin-top: 5px;">
                             <i class="like icon"></i>
                             <a class="">J'aime cet Article !</a>
                         </div>
-                        @*<i class="like icon"></i>  *@
 
                         <div class="">
                             <i class="unhide icon"></i> @article.consultationsJour |
@@ -53,17 +50,14 @@
         </div>
         <div ng-controller="EntityNewsRenderer" class="ten wide column">
             <div class="ui piled segment">
-                <h2><a href="@article.url">@article.titre</a></h2>
-                @*DBpedia : <a target="_blank" href="@uriDBpedia">@uriDBpedia</a>*@
-                @*<br/>*@
-                @*Wikipédia : <a target="_blank" href="@lienWiki">@lienWiki</a>*@
-                <p>@article.description</p>
+                <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
+                <p>@Html(article.description)</p>
                 <p style="font-weight:bold">Le  @article.date.dayOfMonth().get() / @article.date.monthOfYear().get() / @article.date.year().get()
                     à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</p>
 
             </div>
             <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
-                Récupération des articles les plus récents...
+                Récupération des articles similaires les plus récents...
                 <div class="ui active center loader"></div>
             </div>
             <div class="ui five items">
@@ -74,8 +68,9 @@
 
                     <a href="{{item['url']}}" target="_blank">
                         <div class="image">
-                            <img src="{{item['image']}}">
-                                <!-- <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>-->
+                            <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                            <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
+                            <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                         </div>
                     </a>
 
@@ -84,31 +79,30 @@
                         <a href="{{item['url']}}" target="_blank">
                             <div class="name">{{item['titre']}}</div>
                         </a>
-                        <p style="font-weight:bold">{{item['site']}}</p>
-                            <!--<p class="description">{{item['description']}}</p>-->
-                        <div class="extra">
-                            <i class="unhide icon"></i> {{item['consultationsJour']}} |
-                            <i class="heart icon"></i> {{item['coeurs']}} |
-                            <i class="star icon"></i> {{item['note']}}
-                        </div>
-                        <p>
-                                <!-- <i class="tags icon"></i>--><!--
-                        <span style="padding:2px;margin:2px;font-size:11px"  class="ui label">-->
-                    <form style="margin:0px" ng-repeat="tag in item['tags']" action="@routes.Application.entite" method="POST">
-                        <input type="hidden" name="urlarticle" value="{{tag.url}}">
-                        <input class="ui mini button" style="padding:2px;margin:2px;font-size:11px" type="submit" value="{{tag.nom}}">
-                    </form>
-                            <!-- </span>-->
+
+                    <p style="font-weight:bold">{{item['site']}}</p>
+                    <!--<p class="description">{{item['description']}}</p>-->
+                    <div class="extra">
+                        <i class="unhide icon"></i> {{item['consultationsJour']}} |
+                        <i class="heart icon"></i> {{item['coeurs']}} |
+                        <i class="star icon"></i> {{item['note']}}
+                    </div>
+                    <p>
+                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                        <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
+
                         </p>
                         <p ng-show="item['lies']>1">
-                        <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>
+                            <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.
+                            @*<a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
                         </p>
-                       <p ng-show="item['lies']==1">
-                          <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.</a>
-                       </p>
-                       <p ng-show="item['lies']==0">
-                             <i class="add icon"></i>Pas d'article lié à ce sujet.
-                       </p>
+                        <p ng-show="item['lies']==1">
+                            <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.
+                        </p>
+                        <p ng-show="item['lies']==0">
+                            <i class="add icon"></i>Pas d'article lié à ce sujet.
+                        </p>
+                        <p>  <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a> </p>
                     </div>
                 </div>
             </div>
@@ -123,10 +117,7 @@
                 <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
                         <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
                     <div class="content">
-                        <form action="@routes.Application.entite" method="POST">
-                            <input type="hidden" name="urlarticle" value="{{item['url']}}">
-                            <input class="ui mini hover teal button" type="submit" value="{{item['nom']}} ({{item['nombre']}})"></a>
-                        </form>
+                        <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}} ({{item['nombre']}})</a>
                         <div class="description">{{item['type']}}</div>
                     </div>
                 </div>
