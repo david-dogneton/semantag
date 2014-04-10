@@ -1,10 +1,31 @@
 package models
 
-import org.anormcypher.{CypherRow, CypherResultRow, Cypher}
+import org.anormcypher.{CypherRow, Cypher}
 import org.joda.time.DateTime
 
 /**
- * Created by Administrator on 17/03/14.
+ * @author David Dogneton, Romain De Oliveira, Maxime Gautré, Thibault Goustat
+ *
+ * Classe Article.
+ * Classe décrivant les propriétés d'un article.
+ *
+ * @param titre titre de l'article
+ * @param auteur auteur de l'article
+ * @param description description de l'article
+ * @param date date de publication de l'article
+ * @param url url de l'article
+ * @param site site d'où provient l'article
+ * @param image image de l'article (si elle existe)
+ * @param consultationsJour nombre de consultations par jour de l'article (par défaut 0)
+ * @param consultationsSemaine nombre de consultations par semaine de l'article (par défaut 0)
+ * @param consultationsSemaineDerniere nombre de consultations de l'article lors de la semaine précédente (par défaut 0)
+ * @param consultationsMois nombre de consultations par mois de l'article (par défaut 0)
+ * @param consultations nombre de consultations totales de l'article (par défaut 0)
+ * @param totalEtoiles nombre total d'étoiles de l'article
+ * @param nbEtoiles nombre d'étoiles de l'article
+ * @param nbCoeurs nombre de coeurs de l'article
+ * @param id identifiant de l'article, il vaut -1 lorsque l'article n'a pas encore été inséré
+ *
  */
 case class Article(titre: String,
                    auteur: String,
@@ -26,9 +47,23 @@ case class Article(titre: String,
 
 }
 
+/**
+ * Objet compagnon d'un article.
+ *
+ * Elle contient des méthodes d'insertions, de suppression d'un article.
+ */
 object Article {
 
-  def create(article: Article): Option[Article] = {
+  /**
+   * Insertion d'un article dans la base de données.
+   *
+   * Cet article contient les propriétés du site auquel il est rattaché. Avant l'insertion, il n'a pas d'id.
+   * Après l'insertion, l'article aura un identifiant à condition que l'article soit bien inséré.
+   *
+   * @param article article que l'on souhaite insérer
+   * @return On renvoie l'article avec son identifiant s'il s'est bien insérer, sinon on renvoie None.
+   */
+  def insert(article: Article): Option[Article] = {
 
     val dateF = article.date.toString()
 
@@ -90,11 +125,20 @@ object Article {
     }.head
   }
 
-  private def getArticles[A](args: (String, A), criteria : String, restriction : String): Stream[Option[Article]] = {
+  /**
+   * Méthode générique qui exécute une requête en prenant en paramètre, un argument, un critère de recherche et une restriction
+   *
+   * @param args argument de la requête
+   * @param criteria clause where de la requête
+   * @param restriction clause de limitation ou de tri
+   * @tparam A le type de l'argument peut être n'importe quoi (un entier, un double, un string)
+   * @return Renvoie la liste des articles ayant respecté les conditions de la requête
+   */
+  def getArticles[A](args: (String, A), criteria : String, restriction : String): Stream[Option[Article]] = {
 
     Cypher(
       """
-        Match (article:Article)--(site:Site)
+        Match (site:Site)--(article:Article)
         """+ criteria +"""
         return  article.titre,
                 article.auteur,
@@ -157,6 +201,15 @@ object Article {
     }
   }
 
+
+  /**
+   * Renvoie l'article correspondant à l'identifiant passé en paramètre.
+   * On se sert de la méthode générique "getArticles" pour pouvoir récupérer l'article. Comme l'identifiant est unique,
+   * on récupère le premier élément du stream renvoyé par la méthode getArticles
+   *
+   * @param id identifiant de l'article
+   * @return Renvoie l'article correspondant à l'identifiant passé en paramètre.
+   */
   def getById(id: Int): Option[Article] = {
     val stream = getArticles("param" -> id, "where ID(article) = {param}",";")
     if(stream.isEmpty)
@@ -165,6 +218,13 @@ object Article {
       stream.head
   }
 
+  /**
+   * Renvoie l'article correspondant à l'url passée en paramètre.
+   * On se sert de la méthode générique "getArticles" pour pouvoir récupérer l'article. Comme l'url est unique,
+   * on récupère le premier élément du stream renvoyé par la méthode getArticles
+   * @param url url de l'article
+   * @return Renvoie l'article correspondant à l'url passée en paramètre.
+   */
   def getByUrl(url: String): Option[Article] = {
 
     val stream = getArticles("param" -> url, "where article.url = {param}", ";")
@@ -175,6 +235,14 @@ object Article {
   }
 
 
+  /**
+   * Méthode qui recherche la chaîne passée en paramètre dans le titre de chaque article de la base de données.
+   * On cherche si le paramètre est contenu dans le titre (équivalent d'un contains). On transforme d'abord la chaîne en minuscule
+   * pour ne pas tenir compte de la casse.
+   *
+   * @param rechercheUtilisateur chaîne de caractères à rechercher
+   * @return Renvoie la liste des articles qui contiennent l'élément recherché dans leur titre.
+   */
   def rechercheDansTitre(rechercheUtilisateur  : String): List[Article] = {
 
     val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
@@ -185,13 +253,22 @@ object Article {
     }
   }
 
-  def getLastArticle(): List[Article] = {
+  /**
+   *
+   * @return Récupère les 30 articles les plus récents
+   */
+  def getLastArticle: List[Article] = {
 
     val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 30;").toList
     result.map(_.get)
   }
 
-  def delete(id: BigDecimal) = {
+  /**
+   * Méthode de suppresion d'un article
+   * @param id identifiant de l'article
+   * @return Vrai si la requête s'est bien déroulée, faux sinon.
+   */
+  def delete(id: Int) = {
 
     val result: Boolean = Cypher(
       """

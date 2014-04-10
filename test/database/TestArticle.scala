@@ -201,11 +201,20 @@ class TestArticle extends FunSuite with ShouldMatchers {
 //    println("art : "+art)
 //  }
 
-  test("rechercheUtilsiateur") {
-    val res = Article.rechercheDansTitre("ForMuLe 1")
-    res.foreach(println)
-    val res2 = Entite.rechercheDansNom("Formule 1")
-    res2.foreach(println)
+//  test("rechercheUtilsiateur") {
+//    val res = Article.rechercheDansTitre("ForMuLe 1")
+//    res.foreach(println)
+//    val res2 = Entite.rechercheDansNom("Formule 1")
+//    res2.foreach(println)
+//  }
+
+  test("linkedArticles") {
+    val articleInserted = Article.getById(70272).get
+    EstLie.getLinkedArticles(articleInserted).map(el => {
+      println("el : "+el)
+      EstLie.create(el._1, el._2, el._4)
+    })
+
   }
 
 }
