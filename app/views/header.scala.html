@@ -12,12 +12,14 @@
             <div class="hidden content">@Messages("header.buttonSubscribeHover")</div>
         </div>
         <div class="right item">
+            <form action="@routes.Application.search" method="POST">
             <div class="field">
                 <div class="ui action input">
-                    <input style="min-width:250px" placeholder='@Messages("header.search")' type="text">
-                    <div class="ui button"><i class="search icon"></i></div>
+                    <input name="search" style="min-width:250px" placeholder='@Messages("header.search")' type="text">
+                    <div class="ui button" style="cursor:inherit"><button type="submit" style="cursor:pointer; border:0; height:100%; width:100%"><i class="search icon"></i></button></div>
                 </div>
             </div>
+            </form>
         </div>
 
         <div class="right item menu">
