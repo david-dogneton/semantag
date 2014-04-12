@@ -16,10 +16,19 @@
             <div class="ui active center loader"></div>
         </div>
         <div class="ui five items">
-            <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
-                <a class="like ui corner label">
-                    <i class="like icon"></i>
-                </a>
+            <div class="item" style="min-height: 650px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
+                @user match {
+                    case Some(usr) => {
+
+                    }
+                    case None => {
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+                    }
+                }
+
+
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">

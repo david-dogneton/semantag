@@ -89,12 +89,17 @@ class Child extends Actor {
 
         val descriptionValue = art.getDescription.getValue
         val descriptionIndex = descriptionValue.indexOf("<img")
-        val description = if (descriptionIndex != -1) {
+        val descriptionWithoutImg = if (descriptionIndex != -1) {
           descriptionValue.substring(0, descriptionIndex)
         } else {
           descriptionValue
         }
+        val description =if(descriptionWithoutImg.length > 250){
+          descriptionWithoutImg.substring(0,247).concat("...")
 
+        }else {
+          descriptionWithoutImg
+        }
         val lien = art.getLink
         //Liste images  => on la "caste" pour récupérer le bon type (SyndEnclosureImpl) pour pouvoir récuperer l'url des images
         val imageList: util.List[SyndEnclosureImpl] = art.getEnclosures.asInstanceOf[util.List[SyndEnclosureImpl]]
