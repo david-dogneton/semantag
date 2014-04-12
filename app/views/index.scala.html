@@ -15,16 +15,16 @@
             Récupération des articles les plus récents...
             <div class="ui active center loader"></div>
         </div>
-        <div class="ui five items">
-            <div class="item" style="min-height: 650px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
+        <div class="ui  items">
+            <div class="item" style="min-height: 600px; width: 190px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
                 @user match {
                     case Some(usr) => {
-
-                    }
-                    case None => {
                         <a class="like ui corner label">
                             <i class="like icon"></i>
                         </a>
+                    }
+                    case None => {
+
                     }
                 }
 
