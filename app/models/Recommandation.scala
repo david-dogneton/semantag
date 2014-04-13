@@ -58,7 +58,7 @@ object Recommandation {
   }
 
   def buildRecommandations(user: Utilisateur): Boolean = {
-    val listeEntitesOpt = Entite.getTopEntitesPasFavories(user, 10)
+    val listeEntitesOpt = Utilisateur.getTopEntitesPasFavories(user, 10)
     val articlesLusOpt = Utilisateur.getArticlesLus(user)
     var res = true
     listeEntitesOpt match {

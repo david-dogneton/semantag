@@ -118,7 +118,7 @@ object Site {
                  return  site.url as url,
                         site.nom as nom,
                         site.type as type
-                 order by r.nbCoeurs
+                 order by r.nbCoeurs DESC
                  limit {nbSites};
       """).on("mailUser" -> user.mail, "nbSites" -> nbSites)().collect {
       case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)

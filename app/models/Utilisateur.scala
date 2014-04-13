@@ -156,7 +156,7 @@ object Utilisateur {
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
       id: BigDecimal) => {
-        var siteOpt = Site.get(urlSite)
+        var siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
           case Some(site) => {
             new Article(
@@ -292,7 +292,7 @@ object Utilisateur {
                 return  site.url as url,
                         site.nom as nom,
                         site.type as type
-                        order by r.nbCoeurs
+                        order by r.nbCoeurs desc
                         limit {nbMax};
       """).on("nbMax" -> nbMax, "mailUser" -> utilisateur.mail)().collect {
       case CypherRow(url: String, nom: String, typeSite: String) => new Site(url, nom, typeSite)
@@ -323,7 +323,7 @@ object Utilisateur {
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
                         article.nbCoeurs as nbCoeurs
-                        order by r1.nbEtoiles
+                        order by r1.nbEtoiles DESC
                         limit {nbMax};
       """).on("mailUser" -> utilisateur.mail, "nbMax" -> nbMax)().collect {
       case CypherRow(titre: String,
@@ -342,7 +342,7 @@ object Utilisateur {
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
       id: BigDecimal) => {
-        var siteOpt = Site.get(urlSite)
+        var siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
           case Some(site) => {
             new Article(
@@ -380,6 +380,81 @@ object Utilisateur {
       if (site._1.equals(siteCherche)) true
     }
     false
+  }
+
+  def getTopEntites(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
+    val result: List[Entite] = Cypher(
+      """
+        match (user: Utilisateur {mail : {mailUser}})-[r:appreciationEntite]-(entite: Entite)
+                 return entite.nom as nom,
+                 entite.url as url,
+                 entite.apparitionsJour as apparitionsJour,
+                 entite.apparitionsSemaine as apparitionsSemaine,
+                 entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
+                 entite.apparitionsMois as apparitionsMois,
+                 entite.apparitions as apparitions
+                 order by r.nbCoeurs DESC
+                 limit {nbEntites};
+      """).on("mailUser" -> user.mail, "nbEntites" -> nbEntites)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
+  }
+
+  def getTopEntitesPasFavories(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
+    val result: List[Entite] = Cypher(
+      """
+        match (user: Utilisateur {mail : {mailUser}})-[r:appreciationEntite]-(entite: Entite)
+                 where r.estFavori = false
+                 return entite.nom as nom,
+                 entite.url as url,
+                 entite.apparitionsJour as apparitionsJour,
+                 entite.apparitionsSemaine as apparitionsSemaine,
+                 entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
+                 entite.apparitionsMois as apparitionsMois,
+                 entite.apparitions as apparitions
+                 order by r.nbCoeurs DESC
+                 limit {nbEntites};
+      """).on("mailUser" -> user.mail, "nbEntites" -> nbEntites)().collect {
+      case CypherRow(nom: String,
+      url: String,
+      apparitionsJour: BigDecimal,
+      apparitionsSemaine: BigDecimal,
+      apparitionsSemaineDerniere: BigDecimal,
+      apparitionsMois: BigDecimal,
+      apparitions: BigDecimal) =>
+        new Entite(nom,
+          url,
+          apparitionsJour.toInt,
+          apparitionsSemaine.toInt,
+          apparitionsSemaineDerniere.toInt,
+          apparitionsMois.toInt,
+          apparitions.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
   }
 
 }
