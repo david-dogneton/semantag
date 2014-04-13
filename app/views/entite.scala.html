@@ -38,9 +38,17 @@
             <div class="item">
                 <div class="image">
                     <img src="@thumb">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a class="like ui corner label">
+                                <i class="like icon"></i>
+                            </a>
+                        }
+                        case None => {
+
+                        }
+                    }
+
                 </div>
                 <div class="content">
                     <div class="name">@thumbDescription</div>
@@ -67,9 +75,18 @@
         </div>
         <div class="ui five items">
             <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
-                <a class="like ui corner label">
-                    <i class="like icon"></i>
-                </a>
+
+                @user match {
+                    case Some(usr) => {
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+                    }
+                    case None => {
+
+                    }
+                }
+
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">

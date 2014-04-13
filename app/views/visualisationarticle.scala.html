@@ -1,4 +1,4 @@
-@(article : Article)(implicit user: Option[Utilisateur], lang: Lang)
+@(article : Article, listeTags : List[Entite])(implicit user: Option[Utilisateur], lang: Lang)
 
 @main("Article : "+article.titre)("visualisationarticle") {
     <script type="text/javascript">
@@ -25,20 +25,26 @@
         <div class="three wide column">
             <div class="ui one items">
                 <div class="item">
+                    <div class="ui  label ribbon" style="margin-top:5px">@article.site.typeSite</div>
                     <div class="image">
                         <img src="@article.image">
-                        <a class="like ui corner label">
-                            <i class="like icon"></i>
-                        </a>
                     </div>
                     <div class="content">
-                        <div class="ui center label" style="margin-top:5px">@article.site.typeSite</div>
-                        <div class="ui labeled icon button" style="margin-top: 5px;">
-                            <i class="like icon"></i>
-                            <a class="">J'aime cet Article !</a>
-                        </div>
 
-                        <div class="">
+                        @user match {
+                            case Some(usr) => {
+                                <div class="ui labeled small icon button" style="margin-top: 10px;">
+                                    <i class="like icon"></i>
+                                    <a class="">J'aime cet Article !</a>
+                                </div>
+                            }
+                            case None => {
+
+                            }
+                        }
+
+
+                        <div class="extra">
                             <i class="unhide icon"></i> @article.consultationsJour |
                             <i class="heart icon"></i> @article.nbCoeurs |
                             <i class="star icon"></i> @article.nbEtoiles
@@ -62,9 +68,16 @@
             </div>
             <div class="ui five items">
                 <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a class="like ui corner label">
+                                <i class="like icon"></i>
+                            </a>
+                        }
+                        case None => {
+
+                        }
+                    }
 
                     <a href="{{item['url']}}" target="_blank">
                         <div class="image">

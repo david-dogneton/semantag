@@ -15,11 +15,20 @@
             Récupération des articles les plus récents...
             <div class="ui active center loader"></div>
         </div>
-        <div class="ui five items">
-            <div class="item" ng-repeat="item in news['items'] | filter:filtrage | orderBy:'consultationsJour':true | limitTo:limite">
-                <a class="like ui corner label">
-                    <i class="like icon"></i>
-                </a>
+        <div class="ui  items">
+            <div class="item" style="min-height: 600px; width: 190px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
+                @user match {
+                    case Some(usr) => {
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+                    }
+                    case None => {
+
+                    }
+                }
+
+
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
