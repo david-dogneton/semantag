@@ -26,7 +26,12 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           controllers.routes.javascript.Application.getArt,
           controllers.routes.javascript.Application.displayLinkedArt,
           controllers.routes.javascript.Application.getDomaines,
+          controllers.routes.javascript.Application.getTypes,
           controllers.routes.javascript.Application.getTop,
+          controllers.routes.javascript.Application.getTopJour,
+          controllers.routes.javascript.Application.getTopMois,
+          controllers.routes.javascript.Application.getTopSemaine,
+          controllers.routes.javascript.Application.getTop10,
           controllers.routes.javascript.Application.getArticlesByTag
         )
       ).as("text/javascript")
@@ -82,8 +87,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       "search" -> nonEmptyText
     )
   )
-
-
 
   def displayArt(id : Int) = StackAction {
     implicit request =>
@@ -144,17 +147,13 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
       urlForm.bindFromRequest.fold(
         hasErrors = { form =>
-          Logger.debug("BUG URL get by tag")
           Ok(Json.obj())
         },
         success = { url =>
-          Logger.debug("URL OKAY get by tag ")
-          Logger.debug("URL TEST get by tag" + url)
           val tmp = Entite.getByUrl(url)
           tmp match {
             case Some(entite) =>
               val listeTmp = Tag.getArticlesLies(entite,20)
-              Logger.debug("TAILLE LISTE get by tag " +listeTmp.size)
               listeTmp match {
                 case Some(liste) =>
                   val res: List[JsObject] = liste.map(art => {
@@ -177,35 +176,85 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                       "lies" -> EstLie.countLinkedArticles(art._1)
                     )
                   })
-                  Logger.debug("RENVOIT RES get by tag :"+res)
-                  Logger.debug("FIN RENVOI RES:")
                   Ok(Json.obj("liste"->res))
                 case None =>
-                  Logger.debug("NONE SUR lISTE get by tag ")
                   Ok(Json.obj())
               }
             case None =>
-              Logger.debug("NONE SUR ENTITE get by tag ")
               Ok(Json.obj())
           }
         })
   }
 
-  def getTop= StackAction {
+  def getTop10= StackAction {
     implicit request =>
 
       val top: List[Entite] = Entite.lesPlusTaggesDuJour()
-
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
       val res: List[JsObject] = top.map(entite => {
-        Json.obj("nom" -> entite.nom,
+        Json.obj("nom" -> sparql.getName(entite.url),
           "nombre" -> entite.apparitionsJour,
-          "image" -> SparqlQueryExecuter.getImage(entite.url),
           "id" -> entite.id
         )
       })
       Ok(Json.obj("liste"->res))
   }
 
+  def getTop(idType :Int)= StackAction {
+    implicit request =>
+
+      val top: List[Entite] = Entite.topAnnotations(1000,idType)
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      val res: List[JsObject] = top.map(entite => {
+        Json.obj("nom" -> sparql.getName(entite.url),
+          "nombre" -> entite.apparitions,
+          "id" -> entite.id
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
+  def getTopJour(idType :Int)= StackAction {
+    implicit request =>
+
+      val top: List[Entite] = Entite.topAnnotationsJour(1000,idType)
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      val res: List[JsObject] = top.map(entite => {
+        Json.obj("nom" -> sparql.getName(entite.url),
+          "nombre" -> entite.apparitionsJour,
+          "id" -> entite.id
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
+  def getTopSemaine(idType :Int)= StackAction {
+    implicit request =>
+
+      val top: List[Entite] = Entite.topAnnotationsSemaine(1000,idType)
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      val res: List[JsObject] = top.map(entite => {
+        Json.obj("nom" -> sparql.getName(entite.url),
+          "nombre" -> entite.apparitionsSemaine,
+          "id" -> entite.id
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
+  def getTopMois(idType :Int)= StackAction {
+    implicit request =>
+
+      val top: List[Entite] = Entite.topAnnotationsMois(1000,idType)
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      val res: List[JsObject] = top.map(entite => {
+        Json.obj("nom" -> sparql.getName(entite.url),
+          "nombre" -> entite.apparitionsMois,
+          "id" -> entite.id
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
 
   def getDomaines = StackAction {
     implicit request =>
@@ -219,6 +268,20 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       Ok(Json.obj("liste"->res))
   }
 
+  def getTypes = StackAction {
+    implicit request =>
+
+      val listeTypes: List[Type] = Type.getAll
+
+      val res: List[JsObject] = listeTypes.map(typeEntite => {
+        Json.obj("nom" -> typeEntite.denomination,
+        "id" -> typeEntite.id
+        )
+      })
+      Ok(Json.obj("liste"->res))
+  }
+
+
 
   def index = StackAction {
     implicit request =>
@@ -230,6 +293,10 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def presentation = StackAction {
     implicit request => Ok(views.html.presentation())
+  }
+
+  def statistiques = StackAction {
+    implicit request => Ok(views.html.stats())
   }
 
   def create = StackAction {
@@ -669,12 +736,11 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def entite(id:Int) = StackAction {
     implicit request =>
       val res = Entite.getById(id)
+      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
       res match{
         case Some(entite) =>
           val url: String = entite.url
-          Logger.debug("URL OKAY ")
-          Logger.debug("URL TEST " + url)
-          Ok(views.html.entite(SparqlQueryExecuter.getName(url), SparqlQueryExecuter.getImage(url), SparqlQueryExecuter.getImageDescription(url), SparqlQueryExecuter.getAbstract(url), SparqlQueryExecuter.getWikiLink(url), url))
+          Ok(views.html.entite(sparql.getName(url), sparql.getImage(url), sparql.getImageDescription(url), sparql.getAbstract(url), sparql.getWikiLink(url), url))
         case None =>  Ok(views.html.index())
       }
   }
@@ -684,14 +750,11 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
       searchForm.bindFromRequest.fold(
         hasErrors = { form =>
-          Logger.debug("BUG URL get by tag")
           Ok(views.html.index())
         },
         success = { input =>
-          Logger.debug("Recherche : " + input)
           val entites:List[Entite] = Entite.rechercheDansNom(input)
           val articles:List[Article]  = Article.rechercheDansTitre(input)
-          Logger.debug("Résultats: " + entites.length +" entités / "+ articles.length+" articles")
           Ok(views.html.results(entites, articles, input))
         })
   }

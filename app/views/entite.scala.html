@@ -90,7 +90,7 @@
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
-                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}" alt="">
                         <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
                         <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
@@ -113,13 +113,13 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
-                        <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.
+                        {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
-                        <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.
+                        1 article lié à ce sujet.
                     </p>
                     <p ng-show="item['lies']==0">
-                        <i class="add icon"></i>Pas d'article lié à ce sujet.
+                       Pas d'article lié à ce sujet.
                     </p>
                     <p>
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>

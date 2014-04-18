@@ -59,7 +59,7 @@ object Entite {
     Cypher(
       """
         Match  (entite:Entite) """+criteria+"""
-        return  entite.nom,
+        return  distinct entite.nom,
                 entite.url,
                 entite.apparitionsJour,
                 entite.apparitionsSemaine,
@@ -154,6 +154,50 @@ object Entite {
   def lesPlusTaggesDuJour(): List[Entite] = {
     val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit 10;").toList
     result.map(_.get)
+  }
+
+  def topAnnotations(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitions DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitions DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsMois(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsMois DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsMois DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsSemaine(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsSemaine DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsSemaine DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsJour(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
   }
 
   def incrApparitions(entite : Entite): Stream[CypherResultRow] = {

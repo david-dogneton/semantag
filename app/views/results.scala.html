@@ -14,14 +14,14 @@
                     </a>
                     <a href="/entite/@entite.id">
                         <div class="image">
-                            @sparql.SparqlQueryExecuter.getImage(entite.url) match{
+                            @sparql.SparqlQueryExecuter.getImageFromView(entite.url) match{
                             case "noPic" =>   {<img style="height:inherit" src='@routes.Assets.at("images/no-image.jpg")'>}
-                            case _ =>  {<img  style="height:inherit" src="@sparql.SparqlQueryExecuter.getImage(entite.url)"> }
+                            case _ =>  {<img  style="height:inherit" src="@sparql.SparqlQueryExecuter.getImageFromView(entite.url)" alt=""> }
                             }
                         </div>
                     </a>
                     <div class="content">
-                        <div class="name"><a href="/entite/@entite.id">@sparql.SparqlQueryExecuter.getName(entite.url)</a></div>
+                        <div class="name"><a href="/entite/@entite.id">@sparql.SparqlQueryExecuter.getNameFromView(entite.url)</a></div>
                         <p class="description"></p>
                         <div class="extra">
                             <i class="heart icon"></i> 1560 | <i class="pencil icon"></i> @Tag.getNombreArticlesLies(entite)
