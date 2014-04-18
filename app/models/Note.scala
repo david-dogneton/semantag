@@ -1,6 +1,7 @@
 package models
 
 import org.anormcypher.Cypher
+import play.Logger
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,10 +25,36 @@ object Note {
       "nbEtoiles" -> note.nbEtoiles,
       "aCoeur" -> note.aCoeur
     ).execute()
+    Logger.debug("Résultat de la création de la note : "+resultat)
     AppreciationEntite.majAvecCreate(note)
     AppreciationDomaine.majAvecCreate(note)
     AppreciationSite.majAvecCreate(note)
     resultat
+  }
+
+  def createWithIdArticle(utilisateur: Utilisateur, idArticle: Int, nbEtoiles: Int, aCoeur: Boolean = false): Boolean = {
+    val articleOpt = Article.getById(idArticle)
+    articleOpt match {
+      case Some(article) => {
+        val note = new Note(utilisateur, article, nbEtoiles, aCoeur)
+        val resultat = Cypher(
+          """
+         match (user: Utilisateur), (article: Article)
+         where user.mail = {mailUser} and article.url = {urlArt}
+         create (user)-[r:note {nbEtoiles : {nbEtoiles}, aCoeur : {aCoeur}}]->(article)
+          """
+        ).on("mailUser" -> note.utilisateur.mail,
+          "urlArt" -> note.article.url,
+          "nbEtoiles" -> note.nbEtoiles,
+          "aCoeur" -> note.aCoeur
+        ).execute()
+        AppreciationEntite.majAvecCreate(note)
+        AppreciationDomaine.majAvecCreate(note)
+        AppreciationSite.majAvecCreate(note)
+        resultat
+      }
+      case None => throw new Exception("Article not found")
+    }
   }
 
   def get(user: Utilisateur, article: Article): Option[Note] = {

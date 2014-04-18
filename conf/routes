@@ -51,3 +51,5 @@ GET         /createAppreciationEntite         controllers.Application.createAppr
 GET         /testBDD                          controllers.Application.getUser
 GET         /annotation/test                  controllers.Application.test
 GET         /presentation                     controllers.Application.presentation
+
+POST        /changerCoeur                     controllers.Application.changerCoeur

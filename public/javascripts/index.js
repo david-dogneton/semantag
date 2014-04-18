@@ -9,6 +9,11 @@ app.filter('fromNow', function () {
 
 function NewsRenderer($scope, $http) {
 
+    $scope.gererCoeur = function($mailUser, $urlArticle) {
+        console.log("Dans la méthode gererCoeur: " + $mailUser + " - " + $urlArticle);
+        $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+    }
+
     $scope.news = {
         "items": [
 //            {
