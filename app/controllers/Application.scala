@@ -208,6 +208,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val res: List[JsObject] = top.map(entite => {
         Json.obj("nom" -> sparql.getName(entite.url),
           "nombre" -> entite.apparitions,
+          "image" -> sparql.getImage(entite.url),
           "id" -> entite.id
         )
       })
@@ -222,6 +223,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val res: List[JsObject] = top.map(entite => {
         Json.obj("nom" -> sparql.getName(entite.url),
           "nombre" -> entite.apparitionsJour,
+          "image" -> sparql.getImage(entite.url),
           "id" -> entite.id
         )
       })
@@ -236,6 +238,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val res: List[JsObject] = top.map(entite => {
         Json.obj("nom" -> sparql.getName(entite.url),
           "nombre" -> entite.apparitionsSemaine,
+          "image" -> sparql.getImage(entite.url),
           "id" -> entite.id
         )
       })
@@ -250,6 +253,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val res: List[JsObject] = top.map(entite => {
         Json.obj("nom" -> sparql.getName(entite.url),
           "nombre" -> entite.apparitionsMois,
+          "image" -> sparql.getImage(entite.url),
           "id" -> entite.id
         )
       })
