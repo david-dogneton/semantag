@@ -15,7 +15,7 @@
             Récupération des articles les plus récents...
             <div class="ui active center loader"></div>
         </div>
-        <div class="ui five items">
+        <div class="ui  items">
             <div class="item" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
                 @user match {
                     case Some(usr) => {
@@ -26,8 +26,6 @@
                     case None => {
                     }
                 }
-
-
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
@@ -55,13 +53,13 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
-                        <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.
+                        {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
-                        <i class="add icon"></i>{{item['lies']}} article lié à ce sujet.
+                        1 article lié à ce sujet.
                     </p>
                     <p ng-show="item['lies']==0">
-                        <i class="add icon"></i>Pas d'article lié à ce sujet.
+                        Pas d'article lié à ce sujet.
                     </p>
                     <p> <a href="/displayart/{{item['id']}}"><i class="add icon"></i>Voir plus</a></p>
                 </div>

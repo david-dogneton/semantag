@@ -20,6 +20,9 @@ index.header=De quoi parle-on vraiment sur le Net ?
 #PAGE RESULTATS
 results.title=Résultats de la recherche
 
+#PAGE STATISTIQUES
+stats.title=Statistiques générales
+
 #VISUALISATION ENTITE
 entity.title=Semantag : Entité
 

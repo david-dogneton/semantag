@@ -9,16 +9,16 @@
         </a>
         <div class="large basic inverted animated fade ui button">
             <div class="visible content">@Messages("header.buttonSubscribe")</div>
-            <div class="hidden content">@Messages("header.buttonSubscribeHover")</div>
+            <div class="hidden content" ><a href="@routes.LoginLogout.inscription">@Messages("header.buttonSubscribeHover")</a></div>
         </div>
         <div class="right item">
             <form action="@routes.Application.search" method="POST">
-            <div class="field">
-                <div class="ui action input">
-                    <input name="search" style="min-width:250px" placeholder='@Messages("header.search")' type="text">
-                    <div class="ui button" style="cursor:inherit"><button type="submit" style="cursor:pointer; border:0; height:100%; width:100%"><i class="search icon"></i></button></div>
+                <div class="field">
+                    <div class="ui action input">
+                        <input name="search" style="min-width:250px" placeholder='@Messages("header.search")' type="text">
+                        <div class="ui button" style="cursor:inherit"><button type="submit" style="cursor:pointer; border:0; height:100%; width:100%"><i class="search icon"></i></button></div>
+                    </div>
                 </div>
-            </div>
             </form>
         </div>
 
@@ -43,29 +43,26 @@
             } else{
             <a class="item" href="@routes.Application.presentation()">@Messages("header.presentation")</a>
             }
-            <div class="ui dropdown link item">
-                @Messages("header.stats")
-                <i class="dropdown icon" style="display:inline"></i>
-                <div class="menu">
-                    <a class="item">@Messages("header.stats.today")</a>
-                    <a class="item">@Messages("header.stats.thisWeek")</a>
-                    <a class="item">@Messages("header.stats.thisMonth")</a>
-                    <a class="item">@Messages("header.stats.fromBeginning")</a>
-                </div>
-            </div>
+
+            @if(page=="statistiques"){
+            <a class="active item" href="@routes.Application.statistiques()">@Messages("header.stats")</a>
+            } else{
+            <a class="item" href="@routes.Application.statistiques()">@Messages("header.stats")</a>
+            }
+
             @user match {
-                case Some(usr) => {
-                    <div class="item">
-                     <p>Vous êtes connecté en tant que @usr.pseudo</p>
-                     <a href="@routes.LoginLogout.logout" class="ui red button" > Se déconnecter !</a>
-                    </div>
-                }
-                case None => {
-                    <div class="item">
-                       <div class="ui teal button"> <a  style="color :white;" href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
-                        <div class="ui button"><a  style="none;" href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
-                    </div>
-                }
+            case Some(usr) => {
+            <div class="item">
+                <p>Vous êtes connecté en tant que @usr.pseudo</p>
+                <a href="@routes.LoginLogout.logout" class="ui red button" > Se déconnecter !</a>
+            </div>
+            }
+            case None => {
+            <div class="item">
+                <div class="ui teal button"> <a  style="color :white;" href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
+                <div class="ui button"><a  style="none;" href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
+            </div>
+            }
             }
 
         </div>
