@@ -15,8 +15,8 @@
             Récupération des articles les plus récents...
             <div class="ui active center loader"></div>
         </div>
-        <div class="ui  items">
-            <div class="item" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
+        <div class="ui five items">
+            <div class="item" style="min-height: 600px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
                 @user match {
                     case Some(usr) => {
                             <a class="like ui corner label" ng-click="gererCoeur('@usr.mail', item['url'])">
@@ -37,9 +37,18 @@
 
                 <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
                 <div class="content">
-                    <a href="{{item['url']}}" target="_blank">
-                        <div class="name">{{item['titre']}}</div>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a href="{{item['url']}}" target="_blank" ng-click="enregistrerLecture('@usr.mail', item['url'])">
+                                <div class="name">{{item['titre']}}</div>
+                            </a>
+                        }
+                        case None => {
+                            <a href="{{item['url']}}" target="_blank">
+                                <div class="name">{{item['titre']}}</div>
+                            </a>
+                        }
+                    }
                     <p style="font-weight:bold">{{item['site']}}</p>
                     <p class="description">{{item['description']}}</p>
                     <div class="extra">

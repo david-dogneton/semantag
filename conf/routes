@@ -59,3 +59,4 @@ GET         /presentation                     controllers.Application.presentati
 GET         /stats                            controllers.Application.statistiques
 
 POST        /changerCoeur                     controllers.Application.changerCoeur
+POST        /enregistrerLecture               controllers.Application.enregistrerLecture

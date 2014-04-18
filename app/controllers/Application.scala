@@ -57,7 +57,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                     }
                     case None => {
                       Note.create(new Note(user, article, 0, true))
-                      Logger.debug("Je viens de créer une note !")
                     }
                   }
                 }
@@ -68,6 +67,39 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         }
       }
     }
+      Ok("200")
+  }
+
+
+  def enregistrerLecture() = StackAction {
+    implicit request =>
+      val bodyJSonOpt = request.body.asJson
+      bodyJSonOpt match {
+        case Some(bodyJSon) => {
+          val mailUser: String = (bodyJSon \ "mailUser").as[String]
+          val urlArticle: String = (bodyJSon \ "urlArticle").as[String]
+          val userOpt = Utilisateur.get(mailUser)
+          userOpt match {
+            case Some(user) => {
+              val articleOpt = Article.getByUrl(urlArticle)
+              articleOpt match {
+                case Some(article) => {
+                  val noteOpt = Consultation.get(user, article)
+                  noteOpt match {
+                    case Some(note) => {
+                    }
+                    case None => {
+                      Consultation.create(new Consultation(user, article, DateTime.now()))
+                    }
+                  }
+                }
+                case None => throw new Exception("Article not found.")
+              }
+            }
+            case None => throw new Exception("Utilisateur not found.")
+          }
+        }
+      }
       Ok("200")
   }
 
