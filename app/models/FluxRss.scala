@@ -212,6 +212,7 @@ class Master(nbActors: Int) extends Actor {
         println("ERROR: " + ex.getMessage)
         0
     }
+
     //    if (!ok) {
     //      Logger.debug("FeedReader reads and prints any RSS/Atom feed type.")
     //      Logger.debug("The first parameter must be the URL of the feed to read.")

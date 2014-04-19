@@ -4,7 +4,7 @@
 
 import akka.actor.{Props, ActorSystem}
 import java.util.concurrent.TimeUnit
-import models.{Compute, Master, FluxRss}
+import models.{Utils, Compute, Master, FluxRss}
 import org.joda.time.DateTime
 import play.api._
 import org.anormcypher._
@@ -69,6 +69,16 @@ object Global extends GlobalSettings {
           }
         }
       )
+
+    Akka.system.scheduler.schedule(
+      Duration.create(0, TimeUnit.SECONDS),
+      Duration.create(2, TimeUnit.MINUTES),
+      new Runnable() {
+        override def run() {
+          Utils.remiseAZeroJour()
+          Logger.debug("remise a zéro articles")
+        }
+      })
 
 
   }

@@ -330,4 +330,37 @@ Match (article:Article) where ID(article) = {id} delete article;
       case _ => Some(result)
     }
   }
+
+  def lesPlusConsulteesJour() {
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsJour DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesSemaine() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaine DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesSemaineDerniere() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaineDerniere DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesMois() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsMois DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsultees() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultations DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+
+
+
 }
