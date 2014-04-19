@@ -9,6 +9,8 @@
             ]
         }
 
+
+
         /*        $http({
          url: '/getArticlesByTag',
          method: "POST",
@@ -30,11 +32,28 @@
         }).error(function (err) {
                     console.log("err : " + err);
                 });
+
+        $scope.gererCoeur = function ($mailUser, $urlArticle) {
+            $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+            var rank = 0;
+            var currentRank = 0;
+            for (var item in $scope.news["items"]) {
+                if ($scope.news["items"][item].url == $urlArticle) rank = currentRank;
+                currentRank++;
+            }
+            if(($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
+            else ($scope.news["items"][rank])['coeurPresent'] = 0;
+        }
     }
 
     function ControlleurCoeur($scope, $http) {
+        $http.post('/getLikeEntite',  { 'urlEntite' : "@uriDBpedia" }).success(function(data){
+            $scope.entiteACoeur = data.valeur;
+        });
         $scope.enregistrerLikeEntite = function($mailUser, $urlEntite) {
             $http.post("/enregistrerLikeEntite", {mailUser: $mailUser, urlEntite: $urlEntite});
+            if($scope.entiteACoeur == 0)  $scope.entiteACoeur = 1
+            else $scope.entiteACoeur = 0
         }
     }
 </script>
@@ -47,7 +66,7 @@
                     @user match {
                         case Some(usr) => {
                             <a class="like ui corner label" ng-click="enregistrerLikeEntite('@usr.mail', '@uriDBpedia')">
-                                <i class="like icon"></i>
+                                <i ng-class="{'like icon':entiteACoeur == 0, 'like icon cliquee':entiteACoeur == 1}"></i>
                             </a>
                         }
                         case None => {
@@ -84,8 +103,8 @@
 
                 @user match {
                     case Some(usr) => {
-                        <a class="like ui corner label">
-                            <i class="like icon"></i>
+                        <a class="like ui corner label" ng-click="gererCoeur('@usr.mail', item['url'])">
+                            <i ng-class="{'like icon':item['coeurPresent'] == 0, 'like icon cliquee':item['coeurPresent'] == 1}"></i>
                         </a>
                     }
                     case None => {
