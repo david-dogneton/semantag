@@ -71,7 +71,7 @@ object Article {
       """
         match (site : Site)
         where ID(site) = {idSite}
-        create (article: Article {
+        create unique (article: Article {
           titre: {titre},
           auteur: {auteur},
           description: {description},
@@ -333,7 +333,7 @@ object Article {
    */
   def getLastArticle: List[Article] = {
 
-    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 30;").toList
+    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 40;").toList
     result.map(_.get)
   }
 
@@ -388,4 +388,49 @@ Match (article:Article) where ID(article) = {id} delete article;
     }
   }
 
+  def getDomainesLies(article: Article): Option[List[Domaine]] = {
+    val result: List[Domaine] = Cypher(
+      """
+        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
+                return domaine.nom as nom;
+      """).on("urlArticle" -> article.url)().collect {
+      case CypherRow(nom: String) =>
+        new Domaine(nom)
+      case _ => throw new IllegalArgumentException("Mauvais format du domaine")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
+    }
+  }
+
+  def lesPlusConsulteesJour() {
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsJour DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesSemaine() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaine DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesSemaineDerniere() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaineDerniere DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsulteesMois() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsMois DESC Limit 5;").toList
+    result.map(_.get)
+  }
+
+  def lesPlusConsultees() {
+
+    val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultations DESC Limit 5;").toList
+    result.map(_.get)
+  }
 }

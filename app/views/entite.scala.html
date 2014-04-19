@@ -119,6 +119,15 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
+<<<<<<< HEAD
+                       {{item['lies']}} articles liés à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==1">
+                        {{item['lies']}} article lié à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==0">
+                        </i>Pas d'article lié à ce sujet.
+=======
                         {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
@@ -126,6 +135,7 @@
                     </p>
                     <p ng-show="item['lies']==0">
                        Pas d'article lié à ce sujet.
+>>>>>>> 3494a17f2f08b22cff84a571d8eb92fc98efb359
                     </p>
                     <p>
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>
