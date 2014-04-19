@@ -17,8 +17,8 @@
             $scope.news.items = data.liste;
 
         }).error(function (err) {
-                    console.log("err : " + err);
-                });
+            console.log("err : " + err);
+        });
 
         $scope.gererCoeur = function ($mailUser, $urlArticle) {
             $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
@@ -50,7 +50,11 @@
             <div class="item">
                 <div class="ui  label ribbon" style="margin-top:5px">@article.site.typeSite</div>
                 <div class="image">
-                    <img src="@article.image">
+                    @article.image.length match{
+                    case 0 => { <img src='@routes.Assets.at("images/no-image.jpg")'> }
+                    case _ => {<img src="@article.image"> }
+                    }
+
                 </div>
                 <div class="content">
 
