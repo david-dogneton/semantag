@@ -18,16 +18,22 @@
             $scope.news.items=[{"nom" : "Wooops ! Petit problème, veuillez rééssayer !"}];
                 });
     }
+
+    function ControlleurCoeur($scope, $http) {
+        $scope.enregistrerLikeEntite = function($mailUser, $urlEntite) {
+            $http.post("/enregistrerLikeEntite", {mailUser: $mailUser, urlEntite: $urlEntite});
+        }
+    }
 </script>
 <div class="ui grid">
-    <div class="three wide column">
+    <div ng-controller="ControlleurCoeur" class="three wide column">
         <div class="ui one items">
             <div class="item">
                 <div class="image">
                     <img src="@thumb" alt="Pas d'image pour cette entité.">
                     @user match {
                         case Some(usr) => {
-                            <a class="like ui corner label">
+                            <a class="like ui corner label" ng-click="enregistrerLikeEntite('@usr.mail', '@uriDBpedia')">
                                 <i class="like icon"></i>
                             </a>
                         }
@@ -100,6 +106,15 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
+<<<<<<< HEAD
+                       {{item['lies']}} articles liés à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==1">
+                        {{item['lies']}} article lié à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==0">
+                        </i>Pas d'article lié à ce sujet.
+=======
                         {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
@@ -107,6 +122,7 @@
                     </p>
                     <p ng-show="item['lies']==0">
                        Pas d'article lié à ce sujet.
+>>>>>>> 3494a17f2f08b22cff84a571d8eb92fc98efb359
                     </p>
                     <p>
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>

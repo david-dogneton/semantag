@@ -12,9 +12,8 @@ import play.api.data.Forms._
 import jp.t2v.lab.play2.auth._
 import play.api._
 import play.api.mvc._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsValue, JsObject, Json}
 import scala.Some
-import play.api.libs.json.JsObject
 
 
 object Application extends Controller with OptionalAuthElement with LoginLogout with AuthConfigImpl {
@@ -32,11 +31,112 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           controllers.routes.javascript.Application.getTopMois,
           controllers.routes.javascript.Application.getTopSemaine,
           controllers.routes.javascript.Application.getTop10,
-          controllers.routes.javascript.Application.getArticlesByTag
-        )
+          controllers.routes.javascript.Application.getArticlesByTag,
+          controllers.routes.javascript.Application.changerCoeur,
+          controllers.routes.javascript.Application.enregistrerLecture,
+          controllers.routes.javascript.Application.enregistrerLikeEntite
+      )
       ).as("text/javascript")
   }
 
+  def changerCoeur() = StackAction {
+    implicit request =>
+      val bodyJSonOpt = request.body.asJson
+      bodyJSonOpt match {
+        case Some(bodyJSon) => {
+          val mailUser: String = (bodyJSon \ "mailUser").as[String]
+          val urlArticle: String = (bodyJSon \ "urlArticle").as[String]
+          val userOpt = Utilisateur.get(mailUser)
+          userOpt match {
+            case Some(user) => {
+              val articleOpt = Article.getByUrl(urlArticle)
+              articleOpt match {
+                case Some(article) => {
+                  val noteOpt = Note.get(user, article)
+                  noteOpt match {
+                    case Some(note) => {
+                      Note.delete(user, article)
+                    }
+                    case None => {
+                      Note.create(new Note(user, article, 0, true))
+                    }
+                  }
+                }
+                case None => throw new Exception("Article not found.")
+              }
+            }
+            case None => throw new Exception("Utilisateur not found.")
+        }
+      }
+    }
+      Ok("200")
+  }
+
+
+  def enregistrerLecture() = StackAction {
+    implicit request =>
+      val bodyJSonOpt = request.body.asJson
+      bodyJSonOpt match {
+        case Some(bodyJSon) => {
+          val mailUser: String = (bodyJSon \ "mailUser").as[String]
+          val urlArticle: String = (bodyJSon \ "urlArticle").as[String]
+          val userOpt = Utilisateur.get(mailUser)
+          userOpt match {
+            case Some(user) => {
+              val articleOpt = Article.getByUrl(urlArticle)
+              articleOpt match {
+                case Some(article) => {
+                  val noteOpt = Consultation.get(user, article)
+                  noteOpt match {
+                    case Some(note) => {
+                    }
+                    case None => {
+                      Consultation.create(new Consultation(user, article, DateTime.now()))
+                    }
+                  }
+                }
+                case None => throw new Exception("Article not found.")
+              }
+            }
+            case None => throw new Exception("Utilisateur not found.")
+          }
+        }
+      }
+      Ok("200")
+  }
+
+  def enregistrerLikeEntite() = StackAction {
+    implicit request =>
+      val bodyJSonOpt = request.body.asJson
+      bodyJSonOpt match {
+        case Some(bodyJSon) => {
+          val mailUser: String = (bodyJSon \ "mailUser").as[String]
+          val urlEntite: String = (bodyJSon \ "urlEntite").as[String]
+          val userOpt = Utilisateur.get(mailUser)
+          userOpt match {
+            case Some(user) => {
+              val entiteOpt = Entite.getByUrl(urlEntite)
+              entiteOpt match {
+                case Some(entite) => {
+                  val appreciationEntiteOpt = AppreciationEntite.get(user, entite)
+                  appreciationEntiteOpt match {
+                    case Some(appreciationEntite) => {
+                      AppreciationEntite.delete(user, entite)
+                    }
+                    case None => {
+                      AppreciationEntite.create(new AppreciationEntite(user, entite, 0,1,true))
+                    }
+                  }
+                }
+                case None => throw new Exception("Entité not found.")
+              }
+            }
+            case None => throw new Exception("Utilisateur not found.")
+          }
+        }
+      }
+      Ok("200")
+  }
 
 
   def mapage = StackAction {
@@ -53,14 +153,21 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   // Router.JavascriptReverseRoute
   def getArt = StackAction {
     implicit request =>
-
+      val maybeUser: Option[User] = loggedIn
+      val user: User = maybeUser.getOrElse(Utilisateur("default", "", ""))
     // Logger.debug("avant")
       val listeArt: List[Article] = Article.getLastArticle
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
-        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" + art.date.dayOfMonth().get() + " " + art.date.hourOfDay().get() + ":" + art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("id" -> tag._1.id,
           "nom" -> tag._1.nom)))
+        val note = Note.get(user, art)
+        var coeurPresent = 0
+        note match {
+          case Some(no) => coeurPresent = 1
+          case None => coeurPresent = 0
+        }
         Json.obj(
           "id" -> art.id,
           "url" -> art.url,
@@ -73,15 +180,17 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "domaine" -> art.site.typeSite,
           "tags" -> tags,
           "note" -> art.nbEtoiles,
-          "tags"-> tags,
+          "tags" -> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
-          "lies" -> EstLie.countLinkedArticles(art)
+          "lies" -> EstLie.countLinkedArticles(art),
+          "coeurPresent" -> coeurPresent
         )
       })
       // Logger.debug("RES " +res )
-      Ok(Json.obj("liste"->res))
+      Ok(Json.obj("liste" -> res))
   }
+
   val searchForm = Form(
     single(
       "search" -> nonEmptyText
@@ -96,7 +205,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val article: Option[Article] = Article.getById(id)
       if (article.isDefined) {
         val listeTag = Tag.getTagsOfArticles(article.get)
-        val listeTagArticles: List[Entite] =listeTag.map(elt => elt._1)
+        val listeTagArticles: List[Entite] = listeTag.map(elt => elt._1)
         Ok(views.html.visualisationarticle(article.get, listeTagArticles))
       } else {
         Redirect(routes.Application.index).flashing("error" -> "L'article à visualiser n'existe plus ! :o")
@@ -105,7 +214,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   }
 
-  def displayLinkedArt(id : Int) = StackAction {
+  def displayLinkedArt(id: Int) = StackAction {
     implicit request =>
 
       Logger.debug("TEST DISPLAY LINKED ART" + id)
@@ -116,11 +225,11 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
       val listeArt = EstLie.getById(id)
       val res: List[JsObject] = listeArt.map(art => {
-        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" +art.date.dayOfMonth().get()  + " "+art.date.hourOfDay().get()+":"+art.date.minuteOfHour().get()
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" + art.date.dayOfMonth().get() + " " + art.date.hourOfDay().get() + ":" + art.date.minuteOfHour().get()
         val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("id" -> tag._1.id,
           "nom" -> tag._1.nom)))
         Json.obj(
-          "id"->art.id,
+          "id" -> art.id,
           "url" -> art.url,
           "titre" -> art.titre,
           "description" -> art.description,
@@ -131,13 +240,13 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           "domaine" -> art.site.typeSite,
           "tags" -> tags,
           "note" -> art.nbEtoiles,
-          "tags"-> tags,
+          "tags" -> tags,
           "note" -> art.nbEtoiles,
           "date" -> dateF,
           "lies" -> EstLie.countLinkedArticles(art)
         )
       })
-      Ok(Json.obj("liste"->res))
+      Ok(Json.obj("liste" -> res))
 
 
   }
@@ -293,7 +402,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         Json.obj("nom" -> site.typeSite
         )
       })
-      Ok(Json.obj("liste"->res))
+      Ok(Json.obj("liste" -> res))
   }
 
   def getTypes = StackAction {

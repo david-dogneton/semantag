@@ -156,7 +156,7 @@ object AppreciationEntite {
     result
   }
 
-  def majAvecCreate(note: Note): Boolean = {
+  def majAvecCreate(note: Note) = {
     var entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
       case Some(entites) => {
@@ -173,14 +173,14 @@ object AppreciationEntite {
               AppreciationEntite.create(new AppreciationEntite(note.utilisateur, elt, note.nbEtoiles, nbCoeurs))
             }
           }
+
         })
       }
       case None => throw new Exception("Liste d'entités non trouvée")
     }
-    false
   }
 
-  def majSansCreate(note: Note, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false): Boolean = {
+  def majSansCreate(note: Note, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false) = {
     var entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
       case Some(entites) => {

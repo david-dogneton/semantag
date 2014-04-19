@@ -57,3 +57,7 @@ GET         /testBDD                          controllers.Application.getUser
 GET         /annotation/test                  controllers.Application.test
 GET         /presentation                     controllers.Application.presentation
 GET         /stats                            controllers.Application.statistiques
+
+POST        /changerCoeur                     controllers.Application.changerCoeur
+POST        /enregistrerLecture               controllers.Application.enregistrerLecture
+POST        /enregistrerLikeEntite            controllers.Application.enregistrerLikeEntite
