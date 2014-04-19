@@ -6,8 +6,8 @@ import org.joda.time.DateTime
 /**
  * @author David Dogneton, Romain De Oliveira, Maxime Gautré, Thibault Goustat
  *
- * Classe Article.
- * Classe décrivant les propriétés d'un article.
+ *         Classe Article.
+ *         Classe décrivant les propriétés d'un article.
  *
  * @param titre titre de l'article
  * @param auteur auteur de l'article
@@ -90,21 +90,21 @@ object Article {
         return id(article);
       """
     ).on("titre" -> article.titre,
-        "auteur" -> article.auteur,
-        "description" -> article.description,
-        "date" -> dateF,
-        "url" -> article.url,
-        "image" -> article.image,
-        "consultationsJour" -> article.consultationsJour,
-        "consultationsSemaine" -> article.consultationsSemaine,
-        "consultationsSemaineDerniere" -> article.consultationsSemaineDerniere,
-        "consultationsMois" -> article.consultationsMois,
-        "consultations" -> article.consultations,
-        "totalEtoiles" -> article.totalEtoiles,
-        "nbEtoiles" -> article.nbEtoiles,
-        "nbCoeurs" -> article.nbCoeurs,
-        "idSite" -> article.site.id
-      )().collect {
+      "auteur" -> article.auteur,
+      "description" -> article.description,
+      "date" -> dateF,
+      "url" -> article.url,
+      "image" -> article.image,
+      "consultationsJour" -> article.consultationsJour,
+      "consultationsSemaine" -> article.consultationsSemaine,
+      "consultationsSemaineDerniere" -> article.consultationsSemaineDerniere,
+      "consultationsMois" -> article.consultationsMois,
+      "consultations" -> article.consultations,
+      "totalEtoiles" -> article.totalEtoiles,
+      "nbEtoiles" -> article.nbEtoiles,
+      "nbCoeurs" -> article.nbCoeurs,
+      "idSite" -> article.site.id
+    )().collect {
       case CypherRow(id: BigDecimal) => Some(new Article(article.titre,
         article.auteur,
         article.description,
@@ -134,12 +134,12 @@ object Article {
    * @tparam A le type de l'argument peut être n'importe quoi (un entier, un double, un string)
    * @return Renvoie la liste des articles ayant respecté les conditions de la requête
    */
-  def getArticles[A](args: (String, A), criteria : String, restriction : String): Stream[Option[Article]] = {
+  def getArticles[A](args: (String, A), criteria: String, restriction: String): Stream[Option[Article]] = {
 
     Cypher(
       """
         Match (site:Site)--(article:Article)
-        """+ criteria +"""
+      """ + criteria + """
         return  article.titre,
                 article.auteur,
                 article.description,
@@ -159,7 +159,7 @@ object Article {
                 article.nbEtoiles,
                 article.nbCoeurs,
                 ID(article)
-      """+restriction).on(args)().collect {
+                       """ + restriction).on(args)().collect {
 
       case CypherRow(titre: String,
       auteur: String,
@@ -201,6 +201,80 @@ object Article {
     }
   }
 
+  def incrNbConsultations(urlArticle: String): Option[Article] = {
+
+    val result: List[Article] = Cypher(
+      """
+        Match (site:Site)--(article:Article {url: {urlArticle}})
+        set article.consultationsJour = article.consultationsJour + 1,
+                article.consultationsSemaine = article.consultationsSemaine + 1,
+                article.consultationsMois = article.consultationsMois + 1,
+                article.consultations = article.consultations + 1
+        return  article.titre as titre,
+                article.auteur as auteur,
+                article.description as description,
+                article.date as date,
+                article.url as urlArticle,
+                site.url as urlSite,
+                site.nom as nomSite,
+                site.type as typeSite,
+                ID(site) as idSite,
+                article.image as image,
+                article.consultationsJour as cJ,
+                article.consultationsSemaine as cS,
+                article.consultationsSemaineDerniere as cSD,
+                article.consultationsMois as cM,
+                article.consultations as coS,
+                article.totalEtoiles as totE,
+                article.nbEtoiles as nbE,
+                article.nbCoeurs as nbC,
+                ID(article) as idArticle
+      """).on("urlArticle" -> urlArticle)().collect {
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      nomSite: String,
+      typeSite: String,
+      idSite: BigDecimal,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal) =>
+        new Article(
+          titre,
+          auteur,
+          description,
+          new DateTime(date),
+          url,
+          new Site(urlSite, nomSite, typeSite, idSite.toInt),
+          image,
+          consultationsJour.toInt,
+          consultationsSemaine.toInt,
+          consultationsSemaineDerniere.toInt,
+          consultationsMois.toInt,
+          consultations.toInt,
+          totalEtoiles.toInt,
+          nbEtoiles.toInt,
+          nbCoeurs.toInt,
+          id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format pour l'article")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head :: tail => Some(head)
+    }
+  }
+
 
   /**
    * Renvoie l'article correspondant à l'identifiant passé en paramètre.
@@ -211,8 +285,8 @@ object Article {
    * @return Renvoie l'article correspondant à l'identifiant passé en paramètre.
    */
   def getById(id: Int): Option[Article] = {
-    val stream = getArticles("param" -> id, "where ID(article) = {param}",";")
-    if(stream.isEmpty)
+    val stream = getArticles("param" -> id, "where ID(article) = {param}", ";")
+    if (stream.isEmpty)
       None
     else
       stream.head
@@ -228,7 +302,7 @@ object Article {
   def getByUrl(url: String): Option[Article] = {
 
     val stream = getArticles("param" -> url, "where article.url = {param}", ";")
-    if(stream.isEmpty)
+    if (stream.isEmpty)
       None
     else
       stream.head
@@ -243,10 +317,10 @@ object Article {
    * @param rechercheUtilisateur chaîne de caractères à rechercher
    * @return Renvoie la liste des articles qui contiennent l'élément recherché dans leur titre.
    */
-  def rechercheDansTitre(rechercheUtilisateur  : String): List[Article] = {
+  def rechercheDansTitre(rechercheUtilisateur: String): List[Article] = {
 
-    val critereRecherche = ".*"+rechercheUtilisateur.toLowerCase+".*"
-    val result: List[Option[Article]] = getArticles("param" -> critereRecherche , "where lower(article.titre) =~ {param} "," ORDER BY article.date DESC ;").toList
+    val critereRecherche = ".*" + rechercheUtilisateur.toLowerCase + ".*"
+    val result: List[Option[Article]] = getArticles("param" -> critereRecherche, "where lower(article.titre) =~ {param} ", " ORDER BY article.date DESC ;").toList
     result map {
       case Some(article) => article
       case None => throw new NoSuchElementException("article vide")

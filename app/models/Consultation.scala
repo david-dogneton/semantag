@@ -15,7 +15,7 @@ case class Consultation(utilisateur: Utilisateur, article: Article, date: DateTi
 
 object Consultation {
   def create(consultation: Consultation): Boolean = {
-    Cypher(
+    val result = Cypher(
       """
          match (user: Utilisateur), (article: Article)
          where user.mail = {mailUser} and article.url = {urlArt}
@@ -25,6 +25,8 @@ object Consultation {
       "urlArt" -> consultation.article.url,
       "date" -> consultation.date.toString()
     ).execute()
+    if (result) Article.incrNbConsultations(consultation.article.url)
+    result
   }
 
   def get(user: Utilisateur, article: Article): Option[Consultation] = {

@@ -26,7 +26,7 @@ object Note {
       "aCoeur" -> note.aCoeur
     ).execute()
     Logger.debug("Résultat de la création de la note : "+resultat)
-    AppreciationEntite.majAvecCreate(note)
+    //AppreciationEntite.majAvecCreate(note)
     AppreciationDomaine.majAvecCreate(note)
     AppreciationSite.majAvecCreate(note)
     resultat
@@ -88,7 +88,7 @@ object Note {
     result match {
       case Nil => None
       case head :: tail => {
-        var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
+        val note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
         AppreciationEntite.majSansCreate(note, changementNbEtoiles)
         AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
         Some(note)

@@ -32,7 +32,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           controllers.routes.javascript.Application.getTopSemaine,
           controllers.routes.javascript.Application.getTop10,
           controllers.routes.javascript.Application.getArticlesByTag,
-          controllers.routes.javascript.Application.changerCoeur
+          controllers.routes.javascript.Application.changerCoeur,
+          controllers.routes.javascript.Application.enregistrerLecture,
+          controllers.routes.javascript.Application.enregistrerLikeEntite
       )
       ).as("text/javascript")
   }
@@ -94,6 +96,39 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
                   }
                 }
                 case None => throw new Exception("Article not found.")
+              }
+            }
+            case None => throw new Exception("Utilisateur not found.")
+          }
+        }
+      }
+      Ok("200")
+  }
+
+  def enregistrerLikeEntite() = StackAction {
+    implicit request =>
+      val bodyJSonOpt = request.body.asJson
+      bodyJSonOpt match {
+        case Some(bodyJSon) => {
+          val mailUser: String = (bodyJSon \ "mailUser").as[String]
+          val urlEntite: String = (bodyJSon \ "urlEntite").as[String]
+          val userOpt = Utilisateur.get(mailUser)
+          userOpt match {
+            case Some(user) => {
+              val entiteOpt = Entite.getByUrl(urlEntite)
+              entiteOpt match {
+                case Some(entite) => {
+                  val appreciationEntiteOpt = AppreciationEntite.get(user, entite)
+                  appreciationEntiteOpt match {
+                    case Some(appreciationEntite) => {
+                      AppreciationEntite.delete(user, entite)
+                    }
+                    case None => {
+                      AppreciationEntite.create(new AppreciationEntite(user, entite, 0,1,true))
+                    }
+                  }
+                }
+                case None => throw new Exception("Entité not found.")
               }
             }
             case None => throw new Exception("Utilisateur not found.")
