@@ -9,26 +9,13 @@
             ]
         }
 
-        /*        $http({
-         url: '/getArticlesByTag',
-         method: "POST",
-         data: { 'urlarticle' : url }
-         })
-         .then(function(data) {
-         $scope.news.items=data.liste;
-         console.dir(data.liste);
-         },
-         function(err) { // optional
-         console.log("err : " + err);
-         }
-         );*/
-
         $http.post('/getArticlesByTag',  { 'urlarticle' : url }).success(function (data) {
             console.dir(data);
             $scope.news.items=data.liste;
 
         }).error(function (err) {
                     console.log("err : " + err);
+            $scope.news.items=[{"nom" : "Wooops ! Petit problème, veuillez rééssayer !"}];
                 });
     }
 </script>
@@ -37,7 +24,7 @@
         <div class="ui one items">
             <div class="item">
                 <div class="image">
-                    <img src="@thumb">
+                    <img src="@thumb" alt="Pas d'image pour cette entité.">
                     @user match {
                         case Some(usr) => {
                             <a class="like ui corner label">

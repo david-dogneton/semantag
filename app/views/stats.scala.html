@@ -9,7 +9,14 @@
     </div>
     <div class="three wide column">
         <h3 class="ui header">Période</h3>
-        <div class="ui secondary vertical pointing menu">
+        <div ng-show="liste['items'].length==0">
+            <p>Filtre en cours:</p>
+            <div  class="ui teal label">
+                {{currentPeriode}}
+            </div>
+        </div>
+
+        <div  ng-show="liste['items'].length>0" class="ui secondary vertical pointing menu">
             <a ng-click="changePeriode('day')" ng-class="{'active item': periode=='day', 'item': periode!='day'}">
                 Aujourd'hui
             </a>
@@ -49,12 +56,18 @@
     </div>
     <div class="three wide column">
         <h3 class="ui header">Type d'entité</h3>
-        <div class="ui secondary vertical menu">
-            <a ng-click="changeType(-1)" ng-class="{'active item': idType==-1, 'item': idType!=-1}">
+        <div ng-show="liste['items'].length==0">
+           <p>Filtre en cours:</p>
+            <div  class="ui teal label">
+                {{currentType}}
+            </div>
+        </div>
+        <div ng-show="liste['items'].length>0" class="ui secondary vertical menu">
+            <a ng-click="changeType(-1, 'Tout')" ng-class="{'active item': idType==-1, 'item': idType!=-1}">
                 Tout
             </a>
 
-            <a ng-repeat="type in types['items']" ng-click="changeType(type['id'])" ng-class="{'active item': idType==type['id'], 'item': idType!=type['id']}" >
+            <a ng-repeat="type in types['items']" ng-click="changeType(type['id'], type['nom'])" ng-class="{'active item': idType==type['id'], 'item': idType!=type['id']}" >
                 {{type['nom']}}
             </a>
 
