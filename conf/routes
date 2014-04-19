@@ -60,3 +60,6 @@ GET         /stats                            controllers.Application.statistiqu
 
 POST        /changerCoeur                     controllers.Application.changerCoeur
 POST        /enregistrerLecture               controllers.Application.enregistrerLecture
+POST        /enregistrerLikeEntite            controllers.Application.enregistrerLikeEntite
+POST        /getLikeEntite                    controllers.Application.getLikeEntite
+POST        /getLikeArticle                   controllers.Application.getLikeArticle

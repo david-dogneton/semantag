@@ -1,97 +1,129 @@
 @(article : Article, listeTags : List[Entite])(implicit user: Option[Utilisateur], lang: Lang)
 
 @main("Article : "+article.titre)("visualisationarticle") {
-    <script type="text/javascript">
+<script type="text/javascript">
 
-    function EntityNewsRenderer($scope,$http) {
-    var id = "@article.id";
-    $scope.limite = 5;
-    $scope.news = {
-    "items": [
-    ]
+    function EntityNewsRenderer($scope, $http) {
+        var id = "@article.id";
+        $scope.limite = 5;
+        $scope.news = {
+            "items": [
+            ]
+        }
+
+
+        $http.get('/displaylinkedart/' + id).success(function (data) {
+            console.dir(data);
+            $scope.news.items = data.liste;
+
+        }).error(function (err) {
+            console.log("err : " + err);
+        });
+
+        $scope.gererCoeur = function ($mailUser, $urlArticle) {
+            $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+            var rank = 0;
+            var currentRank = 0;
+            for (var item in $scope.news["items"]) {
+                if ($scope.news["items"][item].url == $urlArticle) rank = currentRank;
+                currentRank++;
+            }
+            if (($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
+            else ($scope.news["items"][rank])['coeurPresent'] = 0;
+        }
     }
 
-
-    $http.get('/displaylinkedart/'+id).success(function (data) {
-    console.dir(data);
-    $scope.news.items=data.liste;
-
-    }).error(function (err) {
-    console.log("err : " + err);
-    });
+    function ControlleurCoeur($scope, $http) {
+        $http.post('/getLikeArticle', { 'urlArticle': "@article.url" }).success(function (data) {
+            $scope.articleACoeur = data.valeur;
+        });
+        $scope.enregistrerLikeArticle = function ($mailUser, $urlArticle) {
+            $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+            if ($scope.articleACoeur == 0)  $scope.articleACoeur = 1;
+            else $scope.articleACoeur = 0;
+        }
     }
-    </script>
-    <div class="ui grid">
-        <div class="three wide column">
-            <div class="ui one items">
-                <div class="item">
-                    <div class="ui  label ribbon" style="margin-top:5px">@article.site.typeSite</div>
-                    <div class="image">
-                        <img src="@article.image">
+</script>
+<div class="ui grid">
+    <div class="three wide column">
+        <div class="ui one items" ng-controller="ControlleurCoeur">
+            <div class="item">
+                <div class="ui  label ribbon" style="margin-top:5px">@article.site.typeSite</div>
+                <div class="image">
+                    @article.image.length match{
+                    case 0 => { <img src='@routes.Assets.at("images/no-image.jpg")'> }
+                    case _ => {<img src="@article.image"> }
+                    }
+
+                </div>
+                <div class="content">
+
+                    @user match {
+                    case Some(usr) => {
+                    <div class="ui labeled small icon button" style="margin-top: 10px;"
+                         ng-click="enregistrerLikeArticle('@usr.mail', '@article.url')">
+                        <i ng-class="{'like icon':articleACoeur == 0, 'like icon cliquee':articleACoeur == 1}"></i>
+                        <a class="">J'aime cet Article !</a>
                     </div>
-                    <div class="content">
+                    }
+                    case None => {
 
-                        @user match {
-                            case Some(usr) => {
-                                <div class="ui labeled small icon button" style="margin-top: 10px;">
-                                    <i class="like icon"></i>
-                                    <a class="">J'aime cet Article !</a>
-                                </div>
-                            }
-                            case None => {
-
-                            }
-                        }
+                    }
+                    }
 
 
-                        <div class="extra">
-                            <i class="unhide icon"></i> @article.consultationsJour |
-                            <i class="heart icon"></i> @article.nbCoeurs |
-                            <i class="star icon"></i> @article.nbEtoiles
-                        </div>
+                    <div class="extra">
+                        <i class="unhide icon"></i> @article.consultationsJour |
+                        <i class="heart icon"></i> @article.nbCoeurs |
+                        <i class="star icon"></i> @article.nbEtoiles
                     </div>
                 </div>
             </div>
+        </div>
+
+    </div>
+    <div ng-controller="EntityNewsRenderer" class="ten wide column">
+        <div class="ui piled segment">
+            <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
+
+            <p>@Html(article.description)</p>
+
+            <p style="font-weight:bold">Le @article.date.dayOfMonth().get() / @article.date.monthOfYear().get() /
+                @article.date.year().get()
+                à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</p>
 
         </div>
-        <div ng-controller="EntityNewsRenderer" class="ten wide column">
-            <div class="ui piled segment">
-                <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
-                <p>@Html(article.description)</p>
-                <p style="font-weight:bold">Le  @article.date.dayOfMonth().get() / @article.date.monthOfYear().get() / @article.date.year().get()
-                    à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</p>
+        <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
+            Récupération des articles similaires les plus récents...
+            <div class="ui active center loader"></div>
+        </div>
+        <div class="ui five items">
+            <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
+                @user match {
+                case Some(usr) => {
+                <a class="like ui corner label" ng-click="gererCoeur('@usr.mail', item['url'])">
+                    <i ng-class="{'like icon':item['coeurPresent'] == 0, 'like icon cliquee':item['coeurPresent'] == 1}"></i>
+                </a>
+                }
+                case None => {
 
-            </div>
-            <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
-                Récupération des articles similaires les plus récents...
-                <div class="ui active center loader"></div>
-            </div>
-            <div class="ui five items">
-                <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
-                    @user match {
-                        case Some(usr) => {
-                            <a class="like ui corner label">
-                                <i class="like icon"></i>
-                            </a>
-                        }
-                        case None => {
+                }
+                }
 
-                        }
-                    }
+                <a href="{{item['url']}}" target="_blank">
+                    <div class="image">
+                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
 
+                        <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
+                    </div>
+                </a>
+
+                <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                <div class="content">
                     <a href="{{item['url']}}" target="_blank">
-                        <div class="image">
-                            <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
-                            <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
-                            <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
-                        </div>
+                        <div class="name">{{item['titre']}}</div>
                     </a>
-
-                    <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
-                    <div class="content">
-                        <a href="{{item['url']}}" target="_blank">
-                            <div class="name">{{item['titre']}}</div>
-                        </a>
 
                     <p style="font-weight:bold">{{item['site']}}</p>
                     <!--<p class="description">{{item['description']}}</p>-->
@@ -101,44 +133,55 @@
                         <i class="star icon"></i> {{item['note']}}
                     </div>
                     <p>
-                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px"
+                              class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
 
-                        </p>
-                        <p ng-show="item['lies']>1">
-                           {{item['lies']}} articles liés à ce sujet.
-                            @*<a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à ce sujet.</a>*@
-                        </p>
-                        <p ng-show="item['lies']==1">
-                           1 article lié à ce sujet.
-                        </p>
-                        <p ng-show="item['lies']==0">
-                           Pas d'article lié à ce sujet.
-                        </p>
-                        <p>  <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a> </p>
-                    </div>
+                    </p>
+
+                    <p ng-show="item['lies']>1">
+                        {{item['lies']}} articles liés à ce sujet.
+                        @*<a href="/displayart/{{item['id']}}"> <i class="add icon"></i>{{item['lies']}} articles liés à
+                        ce sujet.</a>*@
+                    </p>
+
+                    <p ng-show="item['lies']==1">
+                        1 article lié à ce sujet.
+                    </p>
+
+                    <p ng-show="item['lies']==0">
+                        Pas d'article lié à ce sujet.
+                    </p>
+
+                    <p><a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a></p>
                 </div>
             </div>
-            <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
         </div>
-        <div ng-controller="NewsRenderer" class="three wide column">
-            <h3 class="ui header">Top du jour</h3>
-            <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
-                <div  class="ui active center loader"></div>
-            </div>
-            <div class="ui divided ordered list">
-                <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                        <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
-                    <div class="content">
-                        <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}} ({{item['nombre']}})</a>
-                        <div class="description">{{item['type']}}</div>
-                    </div>
+        <div class="fluid ui button" ng-click="limite=limite+10"
+             ng-show="limite<(news['items']| filter:filtrage).length">Plus
+        </div>
+    </div>
+    <div ng-controller="NewsRenderer" class="three wide column">
+        <h3 class="ui header">Top du jour</h3>
+
+        <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
+            <div class="ui active center loader"></div>
+        </div>
+        <div class="ui divided ordered list">
+            <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
+                <div class="content">
+                    <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}}
+                        ({{item['nombre']}})</a>
+
+                    <div class="description">{{item['type']}}</div>
                 </div>
             </div>
         </div>
     </div>
-    <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
-    <script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
-    <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
-    <script src='@routes.Assets.at("javascripts/entite.js")' type="text/javascript"></script>
+</div>
+<link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/entite.js")' type="text/javascript"></script>
 }

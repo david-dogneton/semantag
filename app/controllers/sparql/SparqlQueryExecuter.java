@@ -165,10 +165,10 @@ public class SparqlQueryExecuter {
         String img ="noPic";
         String requete = "select ?thumb {<"+uri+"> dbpedia-owl:thumbnail ?thumb}";
         JSONArray uris = null;
-        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://dbpedia.org", "http://dbpedia.org/sparql");
+        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql");
         try {
             uris = sparql.query(requete);
-            if(uris.length()>0){
+            if(uris!=null && uris.length()>0){
                 try {
                     img = uris.getJSONObject(0).getJSONObject("thumb").getString("value");
                 } catch (JSONException e) {
@@ -187,7 +187,7 @@ public class SparqlQueryExecuter {
         JSONArray uris = null;
         try {
             uris = this.query(requete);
-            if(uris.length()>0){
+            if(uris!=null && uris.length()>0){
                 try {
                     JSONObject res = uris.getJSONObject(0).getJSONObject("thumb");
                     String tmp = res.getString("value");
@@ -205,20 +205,26 @@ public class SparqlQueryExecuter {
     }
 
     public String getImageDescription(String uri) throws Exception {
-        String img ="";
+        String desc ="";
         String requete = "select ?thumbCaption {<"+uri+"> dbpedia-owl:thumbnailCaption ?thumbCaption}";
         JSONArray uris = this.query(requete);
-        if(uris.length()>0){
-            img = uris.getJSONObject(0).getJSONObject("thumbCaption").getString("value");
+        if(uris!=null && uris.length()>0){
+            JSONObject thumbCaption = uris.getJSONObject(0).getJSONObject("thumbCaption");
+            if(thumbCaption!=null) {
+                String tmp = thumbCaption.getString("value");
+                if (!tmp.contains("DOCTYPE")){
+                    desc = tmp;
+                }
+            }
         };
-        return img;
+        return desc;
     }
 
     public String getAbstract(String uri) throws Exception {
         String img ="Pas de description.";
         String requete = "select ?abstract {<"+uri+"> dbpedia-owl:abstract ?abstract}";
         JSONArray uris = this.query(requete);
-        if(uris.length()>0){
+        if(uris!=null && uris.length()>0){
             img = uris.getJSONObject(0).getJSONObject("abstract").getString("value");
         }
         return img;
@@ -229,19 +235,29 @@ public class SparqlQueryExecuter {
         String requete = "select ?topic {<"+uri+"> foaf:isPrimaryTopicOf ?topic}";
 
         JSONArray uris = this.query(requete);
-        if(uris.length()>0){
+        if(uris!=null && uris.length()>0){
             img = uris.getJSONObject(0).getJSONObject("topic").getString("value").replace("en.","fr.");
         };
         return img;
     }
 
-    public String getName(String uri) throws Exception {
+    public String getName(String uri){
         String name ="";
         String requete = "select ?name {<"+uri+"> rdfs:label ?name}";
-        JSONArray uris = this.query(requete);
-        if(uris.length()>0){
-            name = uris.getJSONObject(0).getJSONObject("name").getString("value");
-        }else{
+        JSONArray uris = null;
+        try {
+            uris = this.query(requete);
+            if(uris!=null && uris.length()>0){
+                JSONObject res = null;
+                res = uris.getJSONObject(0).getJSONObject("name");
+                String tmp = res.getString("value");
+                if(!tmp.contains("DOCTYPE")) {
+                    name = res.getString("value");
+                }
+            }else{
+                name=this.getTitle(uri);
+            }
+        } catch (Exception e) {
             name=this.getTitle(uri);
         }
         return name;
@@ -250,20 +266,21 @@ public class SparqlQueryExecuter {
     public static String getNameFromView(String uri){
         String name ="";
         String requete = "select ?name {<"+uri+"> rdfs:label ?name}";
-        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://dbpedia.org", "http://dbpedia.org/sparql");
+        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql");
         JSONArray uris = null;
         try {
             uris = sparql.query(requete);
-        } catch (Exception e) {
-            //no name
-        }
-        if(uris.length()>0){
-            try {
-                name = uris.getJSONObject(0).getJSONObject("name").getString("value");
-            } catch (JSONException e) {
-                //no name
+            if(uris!=null && uris.length()>0){
+                JSONObject res = null;
+                res = uris.getJSONObject(0).getJSONObject("name");
+                String tmp = res.getString("value");
+                if(!tmp.contains("DOCTYPE")) {
+                    name = res.getString("value");
+                }
+            }else{
+                name=sparql.getTitle(uri);
             }
-        }else{
+        } catch (Exception e) {
             name=sparql.getTitle(uri);
         }
         return name;
@@ -276,39 +293,23 @@ public class SparqlQueryExecuter {
         try {
             uris = this.query(requete);
         } catch (Exception e) {
-            // pas de title
+            //pas de title
         }
-        if(uris.length()>0){
+        if(uris!=null && uris.length()>0){
             try {
-                title = uris.getJSONObject(0).getJSONObject("name").getString("value");
+                JSONObject res = uris.getJSONObject(0).getJSONObject("name");
+                String tmp = res.getString("value");
+                if(!tmp.contains("DOCTYPE")) {
+                    title = res.getString("value");
+                }
             } catch (Exception e) {
                 //pas de title
             }
-        }else{
-            title=this.getLabel(uri);
         }
 
         return title;
     }
 
-    public String getLabel(String uri){
-        String label ="";
-        String requete = "select ?name {<"+uri+"> rdfs:label ?name}";
-        JSONArray uris = null;
-        try {
-            uris = this.query(requete);
-        } catch (Exception e) {
-            //pas de label
-        }
-        if(uris.length()>0){
-            try {
-                label = uris.getJSONObject(0).getJSONObject("name").getString("value");
-            } catch (Exception e) {
-                //pas de label
-            }
-        };
-        return label;
-    }
 
     public static void main(String[] args) throws Exception {
 

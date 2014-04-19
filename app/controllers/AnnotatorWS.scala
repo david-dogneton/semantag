@@ -14,6 +14,7 @@ object AnnotatorWS {
 
 //  private final val production: String = "http://spotlight.dbpedia.org/rest/annotate"
   private final val fr: String = "http://localhost:2222/rest/annotate"
+  //private final val fr:String ="http://spotlight.sztaki.hu:2225/rest/annotate"
 
   def annotate(text: String): Future[List[ResourceDbPedia]] = {
 

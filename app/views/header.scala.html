@@ -7,10 +7,18 @@
                 <p class="blue" style="margin-top:0px">@Messages("header.slogan")</p>
             </div>
         </a>
+        @user match {
+        case Some(usr) => {
+
+        }
+        case None => {
         <div class="large basic inverted animated fade ui button">
             <div class="visible content">@Messages("header.buttonSubscribe")</div>
             <div class="hidden content" ><a href="@routes.LoginLogout.inscription">@Messages("header.buttonSubscribeHover")</a></div>
         </div>
+        }
+        }
+
         <div class="right item">
             <form action="@routes.Application.search" method="POST">
                 <div class="field">
@@ -53,8 +61,8 @@
             @user match {
             case Some(usr) => {
             <div class="item">
-                <p>Vous êtes connecté en tant que @usr.pseudo</p>
-                <a href="@routes.LoginLogout.logout" class="ui red button" > Se déconnecter !</a>
+                <p>@Messages("header.hi") <strong>@usr.pseudo</strong> !</p>
+                <a href="@routes.LoginLogout.logout" class="ui red button" > @Messages("header.deconnect")</a>
             </div>
             }
             case None => {

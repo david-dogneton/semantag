@@ -9,20 +9,6 @@
             ]
         }
 
-        /*        $http({
-         url: '/getArticlesByTag',
-         method: "POST",
-         data: { 'urlarticle' : url }
-         })
-         .then(function(data) {
-         $scope.news.items=data.liste;
-         console.dir(data.liste);
-         },
-         function(err) { // optional
-         console.log("err : " + err);
-         }
-         );*/
-
         $http.post('/getArticlesByTag',  { 'urlarticle' : url }).success(function (data) {
             console.dir(data);
             $scope.news.items=data.liste;
@@ -30,18 +16,41 @@
         }).error(function (err) {
                     console.log("err : " + err);
                 });
+
+        $scope.gererCoeur = function ($mailUser, $urlArticle) {
+            $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+            var rank = 0;
+            var currentRank = 0;
+            for (var item in $scope.news["items"]) {
+                if ($scope.news["items"][item].url == $urlArticle) rank = currentRank;
+                currentRank++;
+            }
+            if(($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
+            else ($scope.news["items"][rank])['coeurPresent'] = 0;
+        }
+    }
+
+    function ControlleurCoeur($scope, $http) {
+        $http.post('/getLikeEntite',  { 'urlEntite' : "@uriDBpedia" }).success(function(data){
+            $scope.entiteACoeur = data.valeur;
+        });
+        $scope.enregistrerLikeEntite = function($mailUser, $urlEntite) {
+            $http.post("/enregistrerLikeEntite", {mailUser: $mailUser, urlEntite: $urlEntite});
+            if($scope.entiteACoeur == 0)  $scope.entiteACoeur = 1
+            else $scope.entiteACoeur = 0
+        }
     }
 </script>
 <div class="ui grid">
-    <div class="three wide column">
+    <div ng-controller="ControlleurCoeur" class="three wide column">
         <div class="ui one items">
             <div class="item">
                 <div class="image">
-                    <img src="@thumb">
+                    <img src="@thumb" alt="Pas d'image pour cette entité.">
                     @user match {
                         case Some(usr) => {
-                            <a class="like ui corner label">
-                                <i class="like icon"></i>
+                            <a class="like ui corner label" ng-click="enregistrerLikeEntite('@usr.mail', '@uriDBpedia')">
+                                <i ng-class="{'like icon':entiteACoeur == 0, 'like icon cliquee':entiteACoeur == 1}"></i>
                             </a>
                         }
                         case None => {
@@ -113,23 +122,13 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
-<<<<<<< HEAD
-                       {{item['lies']}} articles liés à ce sujet.
-                    </p>
-                    <p ng-show="item['lies']==1">
-                        {{item['lies']}} article lié à ce sujet.
-                    </p>
-                    <p ng-show="item['lies']==0">
-                        </i>Pas d'article lié à ce sujet.
-=======
                         {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
                         1 article lié à ce sujet.
                     </p>
                     <p ng-show="item['lies']==0">
-                       Pas d'article lié à ce sujet.
->>>>>>> 3494a17f2f08b22cff84a571d8eb92fc98efb359
+                        Pas d'article lié à ce sujet.
                     </p>
                     <p>
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>
