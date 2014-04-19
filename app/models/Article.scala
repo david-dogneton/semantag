@@ -275,6 +275,149 @@ object Article {
     }
   }
 
+  def incrNbCoeurs(urlArticle: String): Option[Article] = {
+
+    val result: List[Article] = Cypher(
+      """
+        Match (site:Site)--(article:Article {url: {urlArticle}})
+        set article.nbCoeurs = article.nbCoeurs + 1
+        return  article.titre as titre,
+                article.auteur as auteur,
+                article.description as description,
+                article.date as date,
+                article.url as urlArticle,
+                site.url as urlSite,
+                site.nom as nomSite,
+                site.type as typeSite,
+                ID(site) as idSite,
+                article.image as image,
+                article.consultationsJour as cJ,
+                article.consultationsSemaine as cS,
+                article.consultationsSemaineDerniere as cSD,
+                article.consultationsMois as cM,
+                article.consultations as coS,
+                article.totalEtoiles as totE,
+                article.nbEtoiles as nbE,
+                article.nbCoeurs as nbC,
+                ID(article) as idArticle
+      """).on("urlArticle" -> urlArticle)().collect {
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      nomSite: String,
+      typeSite: String,
+      idSite: BigDecimal,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal) =>
+        new Article(
+          titre,
+          auteur,
+          description,
+          new DateTime(date),
+          url,
+          new Site(urlSite, nomSite, typeSite, idSite.toInt),
+          image,
+          consultationsJour.toInt,
+          consultationsSemaine.toInt,
+          consultationsSemaineDerniere.toInt,
+          consultationsMois.toInt,
+          consultations.toInt,
+          totalEtoiles.toInt,
+          nbEtoiles.toInt,
+          nbCoeurs.toInt,
+          id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format pour l'article")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head :: tail => Some(head)
+    }
+  }
+
+
+  def decrNbCoeurs(urlArticle: String): Option[Article] = {
+
+    val result: List[Article] = Cypher(
+      """
+        Match (site:Site)--(article:Article {url: {urlArticle}})
+        set article.nbCoeurs = article.nbCoeurs - 1
+        return  article.titre as titre,
+                article.auteur as auteur,
+                article.description as description,
+                article.date as date,
+                article.url as urlArticle,
+                site.url as urlSite,
+                site.nom as nomSite,
+                site.type as typeSite,
+                ID(site) as idSite,
+                article.image as image,
+                article.consultationsJour as cJ,
+                article.consultationsSemaine as cS,
+                article.consultationsSemaineDerniere as cSD,
+                article.consultationsMois as cM,
+                article.consultations as coS,
+                article.totalEtoiles as totE,
+                article.nbEtoiles as nbE,
+                article.nbCoeurs as nbC,
+                ID(article) as idArticle
+      """).on("urlArticle" -> urlArticle)().collect {
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      nomSite: String,
+      typeSite: String,
+      idSite: BigDecimal,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal) =>
+        new Article(
+          titre,
+          auteur,
+          description,
+          new DateTime(date),
+          url,
+          new Site(urlSite, nomSite, typeSite, idSite.toInt),
+          image,
+          consultationsJour.toInt,
+          consultationsSemaine.toInt,
+          consultationsSemaineDerniere.toInt,
+          consultationsMois.toInt,
+          consultations.toInt,
+          totalEtoiles.toInt,
+          nbEtoiles.toInt,
+          nbCoeurs.toInt,
+          id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format pour l'article")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head :: tail => Some(head)
+    }
+  }
+
 
   /**
    * Renvoie l'article correspondant à l'identifiant passé en paramètre.

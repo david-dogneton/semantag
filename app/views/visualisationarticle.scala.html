@@ -12,6 +12,10 @@
         }
 
 
+        $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
+            $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
+        }
+
         $http.get('/displaylinkedart/' + id).success(function (data) {
             console.dir(data);
             $scope.news.items = data.liste;
@@ -41,6 +45,9 @@
             $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
             if ($scope.articleACoeur == 0)  $scope.articleACoeur = 1;
             else $scope.articleACoeur = 0;
+        }
+        $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
+            $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
         }
     }
 </script>
@@ -74,8 +81,7 @@
 
                     <div class="extra">
                         <i class="unhide icon"></i> @article.consultationsJour |
-                        <i class="heart icon"></i> @article.nbCoeurs |
-                        <i class="star icon"></i> @article.nbEtoiles
+                        <i class="heart icon"></i> @article.nbCoeurs
                     </div>
                 </div>
             </div>
@@ -84,8 +90,14 @@
     </div>
     <div ng-controller="EntityNewsRenderer" class="ten wide column">
         <div class="ui piled segment">
-            <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
-
+            @user match {
+                case Some(usr) => {
+                    <h2><a href="@article.url" target="_blank" ng-click="enregistrerLecture('@usr.mail', '@article.url')">@article.titre</a></h2>
+                }
+                case None => {
+                    <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
+                }
+            }
             <p>@Html(article.description)</p>
 
             <p style="font-weight:bold">Le @article.date.dayOfMonth().get() / @article.date.monthOfYear().get() /
@@ -121,16 +133,24 @@
 
                 <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
                 <div class="content">
-                    <a href="{{item['url']}}" target="_blank">
-                        <div class="name">{{item['titre']}}</div>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a href="{{item['url']}}" target="_blank" ng-click="enregistrerLecture('@usr.mail', item['url'])">
+                                <div class="name">{{item['titre']}}</div>
+                            </a>
+                        }
+                        case None => {
+                            <a href="{{item['url']}}" target="_blank">
+                                <div class="name">{{item['titre']}}</div>
+                            </a>
+                        }
+                    }
 
                     <p style="font-weight:bold">{{item['site']}}</p>
                     <!--<p class="description">{{item['description']}}</p>-->
                     <div class="extra">
                         <i class="unhide icon"></i> {{item['consultationsJour']}} |
-                        <i class="heart icon"></i> {{item['coeurs']}} |
-                        <i class="star icon"></i> {{item['note']}}
+                        <i class="heart icon"></i> {{item['coeurs']}}
                     </div>
                     <p>
                         <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px"

@@ -3,8 +3,8 @@ header.slogan=Find what you like
 header.presentation=Présentation
 header.subscribe=S''inscrire
 header.connect=Se connecter
-header.buttonSubscribe=Pas encore inscrit?
-header.buttonSubscribeHover=Je m''inscris!
+header.buttonSubscribe=Pas encore inscrit ?
+header.buttonSubscribeHover=Je m''inscris !
 header.stats=Statistiques
 header.entities=Entités
 header.stats.today=Aujourd''hui
@@ -13,11 +13,11 @@ header.stats.thisMonth=Ce mois-ci
 header.stats.fromBeginning=Depuis le début
 header.search=Rechercher un article qui parle de...
 header.hi=Salut
-header.deconnect=Deconnexion
+header.deconnect=Déconnexion
 
 #INDEX
 index.title=Semantag : l''actualité sémantique
-index.header=De quoi parle-on vraiment sur le Net ?
+index.header=De quoi parle-t-on vraiment sur le Net ?
 
 #PAGE RESULTATS
 results.title=Résultats de la recherche
@@ -26,22 +26,22 @@ results.title=Résultats de la recherche
 stats.title=Statistiques générales
 
 #VISUALISATION ENTITE
-entity.title=Semantag : Entité
+entity.title=Semantag : entité
 
 #PRESENTATION
 presentation.title=Semantag : le concept
 presentation.header=Semantag est un moteur d''analyse, de structuration et de recommandation sémantique d''articles du Web.
-presentation.grid.one.title=Aggrégation de flux RSS
+presentation.grid.one.title=Agrégation de flux RSS
 presentation.grid.one.link=Tous les sites
 presentation.grid.one.content=Les articles répertoriés sur Semantag sont la propriété exclusive des sites qui les fournissent. Nous utilisons les flux RSS pour analyser le titre et la description de chaque article pour les l''incorporer dans le système.
 presentation.grid.two.title=Analyse et taggage d''articles
 presentation.grid.two.link=Articles à la une
-presentation.grid.two.content=Semantag analyse les articles de nombreux sites d''actualités pour comprendre leur contenu et en extraire des entités (acteurs, films, sportifs, villes, etc...).
+presentation.grid.two.content=Semantag analyse les articles de nombreux sites d''actualités pour comprendre leur contenu et en extraire des entités (acteurs, films, sportifs, villes, etc.).
 presentation.grid.three.title=Recommandation personnalisée
 presentation.grid.three.link=Connexion
-presentation.grid.three.content=Semantag vous recommande des articles selon vos goûts et vos choix, filtrables par domaines (Sports, Sciences, Cinéma...) ou par entités particulières. Inscrivez-vous en quelques secondes à partir de votre adresse mail !
+presentation.grid.three.content=Semantag vous recommande des articles selon vos goûts et vos choix, filtrables par domaines (Sports, Sciences, Cinéma, ...) ou par entités particulières. Inscrivez-vous en quelques secondes à partir de votre adresse mail !
 presentation.grid.four.title=Analyses statistiques
 presentation.grid.four.link=Stats publiques
 presentation.grid.four.content=Semantag génére automatiquement un grand nombre de statistiques à partir de l''actualité du Web. Il devient facile de voir de quoi on parle le plus sur la Toile.
 presentation.featured.sentence=Semantag permet de lier des articles du Web entre eux selon un matching par tags.<br/>Ces tags correspondent à des entités de DBpedia, la base de données structurée de Wikipédia.<br/>L''annotation des articles permettant de générer des tags est fournie par DBpedia Spotlight.
-presentation.featured.us=Semantag a été réalisé dans le cadre d'un projet de fin d''études par 4 élèves-ingénieurs à l''Ecole Internationale des Sciences du Traitement de l'Information (EISTI) qui remercient le travail des membres du projet open-source DBpedia Spotlight.
+presentation.featured.us=Semantag a été réalisé dans le cadre d'un projet de fin d''études par 4 élèves-ingénieurs à l''École Internationale des Sciences du Traitement de l'Information (EISTI), qui remercient le travail des membres du projet open-source DBpedia Spotlight.

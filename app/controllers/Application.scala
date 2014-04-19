@@ -111,32 +111,36 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     implicit request =>
       val bodyJSonOpt = request.body.asJson
       var aCoeur = 0
+      var nbCoeurs = 0
       bodyJSonOpt match {
         case Some(bodyJSon) => {
           val urlEntite: String = (bodyJSon \ "urlEntite").as[String]
           val userOpt = loggedIn
-          userOpt match {
-            case Some(user) => {
-              val entiteOpt = Entite.getByUrl(urlEntite)
-              entiteOpt match {
-                case Some(entite) => {
+          val entiteOpt = Entite.getByUrl(urlEntite)
+          entiteOpt match {
+            case Some(entite) => {
+              nbCoeurs = AppreciationEntite.getNbCoeurs(entite)
+              Logger.debug("On a récupéré le nombre de coeurs, et il est de : "+nbCoeurs)
+              userOpt match {
+                case Some(user) => {
                   val appreciationEntiteOpt = AppreciationEntite.get(user, entite)
                   appreciationEntiteOpt match {
                     case Some(appreciation) => {
-                       aCoeur = 1
+                      aCoeur = 1
+                      nbCoeurs = AppreciationEntite.getNbCoeurs(entite)
                     }
                     case None => {
                     }
                   }
                 }
-                case None => throw new Exception("AppreciationEntité not found.")
+                case None => {}
               }
             }
-            case None => throw new Exception("Utilisateur not found.")
+            case None => throw new Exception("Entité not found.")
           }
         }
       }
-      Ok(Json.obj("valeur" -> aCoeur))
+      Ok(Json.obj("valeur" -> aCoeur, "nbCoeurs" -> nbCoeurs))
   }
 
   def getLikeArticle() = StackAction {
@@ -396,12 +400,14 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getTop(idType: Int) = StackAction {
     implicit request =>
 
-      val top: List[Entite] = Entite.topAnnotations(100,idType)
-      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
-      top.length match{
+      val top: List[Entite] = Entite.topAnnotations(100, idType)
+      val sparql: SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      top.length match {
         case 0 =>
-          val res= {Json.obj("nom" -> "Pas de résultats pour ce filtrage")}
-          Ok(Json.obj("liste"->res))
+          val res = {
+            Json.obj("nom" -> "Pas de résultats pour ce filtrage")
+          }
+          Ok(Json.obj("liste" -> res))
         case _ =>
           val res: List[JsObject] = top.map(entite => {
             Json.obj("nom" -> sparql.getName(entite.url),
@@ -410,19 +416,21 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
               "id" -> entite.id
             )
           })
-          Ok(Json.obj("liste"->res))
+          Ok(Json.obj("liste" -> res))
       }
   }
 
   def getTopJour(idType: Int) = StackAction {
     implicit request =>
 
-      val top: List[Entite] = Entite.topAnnotationsJour(100,idType)
-      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
-      top.length match{
+      val top: List[Entite] = Entite.topAnnotationsJour(100, idType)
+      val sparql: SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      top.length match {
         case 0 =>
-          val res= {Json.obj("nom" -> "Pas de résultats pour ce filtrage")}
-          Ok(Json.obj("liste"->res))
+          val res = {
+            Json.obj("nom" -> "Pas de résultats pour ce filtrage")
+          }
+          Ok(Json.obj("liste" -> res))
         case _ =>
           val res: List[JsObject] = top.map(entite => {
             Json.obj("nom" -> sparql.getName(entite.url),
@@ -431,19 +439,21 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
               "id" -> entite.id
             )
           })
-          Ok(Json.obj("liste"->res))
+          Ok(Json.obj("liste" -> res))
       }
   }
 
   def getTopSemaine(idType: Int) = StackAction {
     implicit request =>
 
-      val top: List[Entite] = Entite.topAnnotationsSemaine(100,idType)
-      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
-      top.length match{
+      val top: List[Entite] = Entite.topAnnotationsSemaine(100, idType)
+      val sparql: SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      top.length match {
         case 0 =>
-          val res= {Json.obj("nom" -> "Pas de résultats pour ce filtrage")}
-          Ok(Json.obj("liste"->res))
+          val res = {
+            Json.obj("nom" -> "Pas de résultats pour ce filtrage")
+          }
+          Ok(Json.obj("liste" -> res))
         case _ =>
           val res: List[JsObject] = top.map(entite => {
             Json.obj("nom" -> sparql.getName(entite.url),
@@ -452,19 +462,21 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
               "id" -> entite.id
             )
           })
-          Ok(Json.obj("liste"->res))
+          Ok(Json.obj("liste" -> res))
       }
   }
 
   def getTopMois(idType: Int) = StackAction {
     implicit request =>
 
-      val top: List[Entite] = Entite.topAnnotationsMois(100,idType)
-      val sparql : SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
-      top.length match{
+      val top: List[Entite] = Entite.topAnnotationsMois(100, idType)
+      val sparql: SparqlQueryExecuter = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql")
+      top.length match {
         case 0 =>
-          val res= {Json.obj("nom" -> "Pas de résultats pour ce filtrage")}
-          Ok(Json.obj("liste"->res))
+          val res = {
+            Json.obj("nom" -> "Pas de résultats pour ce filtrage")
+          }
+          Ok(Json.obj("liste" -> res))
         case _ =>
           val res: List[JsObject] = top.map(entite => {
             Json.obj("nom" -> sparql.getName(entite.url),
@@ -473,7 +485,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
               "id" -> entite.id
             )
           })
-          Ok(Json.obj("liste"->res))
+          Ok(Json.obj("liste" -> res))
       }
   }
 
@@ -961,9 +973,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         case Some(entite) =>
           val url: String = entite.url
           val fullName: String = sparql.getName(url);
-          val name = if(fullName.length>0) fullName else entite.nom
+          val name = if (fullName.length > 0) fullName else entite.nom
           Ok(views.html.entite(name, sparql.getImage(url), sparql.getImageDescription(url), sparql.getAbstract(url), sparql.getWikiLink(url), url))
-        case None =>  Ok(views.html.index())
+        case None => Ok(views.html.index())
       }
   }
 

@@ -25,7 +25,7 @@ object Note {
       "nbEtoiles" -> note.nbEtoiles,
       "aCoeur" -> note.aCoeur
     ).execute()
-    Logger.debug("Résultat de la création de la note : "+resultat)
+    Article.incrNbCoeurs(note.article.url)
     //AppreciationEntite.majAvecCreate(note)
     AppreciationDomaine.majAvecCreate(note)
     AppreciationSite.majAvecCreate(note)
@@ -48,7 +48,8 @@ object Note {
           "nbEtoiles" -> note.nbEtoiles,
           "aCoeur" -> note.aCoeur
         ).execute()
-        AppreciationEntite.majAvecCreate(note)
+        Article.incrNbCoeurs(article.url)
+        //AppreciationEntite.majAvecCreate(note)
         AppreciationDomaine.majAvecCreate(note)
         AppreciationSite.majAvecCreate(note)
         resultat
@@ -159,6 +160,7 @@ object Note {
       """
     ).on("mailUser" -> user.mail,
       "urlArt" -> article.url).execute()
+    Article.decrNbCoeurs(article.url)
     result
   }
 

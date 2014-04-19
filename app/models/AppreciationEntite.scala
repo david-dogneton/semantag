@@ -112,6 +112,21 @@ object AppreciationEntite {
     }
   }
 
+  def getNbCoeurs(entite: Entite): Int = {
+
+    val result = Cypher(
+      """
+         match (user: Utilisateur)-[r:appreciationEntite]-(entite: Entite{url : {urlEnt}})
+         return count(r) as nbCoeurs;
+      """
+    ).on("urlEnt" -> entite.url)().toList
+
+    result match {
+      case Nil => throw new Exception("AppreciationEntite node doesn't exist.")
+      case head :: tail => head[Int]("nbCoeurs")
+    }
+  }
+
   def setFavori(user: Utilisateur, entite: Entite): Option[AppreciationEntite] = {
 
     val estFavoriList = Cypher(
