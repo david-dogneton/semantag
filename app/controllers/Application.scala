@@ -877,7 +877,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       res match{
         case Some(entite) =>
           val url: String = entite.url
-          Ok(views.html.entite(sparql.getName(url), sparql.getImage(url), sparql.getImageDescription(url), sparql.getAbstract(url), sparql.getWikiLink(url), url))
+          val fullName: String = sparql.getName(url);
+          val name = if(fullName.length>0) fullName else entite.nom
+          Ok(views.html.entite(name, sparql.getImage(url), sparql.getImageDescription(url), sparql.getAbstract(url), sparql.getWikiLink(url), url))
         case None =>  Ok(views.html.index())
       }
   }

@@ -165,7 +165,7 @@ public class SparqlQueryExecuter {
         String img ="noPic";
         String requete = "select ?thumb {<"+uri+"> dbpedia-owl:thumbnail ?thumb}";
         JSONArray uris = null;
-        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://dbpedia.org", "http://dbpedia.org/sparql");
+        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql");
         try {
             uris = sparql.query(requete);
             if(uris!=null && uris.length()>0){
@@ -266,24 +266,21 @@ public class SparqlQueryExecuter {
     public static String getNameFromView(String uri){
         String name ="";
         String requete = "select ?name {<"+uri+"> rdfs:label ?name}";
-        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://dbpedia.org", "http://dbpedia.org/sparql");
+        SparqlQueryExecuter sparql = new SparqlQueryExecuter("http://fr.dbpedia.org", "http://fr.dbpedia.org/sparql");
         JSONArray uris = null;
         try {
             uris = sparql.query(requete);
-        } catch (Exception e) {
-            //no name
-        }
-        if(uris!=null && uris.length()>0){
-            try {
-                JSONObject res = uris.getJSONObject(0).getJSONObject("name");
+            if(uris!=null && uris.length()>0){
+                JSONObject res = null;
+                res = uris.getJSONObject(0).getJSONObject("name");
                 String tmp = res.getString("value");
                 if(!tmp.contains("DOCTYPE")) {
                     name = res.getString("value");
                 }
-            } catch (JSONException e) {
-                //no name
+            }else{
+                name=sparql.getTitle(uri);
             }
-        }else{
+        } catch (Exception e) {
             name=sparql.getTitle(uri);
         }
         return name;
@@ -306,7 +303,7 @@ public class SparqlQueryExecuter {
                     title = res.getString("value");
                 }
             } catch (Exception e) {
-               //pas de title
+                //pas de title
             }
         }
 

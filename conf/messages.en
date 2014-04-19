@@ -12,6 +12,8 @@ header.stats.thisWeek=This week
 header.stats.thisMonth=This month
 header.stats.fromBeginning=From the beginning
 header.search=Find articles talking about...
+header.hi=Hi
+header.deconnect=Deconnection
 
 #INDEX
 index.title=Semantag : semantic news
