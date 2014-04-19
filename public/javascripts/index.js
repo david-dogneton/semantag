@@ -9,11 +9,19 @@ app.filter('fromNow', function () {
 
 function NewsRenderer($scope, $http) {
 
-    $scope.gererCoeur = function($mailUser, $urlArticle) {
+    $scope.gererCoeur = function ($mailUser, $urlArticle) {
         $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+        var rank = 0;
+        var currentRank = 0;
+        for (var item in $scope.news["items"]) {
+            if ($scope.news["items"][item].url == $urlArticle) rank = currentRank;
+            currentRank++;
+        }
+        if(($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
+        else ($scope.news["items"][rank])['coeurPresent'] = 0;
     }
 
-    $scope.enregistrerLecture = function($mailUser, $urlArticle) {
+    $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
         $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
     }
 
@@ -147,25 +155,25 @@ function NewsRenderer($scope, $http) {
     $http.get('/getart').success(function (data) {
         console.log("data : " + data);
         console.dir(data);
-        $scope.news.items=data.liste;
+        $scope.news.items = data.liste;
 
     }).error(function (err) {
             console.log("err : " + err);
-    });
+        });
     $scope.limite = 5;
     $scope.filtrage = [];
     $scope.domaines = {
         "items": [
-            ]
+        ]
     }
     $scope.filtrage['domaine'] = "";
 
     $http.get('/getDomaines').success(function (data) {
         console.dir(data);
-        $scope.domaines.items=data.liste;
+        $scope.domaines.items = data.liste;
     }).error(function (err) {
-        console.log("err : " + err);
-    });
+            console.log("err : " + err);
+        });
 
 
     $scope.tops = {
@@ -175,7 +183,7 @@ function NewsRenderer($scope, $http) {
 
     $http.get('/getTop').success(function (data) {
         console.dir(data);
-        $scope.tops.items=data.liste;
+        $scope.tops.items = data.liste;
     }).error(function (err) {
             console.log("err : " + err);
         });

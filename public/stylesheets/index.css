@@ -1,4 +1,8 @@
-.ui.items .item .like.label .icon .cliquee {
+.ui .label .cliquee {
+    color: #ef404a;
+}
+
+.ui.button .cliquee {
     color: #ef404a;
 }
 
