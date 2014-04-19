@@ -38,9 +38,17 @@
             <div class="item">
                 <div class="image">
                     <img src="@thumb">
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a class="like ui corner label">
+                                <i class="like icon"></i>
+                            </a>
+                        }
+                        case None => {
+
+                        }
+                    }
+
                 </div>
                 <div class="content">
                     <div class="name">@thumbDescription</div>
@@ -67,13 +75,22 @@
         </div>
         <div class="ui five items">
             <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
-                <a class="like ui corner label">
-                    <i class="like icon"></i>
-                </a>
+
+                @user match {
+                    case Some(usr) => {
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+                    }
+                    case None => {
+
+                    }
+                }
+
 
                 <a href="{{item['url']}}" target="_blank">
                     <div class="image">
-                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}" alt="">
                         <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
                         <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
                     </div>
@@ -96,6 +113,7 @@
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
                     </p>
                     <p ng-show="item['lies']>1">
+<<<<<<< HEAD
                        {{item['lies']}} articles liés à ce sujet.
                     </p>
                     <p ng-show="item['lies']==1">
@@ -103,6 +121,15 @@
                     </p>
                     <p ng-show="item['lies']==0">
                         </i>Pas d'article lié à ce sujet.
+=======
+                        {{item['lies']}} articles liés à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==1">
+                        1 article lié à ce sujet.
+                    </p>
+                    <p ng-show="item['lies']==0">
+                       Pas d'article lié à ce sujet.
+>>>>>>> 3494a17f2f08b22cff84a571d8eb92fc98efb359
                     </p>
                     <p>
                         <a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a>

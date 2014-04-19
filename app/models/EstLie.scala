@@ -1,6 +1,7 @@
 package models
 
 import org.anormcypher.{CypherRow, Cypher}
+import org.joda.time.DateTime
 
 /**
  * Created by Administrator on 19/03/14.
@@ -57,6 +58,79 @@ object EstLie {
     result.map {
       case Some(article) => article
       case None => throw new NoSuchElementException("Pas d'article")
+    }
+  }
+
+  def getByIdWithPonderation(id : Int): Option[List[(Article, Double)]] = {
+    val result: List[(Article, Double)] = Cypher(
+      """
+        match (article1: Article)-[r:estLie]-(article2: Article)
+                 where ID(article1) = {idArticle}
+                 return  article.titre,
+                        article.auteur,
+                        article.description,
+                        article.date,
+                        article.url,
+                        site.url,
+                        site.nom,
+                        site.type,
+                        ID(site),
+                        article.image,
+                        article.consultationsJour,
+                        article.consultationsSemaine,
+                        article.consultationsSemaineDerniere,
+                        article.consultationsMois,
+                        article.consultations,
+                        article.totalEtoiles,
+                        article.nbEtoiles,
+                        article.nbCoeurs,
+                        ID(article),
+                        r.ponderation
+                 order by r.nbCoeurs DESC;
+      """).on("idArticle" -> id)().collect {
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      nomSite: String,
+      typeSite: String,
+      idSite: BigDecimal,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal,
+      ponderation: BigDecimal) =>
+        (new Article(
+          titre,
+          auteur,
+          description,
+          new DateTime(date),
+          url,
+          new Site(urlSite, nomSite, typeSite, idSite.toInt),
+          image,
+          consultationsJour.toInt,
+          consultationsSemaine.toInt,
+          consultationsSemaineDerniere.toInt,
+          consultationsMois.toInt,
+          consultations.toInt,
+          totalEtoiles.toInt,
+          nbEtoiles.toInt,
+          nbCoeurs.toInt,
+          id.toInt), ponderation.toDouble)
+      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
+    }.toList
+
+    result match {
+      case Nil => None
+      case _ => Some(result)
     }
   }
 

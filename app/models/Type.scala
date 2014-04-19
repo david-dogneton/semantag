@@ -41,4 +41,21 @@ object Type {
       case head::tail => Some(head)
     }
   }
+
+  def getAll: List[Type] = {
+    val result: List[Type] = Cypher(
+      """
+        Match (type:Type)
+        return  distinct ID(type) as id, type.denomination as denomination ORDER BY type.denomination;
+      """)().collect {
+      case CypherRow(id: BigDecimal, denomination: String) => new Type(denomination, id.toInt)
+      case _ => throw new IllegalArgumentException("Mauvais format du type")
+    }.toList
+
+    result
+  }
+
+
+
+
 }

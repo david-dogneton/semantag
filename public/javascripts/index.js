@@ -9,6 +9,14 @@ app.filter('fromNow', function () {
 
 function NewsRenderer($scope, $http) {
 
+    $scope.gererCoeur = function($mailUser, $urlArticle) {
+        $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
+    }
+
+    $scope.enregistrerLecture = function($mailUser, $urlArticle) {
+        $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
+    }
+
     $scope.news = {
         "items": [
 //            {

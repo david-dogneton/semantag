@@ -359,8 +359,4 @@ Match (article:Article) where ID(article) = {id} delete article;
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultations DESC Limit 5;").toList
     result.map(_.get)
   }
-
-
-
-
 }

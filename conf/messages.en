@@ -20,6 +20,9 @@ index.header=What do we really talk about on the Web ?
 #PAGE RESULTATS
 results.title=Results
 
+#PAGE STATISTIQUES
+stats.title=Global Stats
+
 #VISUALISATION ENTITE
 entity.title=Semantag : Entity
 

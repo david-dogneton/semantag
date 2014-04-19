@@ -1,3 +1,7 @@
+.ui.items .item .like.label .icon .cliquee {
+    color: #ef404a;
+}
+
 .ui.items .item > .content > p {
     clear: both;
 }

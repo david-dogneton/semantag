@@ -7,21 +7,26 @@ GET         /                                 controllers.Application.index
 GET         /jsRoutes                         controllers.Application.javascriptRoutes
 GET         /getart                           controllers.Application.getArt
 GET         /getDomaines                      controllers.Application.getDomaines
-GET         /getTop                           controllers.Application.getTop
+GET         /getTypes                         controllers.Application.getTypes
+GET         /getTop                           controllers.Application.getTop10
+GET         /statsAnnotations/:idType                   controllers.Application.getTop(idType: Int)
+GET         /statsAnnotationsJour/:idType               controllers.Application.getTopJour(idType: Int)
+GET         /statsAnnotationsSemaine/:idType            controllers.Application.getTopSemaine(idType: Int)
+GET         /statsAnnotationsMois/:idType               controllers.Application.getTopMois(idType: Int)
 POST        /getArticlesByTag                 controllers.Application.getArticlesByTag
 
 GET         /majsites                         controllers.Application.miseAJourSites
 GET         /majflux                          controllers.Application.miseAJourFlux
 
-#POST        /displayart                       controllers.Application.displayArt
+#POST       /displayart                       controllers.Application.displayArt
 
-GET        /displaylinkedart/:id                 controllers.Application.displayLinkedArt(id: Int)
-GET        /displayart/:id                    controllers.Application.displayArt(id: Int)
+GET         /displaylinkedart/:id             controllers.Application.displayLinkedArt(id: Int)
+GET         /displayart/:id                   controllers.Application.displayArt(id: Int)
 GET         /connexion                        controllers.LoginLogout.connexion
 POST        /authenticate                     controllers.LoginLogout.authenticate
 GET         /mapage                           controllers.Application.mapage
 GET         /logout                           controllers.LoginLogout.logout
-GET        /entite/:id                       controllers.Application.entite(id: Int)
+GET         /entite/:id                       controllers.Application.entite(id: Int)
 
 GET         /inscription                      controllers.LoginLogout.inscription
 POST        /inscriptionsubmit                controllers.LoginLogout.inscriptionsubmit
@@ -51,3 +56,7 @@ GET         /createAppreciationEntite         controllers.Application.createAppr
 GET         /testBDD                          controllers.Application.getUser
 GET         /annotation/test                  controllers.Application.test
 GET         /presentation                     controllers.Application.presentation
+GET         /stats                            controllers.Application.statistiques
+
+POST        /changerCoeur                     controllers.Application.changerCoeur
+POST        /enregistrerLecture               controllers.Application.enregistrerLecture

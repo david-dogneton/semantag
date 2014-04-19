@@ -57,5 +57,45 @@ object Recommandation {
     result
   }
 
+  def buildRecommandations(user: Utilisateur): Boolean = {
+    val listeEntitesOpt = Utilisateur.getTopEntitesPasFavories(user, 10)
+    val articlesLusOpt = Utilisateur.getArticlesLus(user)
+    var res = true
+    listeEntitesOpt match {
+      case Some(listeEntites) => {
+        articlesLusOpt match {
+          case Some(articlesLus) => {
+            for (entite <- listeEntites) {
+              var listeArticlesOpt = Tag.getArticlesLies(entite, 10)
+              listeArticlesOpt match {
+                case Some(listeArticles) => {
+                  val max = maxListe(listeArticles)
+                  //val listeRecommandations = listeArticles diff articlesLus
+                  for (article <- listeArticles) {
+                    if (!articlesLus.contains(article._1)) {
+                      res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      case None => None
+    }
+    res
+  }
+
+  def maxListe(articles: List[(Article, Int)]): Int = {
+    var max = 0
+    for (article <- articles) {
+      if (article._2 > max) {
+        max = article._2
+      }
+    }
+    max
+  }
+
 
 }

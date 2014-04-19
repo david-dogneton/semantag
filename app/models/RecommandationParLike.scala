@@ -21,7 +21,7 @@ object RecommandationParLike {
         urlArticle: {urlArticle},
         urlEntite: {urlEntite},
         mailUser: {mailUser}});
-        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
+                                        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
 
     if (resultCreate) {
       val otherResult: Boolean = Cypher(
@@ -87,7 +87,7 @@ object RecommandationParLike {
                  reco.urlArticle as urlArticle,
                  reco.urlEntite as urlEntite,
                  reco.ponderation as ponderation
-                 order by r.ponderation
+                 order by r.ponderation DESC
                  limit {nbRecommandations};
       """).on("mailUser" -> user.mail, "nbRecommandations" -> nbRecommandations)().collect {
       case CypherRow(mailUser: String,
@@ -130,7 +130,7 @@ object RecommandationParLike {
         match (user: Utilisateur {mail : {mailUser}})-[r:recommandation]-(article: Article)
                  return r.ponderation as ponderation,
                  article.url as urlArticle
-                 order by r.ponderation
+                 order by r.ponderation DESC
                  limit {nbRecommandations};
       """).on("mailUser" -> user.mail, "nbRecommandations" -> nbRecommandations)().collect {
       case CypherRow(ponderation: BigDecimal,
@@ -150,6 +150,56 @@ object RecommandationParLike {
       case Nil => None
       case _ => Some(result)
     }
+  }
+
+  def buildRecommandationsParLike(user: Utilisateur): Boolean = {
+    var res = true
+    val listeEntitesFavOpt = Utilisateur.getTopEntites(user, 50)
+    val listeArticlesFavOpt = Utilisateur.getTopsArticles(user, 50)
+    val listeSitesFavOpt = Utilisateur.getTopsSites(user, 30)
+    val listeArticlesLusOpt = Utilisateur.getArticlesLus(user)
+    listeEntitesFavOpt match {
+      case Some(listeEntitesFav) => {
+        listeArticlesFavOpt match {
+          case Some(listeArticlesFav) => {
+            listeArticlesLusOpt match {
+              case Some(listeArticlesLus) => {
+                listeSitesFavOpt match {
+                  case Some(listeSitesFav) => {
+                    for (article <- listeArticlesFav) {
+                      val listeArticlesLiesOpt = EstLie.getByIdWithPonderation(article.id)
+                      listeArticlesLiesOpt match {
+                        case Some(listeArticlesLies) => {
+                          for (articleLie <- listeArticlesLies) {
+                            if (!listeArticlesLus.contains(articleLie._1)) {
+                              var ponderation = 0.6 * articleLie._2
+                              if (listeSitesFav.contains(articleLie._1.site)) {
+                                ponderation += 0.3 * (listeSitesFav.indexOf(articleLie._1.site) / listeSitesFav.size)
+                              }
+                              val listeEntitesArticleLie = Tag.getTagsOfArticles(articleLie._1)
+                              for (entite <- listeEntitesArticleLie) {
+                                if (listeEntitesFav.contains(entite._1)) {
+                                  RecommandationParLike.create(new RecommandationParLike(user, articleLie._1, entite._1, ponderation + 0.1))
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                  case None => None
+                }
+              }
+              case None => None
+            }
+          }
+          case None => None
+        }
+      }
+      case None => None
+    }
+    res
   }
 
 }

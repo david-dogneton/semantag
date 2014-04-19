@@ -59,7 +59,7 @@ object Entite {
     Cypher(
       """
         Match  (entite:Entite) """+criteria+"""
-        return  entite.nom,
+        return  distinct entite.nom,
                 entite.url,
                 entite.apparitionsJour,
                 entite.apparitionsSemaine,
@@ -114,46 +114,53 @@ object Entite {
     }
   }
 
-  def getTopEntites(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
-    val result: List[Entite] = Cypher(
-      """
-        match (user: Utilisateur {mail : {mailUser}})-[r:appreciationEntite]-(entite: Entite)
-                 return entite.nom as nom,
-                 entite.url as url,
-                 entite.apparitionsJour as apparitionsJour,
-                 entite.apparitionsSemaine as apparitionsSemaine,
-                 entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
-                 entite.apparitionsMois as apparitionsMois,
-                 entite.apparitions as apparitions
-                 order by r.quantite
-                 limit {nbEntites};
-      """).on("mailUser" -> user.mail, "nbEntites" -> nbEntites)().collect {
-      case CypherRow(nom: String,
-      url: String,
-      apparitionsJour: BigDecimal,
-      apparitionsSemaine: BigDecimal,
-      apparitionsSemaineDerniere: BigDecimal,
-      apparitionsMois: BigDecimal,
-      apparitions: BigDecimal) =>
-        new Entite(nom,
-          url,
-          apparitionsJour.toInt,
-          apparitionsSemaine.toInt,
-          apparitionsSemaineDerniere.toInt,
-          apparitionsMois.toInt,
-          apparitions.toInt)
-      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-    }.toList
-
-    result match {
-      case Nil => None
-      case _ => Some(result)
-    }
-  }
-
   def lesPlusTaggesDuJour(): List[Entite] = {
     val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit 10;").toList
     result.map(_.get)
+  }
+
+  def topAnnotations(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitions DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitions DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsMois(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsMois DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsMois DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsSemaine(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsSemaine DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsSemaine DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
+  }
+
+  def topAnnotationsJour(nombre:Int, idTypeEntite:Int): List[Entite] = {
+    idTypeEntite match{
+      case -1 =>
+        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+        result.map(_.get)
+      case _ =>
+        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+        result.map(_.get)
+    }
   }
 
   def incrApparitions(entite : Entite): Stream[CypherResultRow] = {
