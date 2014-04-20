@@ -117,6 +117,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
         case Some(bodyJSon) => {
           val urlEntite: String = (bodyJSon \ "urlEntite").as[String]
           val userOpt = loggedIn
+          Logger.debug("URL recherché : "+urlEntite)
           val entiteOpt = Entite.getByUrl(urlEntite)
           entiteOpt match {
             case Some(entite) => {

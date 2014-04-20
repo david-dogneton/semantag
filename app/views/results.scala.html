@@ -3,15 +3,22 @@
 
 <div class="ui grid">
     <div class="thirteen wide column">
-        <div class="ui piled segment">
+        <div class="ui piled segment" ng-controller="GestionEntites">
             <h2>Entités pour "@search"</h2>
             <p>@entites.length résultat(s)</p>
             <div class="ui seven items">
                 @for(entite <- entites) {
                 <div class="item" >
-                    <a class="like ui corner label">
-                        <i class="like icon"></i>
-                    </a>
+                    @user match {
+                        case Some(usr) => {
+                            <a class="like ui corner label">
+                                <i class="like icon"></i>
+                            </a>
+                        }
+                        case None => {
+
+                        }
+                    }
                     <a href="/entite/@entite.id">
                         <div class="image">
                             @sparql.SparqlQueryExecuter.getImageFromView(entite.url) match{
@@ -24,7 +31,7 @@
                         <div class="name"><a href="/entite/@entite.id">@sparql.SparqlQueryExecuter.getNameFromView(entite.url)</a></div>
                         <p class="description"></p>
                         <div class="extra">
-                            <i class="heart icon"></i> 1560 | <i class="pencil icon"></i> @Tag.getNombreArticlesLies(entite)
+                            <i class="heart icon"></i> @AppreciationEntite.getNbCoeurs(entite) | <i class="pencil icon"></i> @Tag.getNombreArticlesLies(entite)
                         </div>
                     </div>
                 </div>
@@ -37,9 +44,16 @@
         <div class="ui six items">
             @for(article <- articles) {
             <div class="item" style="min-height: 450px;">
-                <a class="like ui corner label">
-                    <i class="like icon"></i>
-                </a>
+                @user match {
+                    case Some(usr) => {
+                        <a class="like ui corner label">
+                            <i class="like icon"></i>
+                        </a>
+                    }
+                    case None => {
+
+                    }
+                }
 
                 <a href="@article.url" target="_blank">
                     <div class="image">
@@ -61,8 +75,7 @@
                     <p class="description">@article.description</p>
                     <div class="extra">
                         <i class="unhide icon"></i> @article.consultationsJour |
-                        <i class="heart icon"></i> @article.nbCoeurs |
-                        <i class="star icon"></i> @article.nbEtoiles
+                        <i class="heart icon"></i> @article.nbCoeurs
                     </div>
                     <p>
                         <a href="/displayart/@article.id"><i class="add icon"></i>Voir plus</a>
@@ -107,5 +120,5 @@
 <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
 <script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
 <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
-<script src='@routes.Assets.at("javascripts/entite.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/recherche.js")' type="text/javascript"></script>
 }

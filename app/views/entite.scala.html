@@ -36,6 +36,7 @@
     }
 
     function ControlleurCoeur($scope, $http) {
+        $scope.nbCoeursEntite = 0;
         $http.post('/getLikeEntite', { 'urlEntite': "@uriDBpedia" }).success(function (data) {
             $scope.entiteACoeur = data.valeur;
             $scope.nbCoeursEntite = data.nbCoeurs;

@@ -27,8 +27,8 @@ object Note {
     ).execute()
     Article.incrNbCoeurs(note.article.url)
     //AppreciationEntite.majAvecCreate(note)
-    AppreciationDomaine.majAvecCreate(note)
-    AppreciationSite.majAvecCreate(note)
+    //AppreciationDomaine.majAvecCreate(note)
+    //AppreciationSite.majAvecCreate(note)
     resultat
   }
 
@@ -50,8 +50,8 @@ object Note {
         ).execute()
         Article.incrNbCoeurs(article.url)
         //AppreciationEntite.majAvecCreate(note)
-        AppreciationDomaine.majAvecCreate(note)
-        AppreciationSite.majAvecCreate(note)
+        //AppreciationDomaine.majAvecCreate(note)
+        //AppreciationSite.majAvecCreate(note)
         resultat
       }
       case None => throw new Exception("Article not found")
@@ -91,7 +91,7 @@ object Note {
       case head :: tail => {
         val note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
         //AppreciationEntite.majSansCreate(note, changementNbEtoiles)
-        AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
+        //AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
         Some(note)
       }
     }
@@ -142,8 +142,8 @@ object Note {
           case head :: tail => {
              var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
             //AppreciationEntite.majSansCreate(note, 0, true, aCoeur)
-            AppreciationDomaine.majSansCreate(note, true, aCoeur)
-            AppreciationSite.majSansCreate(note, false, 0, true, aCoeur)
+            //AppreciationDomaine.majSansCreate(note, true, aCoeur)
+            //AppreciationSite.majSansCreate(note, false, 0, true, aCoeur)
             Some(note)
           }
         }
