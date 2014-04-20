@@ -2,9 +2,7 @@ package models
 
 import org.anormcypher.Cypher
 
-/**
- * Created by Administrator on 20/03/14.
- */
+
 case class APourType(entite: Entite, typeT: Type) {
 
 }

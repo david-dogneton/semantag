@@ -1,16 +1,8 @@
 package models
 
 import org.anormcypher.Cypher
-import org.joda.time.DateTime
-import play.api.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
+
 case class Recommandation(utilisateur: Utilisateur, article: Article, ponderation: Double)
 
 object Recommandation {
@@ -39,9 +31,7 @@ object Recommandation {
 
     result match {
       case Nil => None
-      case head :: tail => {
-        Some(Recommandation(user, article, head[BigDecimal]("ponderation").toDouble))
-      }
+      case head :: tail => Some(Recommandation(user, article, head[BigDecimal]("ponderation").toDouble))
     }
   }
 
@@ -63,24 +53,25 @@ object Recommandation {
    * @return une liste d'articles comportant au maximum 35 éléments (lignes de 7 articles côté vue), correspondant aux goûts de l'utilisateur.
    */
   def buildRecommandations(user: Utilisateur): List[Article] = {
-    val requeteSuppression = Cypher(
+    Cypher(
       """
          match (user: Utilisateur {mail : {mailUser}})-[r:recommandation]-(article: Article)
          delete r
       """
     ).on("mailUser" -> user.mail).execute()
+
     val listeEntitesOpt = Utilisateur.getTopEntites(user, 10)
     val articlesLusOpt = Utilisateur.getArticlesLus(user)
     var res = true
     var listeURL = List[String]()
     listeEntitesOpt match {
-      case Some(listeEntites) => {
+      case Some(listeEntites) =>
         articlesLusOpt match {
-          case Some(articlesLus) => {
+          case Some(articlesLus) =>
             for (entite <- listeEntites) {
-              var listeArticlesOpt = Tag.getArticlesLies(entite, 10)
+              val listeArticlesOpt = Tag.getArticlesLies(entite, 10)
               listeArticlesOpt match {
-                case Some(listeArticles) => {
+                case Some(listeArticles) =>
                   val max = maxListe(listeArticles)
                   for (article <- listeArticles) {
                     var onAjoute = true
@@ -94,27 +85,22 @@ object Recommandation {
                       listeURL = article._1.url::listeURL
                     }
                   }
-                }
-                case None => {}
+                case None =>
               }
             }
-          }
-          case None => {
+          case None =>
             for (entite <- listeEntites) {
-              var listeArticlesOpt = Tag.getArticlesLies(entite, 10)
+              val listeArticlesOpt = Tag.getArticlesLies(entite, 10)
               listeArticlesOpt match {
-                case Some(listeArticles) => {
+                case Some(listeArticles) =>
                   val max = maxListe(listeArticles)
                   for (article <- listeArticles) {
                       res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
                   }
-                }
-                case None => {}
+                case None =>
               }
             }
-          }
         }
-      }
       case None => None
     }
     if(res) {

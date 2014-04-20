@@ -1,16 +1,9 @@
 package models
 
-import org.anormcypher.{CypherRow, CypherResultRow, CypherStatement, Cypher}
+import org.anormcypher.{CypherRow, Cypher}
 import play.Logger
 import org.joda.time.DateTime
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 17/03/14
- * Time: 16:12
- * To change this template use File | Settings | File Templates.
- */
 case class Utilisateur(mail: String, mdp: String, pseudo: String, nbCoeurs: Int = 0)
 
 object Utilisateur {
@@ -213,10 +206,10 @@ object Utilisateur {
       totalEtoiles: BigDecimal,
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
-      id: BigDecimal) => {
-        var siteOpt = Site.getByUrl(urlSite)
+      id: BigDecimal) =>
+        val siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
-          case Some(site) => {
+          case Some(site) =>
             new Article(
               titre,
               auteur,
@@ -234,10 +227,8 @@ object Utilisateur {
               nbEtoiles.toInt,
               nbCoeurs.toInt,
               id.toInt)
-          }
           case None => throw new Exception("Site not found")
         }
-      }
     }.toList
 
     result match {
@@ -250,7 +241,7 @@ object Utilisateur {
   def getAllArticlesNonLus(utilisateur: Utilisateur, site: Site): Option[List[Article]] = {
     val listeArticlesDuSiteOpt = Site.getAllArticles(site)
     listeArticlesDuSiteOpt match {
-      case Some(listeArticlesDuSite) => {
+      case Some(listeArticlesDuSite) =>
         val result: List[Article] = Cypher(
           """
       Match (user:Utilisateur {mail: {mailUser}})-[r1:consultation]-(article:Article)--(site:Site {url: {urlSite}})
@@ -309,7 +300,6 @@ object Utilisateur {
           case Nil => Some(listeArticlesDuSite)
           case _ => Some(listeArticlesDuSite diff result)
         }
-      }
       case None => None
     }
 
@@ -325,7 +315,7 @@ object Utilisateur {
     val listeArticlesOpt = Utilisateur.getArticlesLus(utilisateur)
     var listeSites = List[(Site, Int)]()
     listeArticlesOpt match {
-      case Some(listeArticles) => {
+      case Some(listeArticles) =>
         for (article <- listeArticles) {
           if (listeSitesContains(listeSites, article.site)) {
             //listeSites = setValueListeSites(listeSites, article.site)
@@ -342,7 +332,6 @@ object Utilisateur {
             listeSites = (article.site, 1) :: listeSites
           }
         }
-      }
       case None => None
     }
     Some(listeSites)
@@ -417,10 +406,10 @@ object Utilisateur {
       totalEtoiles: BigDecimal,
       nbEtoiles: BigDecimal,
       nbCoeurs: BigDecimal,
-      id: BigDecimal) => {
-        var siteOpt = Site.getByUrl(urlSite)
+      id: BigDecimal) =>
+        val siteOpt = Site.getByUrl(urlSite)
         siteOpt match {
-          case Some(site) => {
+          case Some(site) =>
             new Article(
               titre,
               auteur,
@@ -438,10 +427,8 @@ object Utilisateur {
               nbEtoiles.toInt,
               nbCoeurs.toInt,
               id.toInt)
-          }
           case None => throw new Exception("Site not found")
         }
-      }
     }.toList
 
     result match {
@@ -617,6 +604,4 @@ object Utilisateur {
     }.toList
     resultat
   }
-
-
 }

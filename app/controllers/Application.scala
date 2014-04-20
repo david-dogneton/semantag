@@ -547,7 +547,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
   def getDomaines = StackAction {
     implicit request =>
 
-      val listeDomaines: List[Site] = Site.getTypes()
+      val listeDomaines: List[Site] = Site.getTypes
 
       val res: List[JsObject] = listeDomaines.map(site => {
         Json.obj("nom" -> site.typeSite

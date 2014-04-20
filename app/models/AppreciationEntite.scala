@@ -3,13 +3,7 @@ package models
 import org.anormcypher.Cypher
 import scala.BigDecimal
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
+
 case class AppreciationEntite(utilisateur: Utilisateur, entite: Entite, quantite: Int, nbCoeurs: Int, estFavori: Boolean = false)
 
 object AppreciationEntite {
@@ -139,7 +133,7 @@ object AppreciationEntite {
 
     estFavoriList match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val estFavori = !head[Boolean]("estFavori")
         val result = Cypher(
           """
@@ -155,7 +149,6 @@ object AppreciationEntite {
           case Nil => None
           case head :: tail => Some(AppreciationEntite(user, entite, head[BigDecimal]("quantite").toInt, head[BigDecimal]("nbCoeurs").toInt, head[Boolean]("estFavori")))
         }
-      }
     }
   }
 
@@ -176,25 +169,22 @@ object AppreciationEntite {
    * @param note note créée
    */
   def majAvecCreate(note: Note) = {
-    var entitesOpt = Article.getEntitesLiees(note.article)
+    val entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
-      case Some(entites) => {
+      case Some(entites) =>
         entites.map(elt => {
-          var appreciationEntiteOpt = AppreciationEntite.get(note.utilisateur, elt)
+          val appreciationEntiteOpt = AppreciationEntite.get(note.utilisateur, elt)
           appreciationEntiteOpt match {
-            case Some(appreciationEntite) => {
+            case Some(appreciationEntite) =>
               AppreciationEntite.setQuantite(note.utilisateur, elt, note.nbEtoiles)
               if (note.aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
-            }
-            case None => {
+            case None =>
               var nbCoeurs = 0
               if (note.aCoeur) nbCoeurs = 1
               AppreciationEntite.create(new AppreciationEntite(note.utilisateur, elt, note.nbEtoiles, nbCoeurs))
-            }
           }
 
         })
-      }
       case None => throw new Exception("Liste d'entités non trouvée")
     }
   }
@@ -207,23 +197,21 @@ object AppreciationEntite {
    * @param aCoeur booléen stipulant si l'AppreciationEntite va recevoir un nouveau coeur (true) ou en "perdre" un (false)
    */
   def majSansCreate(note: Note, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false) = {
-    var entitesOpt = Article.getEntitesLiees(note.article)
+    val entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
-      case Some(entites) => {
+      case Some(entites) =>
         entites.map(elt => {
           var appreciationEntiteOpt = AppreciationEntite.get(note.utilisateur, elt)
           appreciationEntiteOpt match {
-            case Some(appreciationEntite) => {
+            case Some(appreciationEntite) =>
               AppreciationEntite.setQuantite(note.utilisateur, elt, changementNbEtoiles)
               if (setCoeur) {
                 if (aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
                 else AppreciationEntite.decrNbCoeurs(note.utilisateur, elt)
               }
-            }
             case None => throw new Exception("AppreciationEntite non trouvée")
           }
         })
-      }
       case None => throw new Exception("Liste d'entités non trouvée")
     }
     false

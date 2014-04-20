@@ -161,7 +161,7 @@ class Master(nbActors: Int) extends Actor {
   val smallestMailBoxRouter = context.actorOf(Props[Child].withRouter(SmallestMailboxRouter(nbActors)), name = "workerRouter")
 
   def receive = {
-    case Compute => traitementSite(Site.getAll(), 0)
+    case Compute => traitementSite(Site.getAll, 0)
   }
 
 

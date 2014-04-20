@@ -1,16 +1,7 @@
 package models
 
 import org.anormcypher.Cypher
-import org.joda.time.DateTime
-import play.api.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
 case class AppreciationDomaine(utilisateur: Utilisateur, domaine: Domaine, nbCoeurs: Int, estFavori: Boolean = false)
 
 object AppreciationDomaine {
@@ -40,9 +31,8 @@ object AppreciationDomaine {
 
     result match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         Some(AppreciationDomaine(user, domaine, head[BigDecimal]("nbCoeurs").toInt, head[Boolean]("estFavori")))
-      }
     }
   }
 
@@ -108,7 +98,7 @@ object AppreciationDomaine {
 
     estFavoriList match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val estFavori = !head[Boolean]("estFavori")
         val result = Cypher(
           """
@@ -124,7 +114,6 @@ object AppreciationDomaine {
           case Nil => None
           case head :: tail => Some(AppreciationDomaine(user, domaine, head[BigDecimal]("nbCoeurs").toInt, head[Boolean]("estFavori")))
         }
-      }
     }
   }
 
@@ -145,23 +134,20 @@ object AppreciationDomaine {
    * @param note note créée
    */
   def majAvecCreate(note: Note) {
-    var domainesOpt = APourDomaine.getDomainesLies(note.article)
+    val domainesOpt = APourDomaine.getDomainesLies(note.article)
     domainesOpt match {
-      case Some(domaines) => {
+      case Some(domaines) =>
         domaines.map(elt => {
-          var appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
+          val appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
           appreciationDomaineOpt match {
-            case Some(appreciationDomaine) => {
+            case Some(appreciationDomaine) =>
               if (note.aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
-            }
-            case None => {
+            case None =>
               var nbCoeurs = 0
               if (note.aCoeur) nbCoeurs = 1
               AppreciationDomaine.create(new AppreciationDomaine(note.utilisateur, elt, nbCoeurs))
-            }
           }
         })
-      }
       case None => throw new Exception("Liste de domaines non trouvée")
     }
   }
@@ -173,22 +159,20 @@ object AppreciationDomaine {
    * @param aCoeur booléen stipulant si l'AppreciationDomaine va recevoir un nouveau coeur (true) ou en "perdre" un (false)
    */
   def majSansCreate(note: Note, setCoeur: Boolean = false, aCoeur: Boolean = false) {
-    var domainesOpt = APourDomaine.getDomainesLies(note.article)
+    val domainesOpt = APourDomaine.getDomainesLies(note.article)
     domainesOpt match {
-      case Some(domaines) => {
+      case Some(domaines) =>
         domaines.map(elt => {
-          var appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
+          val appreciationDomaineOpt = AppreciationDomaine.get(note.utilisateur, elt)
           appreciationDomaineOpt match {
-            case Some(appreciationDomaine) => {
+            case Some(appreciationDomaine) =>
               if (setCoeur) {
                 if (aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
                 else AppreciationDomaine.decrNbCoeurs(note.utilisateur, elt)
               }
-            }
             case None => throw new Exception("AppreciationDomaine non trouvée")
           }
         })
-      }
       case None => throw new Exception("Liste de domaines non trouvée")
     }
   }

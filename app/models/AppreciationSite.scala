@@ -1,16 +1,7 @@
 package models
 
 import org.anormcypher.Cypher
-import org.joda.time.DateTime
-import play.api.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
 case class AppreciationSite(utilisateur: Utilisateur, site: Site, totalEtoiles: Int = 0, nbEtoiles: Int = 0, nbCoeurs: Int = 0, estFavori: Boolean = false)
 
 object AppreciationSite {
@@ -42,9 +33,8 @@ object AppreciationSite {
 
     result match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         Some(AppreciationSite(user, site, head[BigDecimal]("totalEtoiles").toInt, head[BigDecimal]("nbEtoiles").toInt, head[BigDecimal]("nbCoeurs").toInt, head[Boolean]("estFavori")))
-      }
     }
   }
 
@@ -164,7 +154,7 @@ object AppreciationSite {
 
     estFavoriList match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val estFavori = !head[Boolean]("estFavori")
         val result = Cypher(
           """
@@ -180,7 +170,6 @@ object AppreciationSite {
           case Nil => None
           case head :: tail => Some(AppreciationSite(user, site, head[BigDecimal]("totalEtoiles").toInt, head[BigDecimal]("nbEtoiles").toInt, head[BigDecimal]("nbCoeurs").toInt, head[Boolean]("estFavori")))
         }
-      }
     }
   }
 
@@ -201,23 +190,21 @@ object AppreciationSite {
    * @param note note créée
    */
   def majAvecCreate(note: Note) = {
-    var site = note.article.site
-    var appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
+    val site = note.article.site
+    val appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
     appreciationSiteOpt match {
-      case Some(appreciationSite) => {
+      case Some(appreciationSite) =>
         if (note.nbEtoiles != 0) {
           AppreciationSite.setTotalEtoiles(note.utilisateur, site, note.nbEtoiles)
           AppreciationSite.incrNbEtoiles(note.utilisateur, site)
         }
         if (note.aCoeur) AppreciationSite.incrNbCoeurs(note.utilisateur, site)
-      }
-      case None => {
+      case None =>
         var nbCoeurs = 0
         var nbEtoiles = 0
         if (note.aCoeur) nbCoeurs = 1
         if (note.nbEtoiles > 0) nbEtoiles = 1
         AppreciationSite.create(new AppreciationSite(note.utilisateur, site, note.nbEtoiles, nbEtoiles, nbCoeurs))
-      }
     }
 
 
@@ -231,10 +218,10 @@ object AppreciationSite {
    * @param aCoeur booléen stipulant si l'AppreciationSite va recevoir un nouveau coeur (true) ou en "perdre" un (false)
    */
   def majSansCreate(note: Note, suppressionNote: Boolean = false, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false) = {
-    var site = note.article.site
-    var appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
+    val site = note.article.site
+    val appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
     appreciationSiteOpt match {
-      case Some(appreciationSite) => {
+      case Some(appreciationSite) =>
         if(suppressionNote){
           AppreciationSite.decrNbEtoiles(note.utilisateur, site)
         }
@@ -243,7 +230,6 @@ object AppreciationSite {
           if (aCoeur) AppreciationSite.incrNbCoeurs(note.utilisateur, site)
           else AppreciationSite.decrNbCoeurs(note.utilisateur, site)
         }
-      }
       case None => throw new Exception("AppreciationSite non trouvée")
     }
     false

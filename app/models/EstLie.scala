@@ -3,9 +3,7 @@ package models
 import org.anormcypher.{CypherRow, Cypher}
 import org.joda.time.DateTime
 
-/**
- * Created by Administrator on 19/03/14.
- */
+
 case class EstLie(urlArticleA: String, urlArticleB: String, ponderation: Double) {
 
 }

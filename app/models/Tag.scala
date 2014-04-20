@@ -3,9 +3,6 @@ package models
 import org.anormcypher.{CypherRow, Cypher}
 import org.joda.time.DateTime
 
-/**
- * Created by Administrator on 19/03/14.
- */
 case class Tag(article: Article, entite: Entite, quantite: Int) {
 
 }

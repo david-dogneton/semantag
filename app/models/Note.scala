@@ -1,15 +1,8 @@
 package models
 
 import org.anormcypher.Cypher
-import play.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
+
 case class Note(utilisateur: Utilisateur, article: Article, nbEtoiles: Int, aCoeur: Boolean = false)
 
 object Note {
@@ -35,7 +28,7 @@ object Note {
   def createWithIdArticle(utilisateur: Utilisateur, idArticle: Int, nbEtoiles: Int, aCoeur: Boolean = false): Boolean = {
     val articleOpt = Article.getById(idArticle)
     articleOpt match {
-      case Some(article) => {
+      case Some(article) =>
         val note = new Note(utilisateur, article, nbEtoiles, aCoeur)
         val resultat = Cypher(
           """
@@ -53,7 +46,6 @@ object Note {
         //AppreciationDomaine.majAvecCreate(note)
         //AppreciationSite.majAvecCreate(note)
         resultat
-      }
       case None => throw new Exception("Article not found")
     }
   }
@@ -88,12 +80,11 @@ object Note {
 
     result match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
         //AppreciationEntite.majSansCreate(note, changementNbEtoiles)
         //AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
         Some(note)
-      }
     }
   }
 
@@ -125,7 +116,7 @@ object Note {
 
     aCoeurList match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val aCoeur = !head[Boolean]("aCoeur")
         val result = Cypher(
           """
@@ -139,15 +130,13 @@ object Note {
 
         result match {
           case Nil => None
-          case head :: tail => {
-             var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
+          case head :: tail =>
+            val note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
             //AppreciationEntite.majSansCreate(note, 0, true, aCoeur)
             //AppreciationDomaine.majSansCreate(note, true, aCoeur)
             //AppreciationSite.majSansCreate(note, false, 0, true, aCoeur)
             Some(note)
-          }
         }
-      }
     }
   }
 

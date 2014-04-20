@@ -2,15 +2,7 @@ package models
 
 import org.anormcypher.Cypher
 import org.joda.time.DateTime
-import play.api.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
 case class Consultation(utilisateur: Utilisateur, article: Article, date: DateTime)
 
 object Consultation {
@@ -41,10 +33,9 @@ object Consultation {
 
     result match {
       case Nil => None
-      case head :: tail => {
-        var date = head[String]("date")
+      case head :: tail =>
+        val date = head[String]("date")
         Some(Consultation(user, article, new DateTime(date)))
-      }
     }
   }
 

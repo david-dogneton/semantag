@@ -1,16 +1,7 @@
 package models
 
 import org.anormcypher.{CypherRow, Cypher}
-import org.joda.time.DateTime
-import play.api.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: Administrator
- * Date: 20/03/14
- * Time: 09:57
- * To change this template use File | Settings | File Templates.
- */
 case class RecommandationParLike(utilisateur: Utilisateur, article: Article, entite: Entite, ponderation: Double)
 
 object RecommandationParLike {
@@ -99,27 +90,22 @@ object RecommandationParLike {
       case CypherRow(mailUser: String,
       urlArticle: String,
       urlEntite: String,
-      ponderation: BigDecimal) => {
-        var optionUser = Utilisateur.get(mailUser)
+      ponderation: BigDecimal) =>
+        val optionUser = Utilisateur.get(mailUser)
         optionUser match {
-          case Some(user) => {
-            var optionArticle = Article.getByUrl(urlArticle)
+          case Some(user) =>
+            val optionArticle = Article.getByUrl(urlArticle)
             optionArticle match {
-              case Some(article) => {
-                var optionEntite = Entite.getByUrl(urlEntite)
+              case Some(article) =>
+                val optionEntite = Entite.getByUrl(urlEntite)
                 optionEntite match {
-                  case Some(entite) => {
-                    new RecommandationParLike(user, article, entite, ponderation.toInt)
-                  }
+                  case Some(entite) => new RecommandationParLike(user, article, entite, ponderation.toInt)
                   case None => throw new IllegalArgumentException("Entité non trouvable")
                 }
-              }
               case None => throw new IllegalArgumentException("Article non trouvable")
             }
-          }
           case None => throw new IllegalArgumentException("Utilisateur non trouvable")
         }
-      }
       case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
     }.toList
 
@@ -135,23 +121,23 @@ object RecommandationParLike {
    * @return vrai si la création s'est bien déroulée, faux sinon.
    */
   def buildRecommandationsParLike(user: Utilisateur): Boolean = {
-    var res = true
+    val res = true
     val listeEntitesFavOpt = Utilisateur.getTopEntites(user, 50)
     val listeArticlesFavOpt = Utilisateur.getTopsArticles(user, 50)
     val listeSitesFavOpt = Utilisateur.getTopsSites(user, 30)
     val listeArticlesLusOpt = Utilisateur.getArticlesLus(user)
     listeEntitesFavOpt match {
-      case Some(listeEntitesFav) => {
+      case Some(listeEntitesFav) =>
         listeArticlesFavOpt match {
-          case Some(listeArticlesFav) => {
+          case Some(listeArticlesFav) =>
             listeArticlesLusOpt match {
-              case Some(listeArticlesLus) => {
+              case Some(listeArticlesLus) =>
                 listeSitesFavOpt match {
-                  case Some(listeSitesFav) => {
+                  case Some(listeSitesFav) =>
                     for (article <- listeArticlesFav) {
                       val listeArticlesLiesOpt = EstLie.getByIdWithPonderation(article.id)
                       listeArticlesLiesOpt match {
-                        case Some(listeArticlesLies) => {
+                        case Some(listeArticlesLies) =>
                           for (articleLie <- listeArticlesLies) {
                             if (!listeArticlesLus.contains(articleLie._1)) {
                               var ponderation = 0.6 * articleLie._2
@@ -166,20 +152,15 @@ object RecommandationParLike {
                               }
                             }
                           }
-                        }
-                        case None => {}
+                        case None =>
                       }
                     }
-                  }
                   case None => None
                 }
-              }
               case None => None
             }
-          }
           case None => None
         }
-      }
       case None => None
     }
     res

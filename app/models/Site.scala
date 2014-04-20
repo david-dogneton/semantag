@@ -3,9 +3,6 @@ package models
 import org.anormcypher.{CypherRow, Cypher}
 import org.joda.time.DateTime
 
-/**
- * Created by Administrator on 17/03/14.
- */
 case class Site(url: String, nom: String, typeSite: String, id: Int = -1) {}
 
 object Site {
@@ -69,7 +66,7 @@ object Site {
     }
   }
 
-  def getAll(): List[Site] = {
+  def getAll: List[Site] = {
 
     val result: List[Site] = Cypher(
       """
@@ -86,7 +83,7 @@ object Site {
     result
   }
 
-  def getTypes(): List[Site] = {
+  def getTypes: List[Site] = {
 
     val result: List[Site] = Cypher(
       """
