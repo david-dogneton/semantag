@@ -61,7 +61,7 @@ object Article {
    * Après l'insertion, l'article aura un identifiant à condition que l'article soit bien inséré.
    *
    * @param article article que l'on souhaite insérer
-   * @return On renvoie l'article avec son identifiant s'il s'est bien insérer, sinon on renvoie None.
+   * @return On renvoie l'article avec son identifiant s'il s'est bien inséré, sinon on renvoie None.
    */
   def insert(article: Article): Option[Article] = {
 
@@ -574,29 +574,44 @@ Match (article:Article) where ID(article) = {id} delete article;
     }
   }
 
+  /**
+   * Renvoie les 5 articles les plus consultés du jour
+   */
   def lesPlusConsulteesJour() {
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsJour DESC Limit 5;").toList
     result.map(_.get)
   }
 
+  /**
+   * Renvoie les 5 articles les plus consultés de la semaine
+   */
   def lesPlusConsulteesSemaine() {
 
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaine DESC Limit 5;").toList
     result.map(_.get)
   }
 
+  /**
+   * Renvoie les 5 artciles les plus consultés de la semaine dernière
+   */
   def lesPlusConsulteesSemaineDerniere() {
 
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsSemaineDerniere DESC Limit 5;").toList
     result.map(_.get)
   }
 
+  /**
+   * Renvoie les 5 articles les plus consultés du mois
+   */
   def lesPlusConsulteesMois() {
 
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultationsMois DESC Limit 5;").toList
     result.map(_.get)
   }
 
+  /**
+   * Renvoie les 5 articles les plus consultés toute période confondue
+   */
   def lesPlusConsultees() {
 
     val result: List[Option[Article]] = getArticles("" -> "", "", "ORDER BY article.consultations DESC Limit 5;").toList
