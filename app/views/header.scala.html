@@ -60,6 +60,11 @@
 
             @user match {
             case Some(usr) => {
+            @if(page=="mapage"){
+            <a class="active item" href="@routes.Application.mapage()">@Messages("header.mapage")</a>
+            } else{
+            <a class="item" href="@routes.Application.mapage()">@Messages("header.mapage")</a>
+            }
             <div class="item">
                 <p>@Messages("header.hi") <strong>@usr.pseudo</strong> !</p>
                 <a href="@routes.LoginLogout.logout" class="ui red button" > @Messages("header.deconnect")</a>

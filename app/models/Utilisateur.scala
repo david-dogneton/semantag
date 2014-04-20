@@ -138,7 +138,8 @@ object Utilisateur {
                         article.consultations as consultations,
                         article.totalEtoiles as totalEtoiles,
                         article.nbEtoiles as nbEtoiles,
-                        article.nbCoeurs as nbCoeurs;
+                        article.nbCoeurs as nbCoeurs,
+                        ID(article) as idArticle;
       """).on("mailUser" -> utilisateur.mail)().collect {
       case CypherRow(titre: String,
       auteur: String,
@@ -183,8 +184,8 @@ object Utilisateur {
     }.toList
 
     result match {
-      case Nil => Some(result)
-      case _ => None
+      case Nil => None
+      case _ => Some(result)
     }
 
   }
@@ -257,6 +258,12 @@ object Utilisateur {
 
   }
 
+  /**
+   * Liste les sites les plus consultés par un utilisateur.
+   * @param utilisateur utilisateur étudié
+   * @param nbMax nombre maximum d'éléments dans la liste de retour
+   * @return Some d'une liste de tuples (Site, nombre de visites), de taille maximale "nbMax", ou None si les informations n'ont pas été trouvées en BDD.
+   */
   def getSitesLesPlusConsultes(utilisateur: Utilisateur, nbMax: Int): Option[List[(Site, Int)]] = {
     val listeArticlesOpt = Utilisateur.getArticlesLus(utilisateur)
     var listeSites = List[(Site, Int)]()
@@ -285,6 +292,12 @@ object Utilisateur {
 
   }
 
+  /**
+   * Liste les sites favoris d'un utilisateur (par nombre de likes sur des articles liés aux sites).
+   * @param utilisateur utilisateur étudié
+   * @param nbMax nombre maximum d'éléments dans la liste de retour
+   * @return Some d'une liste de sites, de taille maxmimale "nbMax", ou None si les informations n'ont pas été trouvées en BDD.
+   */
   def getTopsSites(utilisateur: Utilisateur, nbMax: Int): Option[List[Site]] = {
     val result: List[Site] = Cypher(
       """
@@ -304,6 +317,12 @@ object Utilisateur {
     }
   }
 
+  /**
+   * Liste les articles favoris d'un utilisateur (par nombre d'étoiles). Méthode actuellement non utilisable car les étoiles ne sont pas utilisées dans le modèle actuel du site.
+   * @param utilisateur utilisateur étudié
+   * @param nbMax nombre maximum d'éléments dans la liste de retour
+   * @return Some d'une liste d'articles, de taille maxmimale "nbMax", ou None si les informations n'ont pas été trouvées en BDD.
+   */
   def getTopsArticles(utilisateur: Utilisateur, nbMax: Int): Option[List[Article]] = {
     val result: List[Article] = Cypher(
       """
@@ -382,6 +401,12 @@ object Utilisateur {
     false
   }
 
+  /**
+   * Liste les entitées favorites d'un utilisateur (par nombre de likes sur ces entités).
+   * @param user utilisateur étudié
+   * @param nbEntites nombre maximum d'éléments dans la liste de retour
+   * @return Some d'une liste d'entités, de taille maxmimale "nbMax", ou None si les informations n'ont pas été trouvées en BDD.
+   */
   def getTopEntites(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
     val result: List[Entite] = Cypher(
       """
@@ -419,6 +444,12 @@ object Utilisateur {
     }
   }
 
+  /**
+   * Liste les entitées favorites d'un utilisateur (par nombre de likes sur ces entités), en excluant celles ayant été spécifiées comme "favorites" par l'utilisateur lui-même.
+   * @param user utilisateur étudié
+   * @param nbEntites nombre maximum d'éléments dans la liste de retour
+   * @return Some d'une liste d'entités, de taille maxmimale "nbMax", ou None si les informations n'ont pas été trouvées en BDD.
+   */
   def getTopEntitesPasFavories(user: Utilisateur, nbEntites: Int): Option[List[Entite]] = {
     val result: List[Entite] = Cypher(
       """
@@ -456,5 +487,79 @@ object Utilisateur {
       case _ => Some(result)
     }
   }
+
+  /**
+   * Liste les articles pouvant être recommandés à l'utilisateur, en se basant sur les instances de "recommandation".
+   * @param user utilisateur étudié
+   * @param nbMax nombre maximum d'articles sélectionnés
+   * @return une liste d'articles de taille maximale "nbMax".
+   */
+  def getRecommandations(user: Utilisateur, nbMax: Int): List[Article] = {
+    val resultat : List[Article] = Cypher(
+      """
+        Match (site:Site)--(article:Article)-[r:recommandation]-(user:Utilisateur {mail: {mailUser}})
+        return  article.titre,
+                article.auteur,
+                article.description,
+                article.date,
+                article.url,
+                site.url,
+                site.nom,
+                site.type,
+                ID(site),
+                article.image,
+                article.consultationsJour,
+                article.consultationsSemaine,
+                article.consultationsSemaineDerniere,
+                article.consultationsMois,
+                article.consultations,
+                article.totalEtoiles,
+                article.nbEtoiles,
+                article.nbCoeurs,
+                ID(article)
+                order by r.ponderation DESC
+                limit {nbMax};
+      """).on("mailUser" -> user.mail, "nbMax" -> nbMax)().collect {
+
+      case CypherRow(titre: String,
+      auteur: String,
+      description: String,
+      date: String,
+      url: String,
+      urlSite: String,
+      nomSite: String,
+      typeSite: String,
+      idSite: BigDecimal,
+      image: String,
+      consultationsJour: BigDecimal,
+      consultationsSemaine: BigDecimal,
+      consultationsSemaineDerniere: BigDecimal,
+      consultationsMois: BigDecimal,
+      consultations: BigDecimal,
+      totalEtoiles: BigDecimal,
+      nbEtoiles: BigDecimal,
+      nbCoeurs: BigDecimal,
+      id: BigDecimal) =>
+        new Article(
+          titre,
+          auteur,
+          description,
+          new DateTime(date),
+          url,
+          new Site(urlSite, nomSite, typeSite, idSite.toInt),
+          image,
+          consultationsJour.toInt,
+          consultationsSemaine.toInt,
+          consultationsSemaineDerniere.toInt,
+          consultationsMois.toInt,
+          consultations.toInt,
+          totalEtoiles.toInt,
+          nbEtoiles.toInt,
+          nbCoeurs.toInt,
+          id.toInt)
+    }.toList
+    resultat
+  }
+
 
 }

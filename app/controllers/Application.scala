@@ -36,7 +36,8 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
           controllers.routes.javascript.Application.enregistrerLecture,
           controllers.routes.javascript.Application.enregistrerLikeEntite,
           controllers.routes.javascript.Application.getLikeEntite,
-          controllers.routes.javascript.Application.getLikeArticle
+          controllers.routes.javascript.Application.getLikeArticle,
+          controllers.routes.javascript.Application.getArticlesRecommandes
         )
       ).as("text/javascript")
   }
@@ -211,7 +212,15 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def mapage = StackAction {
     implicit request =>
-      Ok(views.html.mapage())
+      val maybeUser: Option[User] = loggedIn
+      maybeUser match {
+        case Some(usr) => {
+          Ok(views.html.mapage())
+        }
+        case None => {
+          Ok(views.html.index())
+        }
+      }
   }
 
   val urlForm = Form(
@@ -227,6 +236,47 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       val user: User = maybeUser.getOrElse(Utilisateur("default", "", ""))
       // Logger.debug("avant")
       val listeArt: List[Article] = Article.getLastArticle
+      // Logger.debug("apres")
+      val res: List[JsObject] = listeArt.map(art => {
+        val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" + art.date.dayOfMonth().get() + " " + art.date.hourOfDay().get() + ":" + art.date.minuteOfHour().get()
+        val tags: List[JsObject] = Tag.getTagsOfArticles(art).map(tag => (Json.obj("id" -> tag._1.id,
+          "nom" -> tag._1.nom)))
+        val note = Note.get(user, art)
+        var coeurPresent = 0
+        note match {
+          case Some(no) => coeurPresent = 1
+          case None => coeurPresent = 0
+        }
+        Json.obj(
+          "id" -> art.id,
+          "url" -> art.url,
+          "titre" -> art.titre,
+          "description" -> art.description,
+          "site" -> art.site.nom,
+          "image" -> art.image,
+          "consultationsJour" -> art.consultationsJour,
+          "coeurs" -> art.nbCoeurs,
+          "domaine" -> art.site.typeSite,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
+          "tags" -> tags,
+          "note" -> art.nbEtoiles,
+          "date" -> dateF,
+          "lies" -> EstLie.countLinkedArticles(art),
+          "coeurPresent" -> coeurPresent
+        )
+      })
+      // Logger.debug("RES " +res )
+      Ok(Json.obj("liste" -> res))
+  }
+
+  def getArticlesRecommandes = StackAction {
+    implicit request =>
+      val maybeUser: Option[User] = loggedIn
+      val user: User = maybeUser.getOrElse(Utilisateur("default", "", ""))
+      // Logger.debug("avant")
+
+      val listeArt: List[Article] = Recommandation.buildRecommandations(user)
       // Logger.debug("apres")
       val res: List[JsObject] = listeArt.map(art => {
         val dateF: String = art.date.year().get() + "-" + art.date.monthOfYear().get() + "-" + art.date.dayOfMonth().get() + " " + art.date.hourOfDay().get() + ":" + art.date.minuteOfHour().get()

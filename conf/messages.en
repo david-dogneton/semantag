@@ -7,6 +7,7 @@ header.buttonSubscribe=Want to sign in ?
 header.buttonSubscribeHover=I sign in now !
 header.entities=Entities
 header.stats=Statistics
+header.mapage=Recommendations
 header.stats.today=Today
 header.stats.thisWeek=This week
 header.stats.thisMonth=This month
@@ -27,6 +28,10 @@ stats.title=Global Stats
 
 #VISUALISATION ENTITE
 entity.title=Semantag : Entity
+#MA PAGE DE RECOMMANDATIONS
+mapage.title=Personalized recommendations
+mapage.bienvenue=Welcome to your personalized page!
+mapage.description=Semantag offers a selection of articles based on analyzing your tastes! Each article consulted, each heart placed or removed, allow us to guess what information you might enjoy. Don'' t hesitate to contact us so that we can further improve the relevance of our recommendations.
 
 #PRESENTATION
 presentation.title=What is Semantag ?

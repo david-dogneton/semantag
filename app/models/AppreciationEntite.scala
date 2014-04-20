@@ -171,6 +171,10 @@ object AppreciationEntite {
     result
   }
 
+  /**
+   * Met à jour l'appréciation d'une entité pour un utilisateur, lors de la création d'une nouvelle note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationEntite et sa propriété "estFavori".
+   * @param note note créée
+   */
   def majAvecCreate(note: Note) = {
     var entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
@@ -184,7 +188,7 @@ object AppreciationEntite {
             }
             case None => {
               var nbCoeurs = 0
-              if(note.aCoeur) nbCoeurs = 1
+              if (note.aCoeur) nbCoeurs = 1
               AppreciationEntite.create(new AppreciationEntite(note.utilisateur, elt, note.nbEtoiles, nbCoeurs))
             }
           }
@@ -195,6 +199,13 @@ object AppreciationEntite {
     }
   }
 
+  /**
+   * Met à jour l'appréciation d'une entité pour un utilisateur, lors de la modification d'une note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationEntite et sa propriété "estFavori".
+   * @param note note modifiée
+   * @param changementNbEtoiles Le nombre d'étoiles à ajouter ou enlever à l'AppreciationEntite
+   * @param setCoeur booléen stipulant s'il faut changer le nombre de coeurs
+   * @param aCoeur booléen stipulant si l'AppreciationEntite va recevoir un nouveau coeur (true) ou en "perdre" un (false)
+   */
   def majSansCreate(note: Note, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false) = {
     var entitesOpt = Article.getEntitesLiees(note.article)
     entitesOpt match {
@@ -205,7 +216,7 @@ object AppreciationEntite {
             case Some(appreciationEntite) => {
               AppreciationEntite.setQuantite(note.utilisateur, elt, changementNbEtoiles)
               if (setCoeur) {
-                if(aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
+                if (aCoeur) AppreciationEntite.incrNbCoeurs(note.utilisateur, elt)
                 else AppreciationEntite.decrNbCoeurs(note.utilisateur, elt)
               }
             }

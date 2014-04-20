@@ -201,6 +201,11 @@ object Article {
     }
   }
 
+  /**
+   * Méthode incrémentant le nombre de consultations d'un article (du jour, de la semaine, du mois et au total).
+   * @param urlArticle URL de l'article à modifier
+   * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
+   */
   def incrNbConsultations(urlArticle: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
@@ -275,6 +280,11 @@ object Article {
     }
   }
 
+  /**
+   * Méthode incrémentant le nombre de coeurs d'un article.
+   * @param urlArticle URL de l'article à modifier
+   * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
+   */
   def incrNbCoeurs(urlArticle: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
@@ -347,6 +357,12 @@ object Article {
   }
 
 
+
+  /**
+   * Méthode décrémentant le nombre de coeurs d'un article.
+   * @param urlArticle URL de l'article à modifier
+   * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
+   */
   def decrNbCoeurs(urlArticle: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
@@ -496,6 +512,11 @@ Match (article:Article) where ID(article) = {id} delete article;
     result
   }
 
+  /**
+   * Liste toutes les entités liées à un article.
+   * @param article L'article à étudier.
+   * @return Some d'une liste d'entités (celles liées à l'article), ou None si l'article n'a pas été trouvé.
+   */
   def getEntitesLiees(article: Article): Option[List[Entite]] = {
     val result: List[Entite] = Cypher(
       """
@@ -531,6 +552,11 @@ Match (article:Article) where ID(article) = {id} delete article;
     }
   }
 
+  /**
+   * Liste tous les domaines liées à un article.
+   * @param article L'article à étudier.
+   * @return Some d'une liste de domaines (ceux liés à l'article), ou None si l'article n'a pas été trouvé.
+   */
   def getDomainesLies(article: Article): Option[List[Domaine]] = {
     val result: List[Domaine] = Cypher(
       """

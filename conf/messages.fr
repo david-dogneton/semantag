@@ -6,6 +6,7 @@ header.connect=Se connecter
 header.buttonSubscribe=Pas encore inscrit ?
 header.buttonSubscribeHover=Je m''inscris !
 header.stats=Statistiques
+header.mapage=Recommandations
 header.entities=Entités
 header.stats.today=Aujourd''hui
 header.stats.thisWeek=Cette semaine
@@ -27,6 +28,11 @@ stats.title=Statistiques générales
 
 #VISUALISATION ENTITE
 entity.title=Semantag : entité
+
+#MA PAGE DE RECOMMANDATIONS
+mapage.title=Recommandations personnalisées
+mapage.bienvenue=Bienvenue sur votre page personnalisée !
+mapage.description=Semantag vous propose une sélection d''articles réalisée en analysant vos goûts ! Chaque article consulté, chaque coeur placé ou retiré, permettent de deviner quelles informations seront susceptibles de vous plaire. N''hésitez pas à nous contacter afin que nous puissions améliorer encore la pertinence de nos recommandations.
 
 #PRESENTATION
 presentation.title=Semantag : le concept

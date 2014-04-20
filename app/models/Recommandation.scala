@@ -57,8 +57,19 @@ object Recommandation {
     result
   }
 
-  def buildRecommandations(user: Utilisateur): Boolean = {
-    val listeEntitesOpt = Utilisateur.getTopEntitesPasFavories(user, 10)
+  /**
+   * Construit la liste de recommandations d'un utilisateur à partir de ses goûts (en l'occurrence, de ses "likes" d'entités).
+   * @param user utilisateur étudié
+   * @return une liste d'articles comportant au maximum 35 éléments (lignes de 7 articles côté vue), correspondant aux goûts de l'utilisateur.
+   */
+  def buildRecommandations(user: Utilisateur): List[Article] = {
+    val requeteSuppression = Cypher(
+      """
+         match (user: Utilisateur {mail : {mailUser}})-[r:recommandation]-(article: Article)
+         delete r
+      """
+    ).on("mailUser" -> user.mail).execute()
+    val listeEntitesOpt = Utilisateur.getTopEntites(user, 10)
     val articlesLusOpt = Utilisateur.getArticlesLus(user)
     var res = true
     listeEntitesOpt match {
@@ -70,9 +81,14 @@ object Recommandation {
               listeArticlesOpt match {
                 case Some(listeArticles) => {
                   val max = maxListe(listeArticles)
-                  //val listeRecommandations = listeArticles diff articlesLus
                   for (article <- listeArticles) {
-                    if (!articlesLus.contains(article._1)) {
+                    var onAjoute = true
+                    for(artTmp <- articlesLus) {
+                      if(artTmp.url.equals(article._1.url)) {
+                        onAjoute = false
+                      }
+                    }
+                    if (onAjoute) {
                       res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
                     }
                   }
@@ -84,7 +100,12 @@ object Recommandation {
       }
       case None => None
     }
-    res
+    if(res) {
+      Utilisateur.getRecommandations(user, 35)
+    }
+    else {
+      throw new Exception("La construction de la liste de recommandations n'a pas fonctionné.")
+    }
   }
 
   def maxListe(articles: List[(Article, Int)]): Int = {
