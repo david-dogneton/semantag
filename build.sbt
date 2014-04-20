@@ -28,4 +28,14 @@ libraryDependencies ++= Seq(
   "commons-httpclient" % "commons-httpclient" % "3.1"
 )
 
+scalacOptions ++= Seq(
+  "-encoding",
+  "UTF-8",
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-language:postfixOps",
+  "-language:implicitConversions"
+)
+
 play.Project.playScalaSettings
