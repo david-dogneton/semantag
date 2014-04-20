@@ -49,6 +49,12 @@ object Utilisateur {
     }
   }
 
+  /**
+   * Détermine si un utilisateur aime un article en particulier.
+   * @param user l'utilisateur étudié
+   * @param article l'article étudié
+   * @return 1 si l'utilisateur aime cet article, 0 sinon
+   */
   def aime(user: Utilisateur, article:Article): Int = {
     val result: List[Utilisateur] = Cypher(
       """
@@ -71,6 +77,12 @@ object Utilisateur {
     }
   }
 
+  /**
+   * Détermine si un utilisateur aime une entité en particulier.
+   * @param user l'utilisateur étudié
+   * @param entite l'entité étudiée
+   * @return 1 si l'utilisateur aime cette entité, 0 sinon
+   */
   def aime(user: Utilisateur, entite:Entite): Int = {
     Logger.debug("URL INPUT : " + entite.url)
     val result: List[Utilisateur] = Cypher(

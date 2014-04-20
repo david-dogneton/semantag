@@ -30,7 +30,6 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
     implicit request =>
       val maybeUser :Option[User] = loggedIn
       if(maybeUser.isDefined){
-        Logger.debug("Deja Loggué !!!")
         Redirect(routes.Application.mapage)
       }
       else{
@@ -87,13 +86,13 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
     implicit request =>
     val maybeUser :Option[User] = loggedIn
     if(maybeUser.isDefined){
-      Logger.debug("Deja Loggué !!! => SE DELOGER !!")
       Redirect(routes.Application.mapage())
     }
     else{
       Ok(views.html.inscription())
     }
   }
+
   def inscriptionsubmit = StackAction{
     implicit request =>
       inscriptionForm.bindFromRequest.fold(
@@ -118,6 +117,7 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
         }
       )
   }
+
 
 
 }
