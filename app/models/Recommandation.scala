@@ -96,6 +96,19 @@ object Recommandation {
               }
             }
           }
+          case None => {
+            for (entite <- listeEntites) {
+              var listeArticlesOpt = Tag.getArticlesLies(entite, 10)
+              listeArticlesOpt match {
+                case Some(listeArticles) => {
+                  val max = maxListe(listeArticles)
+                  for (article <- listeArticles) {
+                      res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
+                  }
+                }
+              }
+            }
+          }
         }
       }
       case None => None

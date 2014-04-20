@@ -7,6 +7,10 @@ app.filter('fromNow', function () {
     }
 });
 
+function GestionEntites($scope, $http) {
+
+}
+
 
 function NewsRenderer($scope, $http) {
 
