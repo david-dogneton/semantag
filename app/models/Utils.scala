@@ -3,7 +3,7 @@ package models
 import org.anormcypher.Cypher
 
 /**
- * Created by Administrator on 11/04/2014.
+ * Ensemble de fonctions utilitaires
  */
 object Utils {
 
