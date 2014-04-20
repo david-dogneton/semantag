@@ -164,7 +164,6 @@ object AppreciationDomaine {
       }
       case None => throw new Exception("Liste de domaines non trouvée")
     }
-    false
   }
 
   /**
@@ -192,6 +191,5 @@ object AppreciationDomaine {
       }
       case None => throw new Exception("Liste de domaines non trouvée")
     }
-    false
   }
 }

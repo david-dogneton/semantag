@@ -72,6 +72,7 @@ object Recommandation {
     val listeEntitesOpt = Utilisateur.getTopEntites(user, 10)
     val articlesLusOpt = Utilisateur.getArticlesLus(user)
     var res = true
+    var listeURL = List[String]()
     listeEntitesOpt match {
       case Some(listeEntites) => {
         articlesLusOpt match {
@@ -88,11 +89,13 @@ object Recommandation {
                         onAjoute = false
                       }
                     }
-                    if (onAjoute) {
+                    if (onAjoute && !listeURL.contains(article._1.url)) {
                       res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
+                      listeURL = article._1.url::listeURL
                     }
                   }
                 }
+                case None => {}
               }
             }
           }
@@ -106,6 +109,7 @@ object Recommandation {
                       res = Recommandation.create(new Recommandation(user, article._1, article._2 / max)) && res
                   }
                 }
+                case None => {}
               }
             }
           }

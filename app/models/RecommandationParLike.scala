@@ -167,6 +167,7 @@ object RecommandationParLike {
                             }
                           }
                         }
+                        case None => {}
                       }
                     }
                   }

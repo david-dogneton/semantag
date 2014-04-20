@@ -70,6 +70,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
             case None => throw new Exception("Utilisateur not found.")
           }
         }
+        case None => {}
       }
       Ok("200")
   }
@@ -103,6 +104,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
             case None => throw new Exception("Utilisateur not found.")
           }
         }
+        case None => {}
       }
       Ok("200")
   }
@@ -140,6 +142,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
             case None => throw new Exception("Entité not found.")
           }
         }
+        case None => {}
       }
       Ok(Json.obj("valeur" -> aCoeur, "nbCoeurs" -> nbCoeurs))
   }
@@ -172,6 +175,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
             case None => throw new Exception("Utilisateur not found.")
           }
         }
+        case None => {}
       }
       Ok(Json.obj("valeur" -> aCoeur))
   }
@@ -205,6 +209,7 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
             case None => throw new Exception("Utilisateur not found.")
           }
         }
+        case None => {}
       }
       Ok("200")
   }
