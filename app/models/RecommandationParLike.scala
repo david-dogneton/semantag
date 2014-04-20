@@ -79,6 +79,12 @@ object RecommandationParLike {
     result
   }
 
+  /**
+   * Récupère les RecommandationParLike les plus pertinentes pour un utilisateur donné (en fonction de leur propriété "pondération").
+   * @param user l'utilisateur étudié
+   * @param nbRecommandations le nombre de recommandations à sélectionner
+   * @return Some d'une liste de RecommandationParLike (comportant maximum "nbRecommandations" éléments), ou None si les informations n'ont pas été trouvées en BDD
+   */
   def getTopRecommandationsParLike(user: Utilisateur, nbRecommandations: Int): Option[List[RecommandationParLike]] = {
     val result: List[RecommandationParLike] = Cypher(
       """
@@ -123,35 +129,11 @@ object RecommandationParLike {
     }
   }
 
-
-  def getTopRecommandations(user: Utilisateur, nbRecommandations: Int): Option[List[Recommandation]] = {
-    val result: List[Recommandation] = Cypher(
-      """
-        match (user: Utilisateur {mail : {mailUser}})-[r:recommandation]-(article: Article)
-                 return r.ponderation as ponderation,
-                 article.url as urlArticle
-                 order by r.ponderation DESC
-                 limit {nbRecommandations};
-      """).on("mailUser" -> user.mail, "nbRecommandations" -> nbRecommandations)().collect {
-      case CypherRow(ponderation: BigDecimal,
-      urlArticle: String) => {
-        var optionArticle = Article.getByUrl(urlArticle)
-        optionArticle match {
-          case Some(article) => {
-            new Recommandation(user, article, ponderation.toInt)
-          }
-          case None => throw new IllegalArgumentException("Article non trouvable")
-        }
-      }
-      case _ => throw new IllegalArgumentException("Mauvais format de l'entite")
-    }.toList
-
-    result match {
-      case Nil => None
-      case _ => Some(result)
-    }
-  }
-
+  /**
+   * Construit les instances de "RecommandationParLike" pour un utilisateur donné. Établit une pondération basée sur celle de la relation "EstLie" entre deux articles (60%), de la place du site dans les favoris de l'utilisateur (30%) et de la présence d'une entité dans les favoris de l'utilisateur (10%).
+   * @param user l'utilisateur étudié
+   * @return vrai si la création s'est bien déroulée, faux sinon.
+   */
   def buildRecommandationsParLike(user: Utilisateur): Boolean = {
     var res = true
     val listeEntitesFavOpt = Utilisateur.getTopEntites(user, 50)

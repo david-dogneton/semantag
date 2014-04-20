@@ -25,7 +25,7 @@ object Note {
       "nbEtoiles" -> note.nbEtoiles,
       "aCoeur" -> note.aCoeur
     ).execute()
-    Logger.debug("Résultat de la création de la note : "+resultat)
+    Article.incrNbCoeurs(note.article.url)
     //AppreciationEntite.majAvecCreate(note)
     AppreciationDomaine.majAvecCreate(note)
     AppreciationSite.majAvecCreate(note)
@@ -48,7 +48,8 @@ object Note {
           "nbEtoiles" -> note.nbEtoiles,
           "aCoeur" -> note.aCoeur
         ).execute()
-        AppreciationEntite.majAvecCreate(note)
+        Article.incrNbCoeurs(article.url)
+        //AppreciationEntite.majAvecCreate(note)
         AppreciationDomaine.majAvecCreate(note)
         AppreciationSite.majAvecCreate(note)
         resultat
@@ -89,7 +90,7 @@ object Note {
       case Nil => None
       case head :: tail => {
         val note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
-        AppreciationEntite.majSansCreate(note, changementNbEtoiles)
+        //AppreciationEntite.majSansCreate(note, changementNbEtoiles)
         AppreciationSite.majSansCreate(note, false, changementNbEtoiles)
         Some(note)
       }
@@ -140,7 +141,7 @@ object Note {
           case Nil => None
           case head :: tail => {
              var note = Note(user, article, head[BigDecimal]("nbEtoiles").toInt, head[Boolean]("aCoeur"))
-            AppreciationEntite.majSansCreate(note, 0, true, aCoeur)
+            //AppreciationEntite.majSansCreate(note, 0, true, aCoeur)
             AppreciationDomaine.majSansCreate(note, true, aCoeur)
             AppreciationSite.majSansCreate(note, false, 0, true, aCoeur)
             Some(note)
@@ -159,6 +160,7 @@ object Note {
       """
     ).on("mailUser" -> user.mail,
       "urlArt" -> article.url).execute()
+    Article.decrNbCoeurs(article.url)
     result
   }
 

@@ -140,7 +140,10 @@ object AppreciationDomaine {
     result
   }
 
-
+  /**
+   * Met à jour l'appréciation d'un domaine pour un utilisateur, lors de la création d'une nouvelle note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationDomaine et sa propriété "estFavori".
+   * @param note note créée
+   */
   def majAvecCreate(note: Note) {
     var domainesOpt = APourDomaine.getDomainesLies(note.article)
     domainesOpt match {
@@ -153,7 +156,7 @@ object AppreciationDomaine {
             }
             case None => {
               var nbCoeurs = 0
-              if(note.aCoeur) nbCoeurs = 1
+              if (note.aCoeur) nbCoeurs = 1
               AppreciationDomaine.create(new AppreciationDomaine(note.utilisateur, elt, nbCoeurs))
             }
           }
@@ -164,7 +167,12 @@ object AppreciationDomaine {
     false
   }
 
-
+  /**
+   * Met à jour l'appréciation d'un domaine pour un utilisateur, lors de la modification d'une note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationDomaine et sa propriété "estFavori".
+   * @param note note modifiée
+   * @param setCoeur booléen stipulant s'il faut changer le nombre de coeurs
+   * @param aCoeur booléen stipulant si l'AppreciationDomaine va recevoir un nouveau coeur (true) ou en "perdre" un (false)
+   */
   def majSansCreate(note: Note, setCoeur: Boolean = false, aCoeur: Boolean = false) {
     var domainesOpt = APourDomaine.getDomainesLies(note.article)
     domainesOpt match {
@@ -174,7 +182,7 @@ object AppreciationDomaine {
           appreciationDomaineOpt match {
             case Some(appreciationDomaine) => {
               if (setCoeur) {
-                if(aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
+                if (aCoeur) AppreciationDomaine.incrNbCoeurs(note.utilisateur, elt)
                 else AppreciationDomaine.decrNbCoeurs(note.utilisateur, elt)
               }
             }

@@ -27,7 +27,11 @@ object APourDomaine {
      create(aPourDomaine.article, aPourDomaine.domaine)
   }
 
-
+  /**
+   * Liste les domaines liés à un article.
+   * @param article l'article étudié.
+   * @return Some d'une liste de domaines (ceux liés à l'article) ou None si l'article n'a pas été trouvé en BDD.
+   */
   def getDomainesLies(article: Article): Option[List[Domaine]] = {
     val result: List[Domaine] = Cypher(
       """

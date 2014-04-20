@@ -196,6 +196,10 @@ object AppreciationSite {
     result
   }
 
+  /**
+   * Met à jour l'appréciation d'un site pour un utilisateur, lors de la création d'une nouvelle note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationSite et sa propriété "estFavori".
+   * @param note note créée
+   */
   def majAvecCreate(note: Note) = {
     var site = note.article.site
     var appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
@@ -219,6 +223,13 @@ object AppreciationSite {
 
   }
 
+  /**
+   * Met à jour l'appréciation d'un site pour un utilisateur, lors de la modification d'une note. Sert au système de recommandation. Agit sur le nombre de coeurs de l'AppreciationSite et sa propriété "estFavori".
+   * @param note note modifiée
+   * @param changementNbEtoiles Le nombre d'étoiles à ajouter ou enlever à l'AppreciationSite
+   * @param setCoeur booléen stipulant s'il faut changer le nombre de coeurs
+   * @param aCoeur booléen stipulant si l'AppreciationSite va recevoir un nouveau coeur (true) ou en "perdre" un (false)
+   */
   def majSansCreate(note: Note, suppressionNote: Boolean = false, changementNbEtoiles: Int = 0, setCoeur: Boolean = false, aCoeur: Boolean = false) = {
     var site = note.article.site
     var appreciationSiteOpt = AppreciationSite.get(note.utilisateur, site)
