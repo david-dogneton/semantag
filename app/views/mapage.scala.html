@@ -32,13 +32,21 @@
                 placer un coeur sur une entité à partir de la page de recherche. Une recherche s'effectue à l'aide de la
                 barre de saisie située en haut à droite de chaque page.</p>
 
+            <p>À noter, donc, qu'aucun article n'apparaîtra ci-dessous tant que vous n'aurez pas placé de coeur sur une
+                entité.</p>
+
             <p>D'autres fonctionnalités sont prévues, mais cette première sélection permet de découvrir le potentiel du
                 système de recommandation.</p>
             <h4>v1.0.1</h4>
         </div>
-        <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
+        <div ng-show="tailleListe == -1" class="ui segment" style="padding-top:50px">
             Récupération des articles susceptibles de vous intéresser...
             <div class="ui active center loader"></div>
+        </div>
+
+        <div ng-show="tailleListe == 0" class="ui primary inverted red segment" style="padding-top:50px">
+            Aucun article ne peut actuellement vous être recommandé. Ajoutez un coeur à une ou plusieurs entités pour
+            voir des articles apparaître sur cette page.
         </div>
         <div class="ui seven items">
             <div class="item" style="min-height: 600px;"

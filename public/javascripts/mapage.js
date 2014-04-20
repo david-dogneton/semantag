@@ -10,6 +10,8 @@ app.filter('fromNow', function () {
 function NewsRenderer($scope, $http) {
     $scope.afficher = 1;
 
+    $scope.tailleListe = -1;
+
     $scope.gererCoeur = function ($mailUser, $urlArticle) {
         $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
         var rank = 0;
@@ -35,12 +37,12 @@ function NewsRenderer($scope, $http) {
 
 
     $http.get('/getArtRecommandes').success(function (data) {
-        console.log("data : " + data);
-        console.dir(data);
         $scope.news.items = data.liste;
+        $scope.tailleListe = data.liste.length;
 
     }).error(function (err) {
-            console.log("err : " + err);
+            $scope.tailleListe = 0;
+                console.log("err : " + err);
         });
     $scope.limite = 7;
     $scope.filtrage = [];

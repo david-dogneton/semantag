@@ -11,6 +11,8 @@
             ]
         }
 
+        $scope.tailleListe = -1;
+
 
         $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
             $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
@@ -19,9 +21,11 @@
         $http.get('/displaylinkedart/' + id).success(function (data) {
             console.dir(data);
             $scope.news.items = data.liste;
+            $scope.tailleListe = data.liste.length;
 
         }).error(function (err) {
             console.log("err : " + err);
+            $scope.tailleListe = 0;
         });
 
         $scope.gererCoeur = function ($mailUser, $urlArticle) {
@@ -105,9 +109,13 @@
                 à @article.date.hourOfDay().get() h @article.date.minuteOfHour().get()</p>
 
         </div>
-        <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
+        <div ng-show="tailleListe == -1" class="ui segment" style="padding-top:50px">
             Récupération des articles similaires les plus récents...
             <div class="ui active center loader"></div>
+        </div>
+
+        <div ng-show="tailleListe == 0" class="ui primary inverted red segment" style="padding-top:50px">
+            Aucun article n'est lié à celui-ci.
         </div>
         <div class="ui five items">
             <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
