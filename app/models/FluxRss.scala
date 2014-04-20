@@ -37,7 +37,7 @@ object FluxRss {
     )
   }
 
-  private final val nbActors = 1000
+  private final val nbActors = 100
 
   //Mise à jour des sites DEJA existants en BDD
 

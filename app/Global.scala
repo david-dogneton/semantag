@@ -1,11 +1,8 @@
-/**
- * Created by Administrator on 15/03/14.
- */
+
 
 import akka.actor.{Props, ActorSystem}
 import java.util.concurrent.TimeUnit
-import models.{Utils, Compute, Master, FluxRss}
-import org.joda.time.DateTime
+import models.{Utils, Master, FluxRss}
 import play.api._
 import org.anormcypher._
 import play.api.libs.concurrent.Akka
@@ -33,7 +30,7 @@ object Global extends GlobalSettings {
 //          }
 //        })
 
-   val nbActors = 1000
+   val nbActors = 100
     val system = ActorSystem("InsertionSiteArticle")
     val master = system.actorOf(Props(new Master(nbActors)), name = "master")
 
