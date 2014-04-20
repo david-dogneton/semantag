@@ -2,7 +2,6 @@ package controllers
 
 
 import models._
-import models.database.{Country}
 import scala.Some
 import org.joda.time.DateTime
 import scala.Some
@@ -582,16 +581,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
     implicit request => Ok(views.html.stats())
   }
 
-  def create = StackAction {
-    implicit request =>
-      val result = Country.create()
-      Logger.debug("result : " + result)
-      Ok(views.html.index())
-  }
-
   def createEntite = StackAction {
     implicit request =>
-      val result = Entite.create(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
+      val result = Entite.insert(Entite("Robin Van Persie", "http://quartsDeFinale.com"))
       Logger.debug("result test create entité : " + result)
       Ok(views.html.index())
   }
@@ -979,30 +971,9 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
 
   def delete = StackAction {
     implicit request =>
-      Country.delete()
+      Utils.delete()
       Ok(views.html.index())
   }
-
-  def getNodeOfFrance = StackAction {
-    implicit request =>
-      val result: List[(String, String)] = Country.getNodesOfFrance()
-      result.foreach(el => Logger.debug("el : " + el))
-      Ok(views.html.index())
-  }
-
-
-  def getAllNodes = StackAction {
-    implicit request =>
-      val result: List[(String, String, Double)] = Country.getAllCountries()
-      result.foreach(el => Logger.debug("el : " + el))
-      Ok(views.html.index())
-  }
-
-  def test = StackAction {
-    implicit request =>
-      Ok(views.html.test())
-  }
-
 
   def miseAJourFlux = StackAction {
     implicit request =>

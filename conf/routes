@@ -38,9 +38,6 @@ POST        /search                           controllers.Application.search
 GET         /assets/*file                     controllers.Assets.at(path="/public", file)
 
 
-GET         /create                           controllers.Application.create
-GET         /get/france                       controllers.Application.getNodeOfFrance
-GET         /get                              controllers.Application.getAllNodes
 GET         /delete                           controllers.Application.delete
 GET         /createUser                       controllers.Application.createUser
 GET         /createDomaine                    controllers.Application.createDomaine
@@ -54,7 +51,6 @@ GET         /deleteUser                       controllers.Application.deleteUser
 GET         /createEntite                     controllers.Application.createEntite
 GET         /createAppreciationEntite         controllers.Application.createAppreciationEntite
 GET         /testBDD                          controllers.Application.getUser
-GET         /annotation/test                  controllers.Application.test
 GET         /presentation                     controllers.Application.presentation
 GET         /stats                            controllers.Application.statistiques
 
