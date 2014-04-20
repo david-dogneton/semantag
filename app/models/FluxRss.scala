@@ -10,11 +10,8 @@ import akka.actor.{ActorSystem, Props, Actor}
 import akka.routing.SmallestMailboxRouter
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
-import java.util.Date
 
-/**
- * Created by Romain on 20/03/14.
- */
+
 object FluxRss {
 
 

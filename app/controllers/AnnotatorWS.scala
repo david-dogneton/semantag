@@ -7,9 +7,6 @@ import ExecutionContext.Implicits.global
 import play.api.libs.functional.syntax._
 import models.ResourceDbPedia
 
-/**
- * Created by Administrator on 27/03/2014.
- */
 object AnnotatorWS {
 
 //  private final val production: String = "http://spotlight.dbpedia.org/rest/annotate"

@@ -1,15 +1,11 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
 import jp.t2v.lab.play2.auth._
-import models.{Utilisateur, Permission}
-import play.api.data.Form
+import models.Utilisateur
 import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-import play.api.data.validation._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -30,7 +26,7 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
     implicit request =>
       val maybeUser :Option[User] = loggedIn
       if(maybeUser.isDefined){
-        Redirect(routes.Application.mapage)
+        Redirect(routes.Application.mapage())
       }
       else{
         Ok(views.html.connexion())
@@ -48,22 +44,17 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       loginForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Formulaire connexion mal rempli")
-          Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Les champs ne sont pas renseignés correctement !"))
+          Future.successful(Redirect(routes.LoginLogout.connexion()).flashing("error"->"Les champs ne sont pas renseignés correctement !"))
         },
         user => {
           Logger.debug("Formulaire connexion bien rempli")
           Future(Utilisateur.authenticate(user.mail,user.mdp)).flatMap {
-            current =>
-              current match {
-                case Some(_) => {
-                  Logger.debug("Compte Existant")
-                  gotoLoginSucceeded(user.mail)
-                }
-                case None => {
-                  Logger.debug("L'auth n'a pas marché, et le compte mail existe pas donc le compte n'existe pas")
-                  authorizationFailed(request)
-                }
-              }
+            case Some(_) =>
+              Logger.debug("Compte Existant")
+              gotoLoginSucceeded(user.mail)
+            case None =>
+              Logger.debug("L'auth n'a pas marché, et le compte mail existe pas donc le compte n'existe pas")
+              authorizationFailed(request)
           }
         }
       )
@@ -98,21 +89,21 @@ object LoginLogout extends Controller with LoginLogout with OptionalAuthElement 
       inscriptionForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("Compte mal renseigné")
-          Logger.debug(s"Bad registration !! : ${formWithErrors}")
-          Redirect(routes.LoginLogout.inscription).flashing("error" -> "Les champs sont mal renseignés  !")
+          Logger.debug(s"Bad registration !! : $formWithErrors")
+          Redirect(routes.LoginLogout.inscription()).flashing("error" -> "Les champs sont mal renseignés  !")
         },
         admin => {
           Logger.debug("Compte bien renseigné")
           val mayBeUser: Option[Utilisateur] = Utilisateur.get(admin.mail)
          if (mayBeUser.isDefined) {
          Logger.debug("Compte déjà existant ")
-         Redirect(routes.LoginLogout.inscription).flashing("error" -> "Ce compte mail est déjà associé à un compte SEMANTAG !")
+         Redirect(routes.LoginLogout.inscription()).flashing("error" -> "Ce compte mail est déjà associé à un compte SEMANTAG !")
          }
         else{
           Logger.debug("Compte non existant !")
           Utilisateur.create(admin)
           Logger.debug("Compte bien crée")
-          Redirect(routes.LoginLogout.inscription).flashing("success" -> "Vous êtes maintenant membre de SEMANTAG !")
+          Redirect(routes.LoginLogout.inscription()).flashing("success" -> "Vous êtes maintenant membre de SEMANTAG !")
         }
         }
       )

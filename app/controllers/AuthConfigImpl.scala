@@ -7,7 +7,6 @@ import scala.concurrent.{Future, ExecutionContext}
 import play.api.mvc.{SimpleResult, RequestHeader, Controller}
 import jp.t2v.lab.play2.auth.AuthConfig
 
-import jp.t2v.lab.play2.auth.CacheIdContainer
 import scala.reflect._
 
 trait AuthConfigImpl extends AuthConfig with Controller{
@@ -48,16 +47,16 @@ trait AuthConfigImpl extends AuthConfig with Controller{
   def resolveUser(id: Id)(implicit ctx: ExecutionContext): Future[Option[User]] = Future(Utilisateur.get(id))
 
   def loginSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[SimpleResult] =
-    Future.successful(Redirect(routes.Application.mapage))
+    Future.successful(Redirect(routes.Application.mapage()))
 
   def logoutSucceeded(request: RequestHeader)(implicit ctx: ExecutionContext): Future[SimpleResult] =
-    Future.successful(Redirect(routes.Application.index).flashing("success"->"Vous avez été déconnecté avec succès"))
+    Future.successful(Redirect(routes.Application.index()).flashing("success"->"Vous avez été déconnecté avec succès"))
 
   def authenticationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[SimpleResult] =
-    Future.successful(Redirect(routes.LoginLogout.connexion))
+    Future.successful(Redirect(routes.LoginLogout.connexion()))
 
   def authorizationFailed(request: RequestHeader)(implicit ctx: ExecutionContext): Future[SimpleResult] =
-    Future.successful(Redirect(routes.LoginLogout.connexion).flashing("error"->"Ce compte n'existe pas, ou le mot de passe est incorrect !"))
+    Future.successful(Redirect(routes.LoginLogout.connexion()).flashing("error"->"Ce compte n'existe pas, ou le mot de passe est incorrect !"))
 
   def authorize(user: User, authority: Authority)(implicit ctx: ExecutionContext): Future[Boolean] = Future.successful {
     (user, authority) match {
