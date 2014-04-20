@@ -9,14 +9,14 @@
         $scope.news = {
             "items": [
             ]
-        }
+        };
 
         $scope.tailleListe = -1;
 
 
         $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
             $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
-        }
+        };
 
         $http.get('/displaylinkedart/' + id).success(function (data) {
             console.dir(data);
@@ -49,10 +49,10 @@
             $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
             if ($scope.articleACoeur == 0)  $scope.articleACoeur = 1;
             else $scope.articleACoeur = 0;
-        }
+        };
         $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
             $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
-        }
+        };
     }
 </script>
 <div class="ui grid">

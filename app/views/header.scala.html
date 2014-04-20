@@ -4,7 +4,7 @@
         <a href="@routes.Application.index()">
             <div class="header item" style="background:none">
                 <h3 id="logo">Semantag</h3>
-                <p class="blue" style="margin-top:0px">@Messages("header.slogan")</p>
+                <p class="blue" style="margin-top:0;">@Messages("header.slogan")</p>
             </div>
         </a>
         @user match {
@@ -73,7 +73,7 @@
             case None => {
             <div class="item">
                 <div class="ui teal button"> <a  style="color :white;" href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
-                <div class="ui button"><a  style="none;" href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
+                <div class="ui button"><a href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
             </div>
             }
             }
