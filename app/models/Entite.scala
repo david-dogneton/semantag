@@ -28,6 +28,11 @@ case class Entite(nom: String,
 
 }
 
+/**
+ * Objet compagnon d'une entité.
+ *
+ * Elle contient des méthodes d'insertion, de suppression d'une entité.
+ */
 object Entite {
 
   /**
