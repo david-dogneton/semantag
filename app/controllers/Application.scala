@@ -974,11 +974,6 @@ object Application extends Controller with OptionalAuthElement with LoginLogout 
       Utils.delete()
       Ok(views.html.index())
   }
-  def test = StackAction {
-    implicit request =>
-      Ok(views.html.test())
-  }
-
 
   def miseAJourFlux = StackAction {
     implicit request =>
