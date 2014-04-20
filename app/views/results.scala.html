@@ -11,8 +11,12 @@
                 <div class="item" >
                     @user match {
                         case Some(usr) => {
-                            <a class="like ui corner label">
-                                <i class="like icon"></i>
+                            <a class="like ui corner label" ng-click="gererCoeurEntite('@usr.mail', '@entite.url', '@entite.id')">
+                                @if(Utilisateur.aime(usr,entite) == 1){
+                                    <i id="@entite.id" class="like icon cliquee"></i>
+                                } else{
+                                    <i id="@entite.id" class="like icon"></i>
+                                }
                             </a>
                         }
                         case None => {
@@ -41,13 +45,17 @@
 
         <h2>Articles pour "@search"</h2>
         <p>@articles.length résultat(s)</p>
-        <div class="ui six items">
+        <div class="ui six items" ng-controller="GestionArticles">
             @for(article <- articles) {
             <div class="item" style="min-height: 450px;">
                 @user match {
                     case Some(usr) => {
-                        <a class="like ui corner label">
-                            <i class="like icon"></i>
+                        <a class="like ui corner label" ng-click="gererCoeurArticle('@usr.mail', '@article.url', '@article.id')">
+                            @if(Utilisateur.aime(usr,article) == 1){
+                                <i id="@article.id" class="like icon cliquee"></i>
+                            } else{
+                                <i id="@article.id" class="like icon"></i>
+                            }
                         </a>
                     }
                     case None => {

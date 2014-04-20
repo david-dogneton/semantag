@@ -52,12 +52,35 @@ object Utilisateur {
   def aime(user: Utilisateur, article:Article): Int = {
     val result: List[Utilisateur] = Cypher(
       """
-        Match (n:Utilisateur {mail: {mailUser}})-[r:note]-(a:article {url: {urlArticle}})
+        Match (n:Utilisateur {mail: {mailUser}})-[r:note]-(a:Article {url: {urlArticle}})
         return n.mail as mail,
           n.mdp as mdp,
           n.pseudo as pseudo,
           n.nbCoeurs as nbCoeurs;
-      """).on("mailDonne" -> user.mail, "urlArticle" -> {article.url})().collect {
+      """).on("mailUser" -> user.mail, "urlArticle" -> article.url)().collect {
+      case CypherRow(mail: String,
+      mdp: String,
+      pseudo: String,
+      nbCoeurs: BigDecimal) =>
+        new Utilisateur(mail, mdp, pseudo, nbCoeurs.toInt)
+      case _ => throw new Exception("Utilisateur not found")
+    }.toList
+    result match {
+      case Nil => 0
+      case head :: tail => 1
+    }
+  }
+
+  def aime(user: Utilisateur, entite:Entite): Int = {
+    Logger.debug("URL INPUT : " + entite.url)
+    val result: List[Utilisateur] = Cypher(
+      """
+        Match (n:Utilisateur {mail: {mailUser}})-[r:appreciationEntite]-(a:Entite {url: {urlEntite}})
+        return n.mail as mail,
+          n.mdp as mdp,
+          n.pseudo as pseudo,
+          n.nbCoeurs as nbCoeurs;
+      """).on("mailUser" -> user.mail, "urlEntite" -> entite.url)().collect {
       case CypherRow(mail: String,
       mdp: String,
       pseudo: String,
