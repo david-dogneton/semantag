@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------------------------------
---------------------- SEMANTAG, structuration sémantique d'artciles d'actualités ----------------------
+--------------------- SEMANTAG, structuration sémantique d'articles d'actualités ----------------------
 -------------------------------------------------------------------------------------------------------
 
 --------------
 Auteurs
 --------------
 
-    David Dogneton, Romain De Oliveira, Maxime Gautré et Thibault Goustat
+    Romain De Oliveira, David Dogneton, Maxime Gautré et Thibault Goustat
 
 --------------
 Objectifs
@@ -16,13 +16,13 @@ L’ambition de ce projet est de structurer sémantiquement les articles d’act
 Cette structuration est permise par une annotation des titres et descriptions de chaque flux grâce au projet open source DBpedia Spotlight,
 qui détecte dans un texte donné des entités DBpedia.
 
-L’idée est ici d’associer la notion d’annotation à celle de tag. Nous stockons en base de données des articles et leur tags associés,
-qui sont en réalité des entités DBpedia. Ces tags permettent de lier les articles similaires et d’aggréger les articles concernant
+L’idée est ici d’associer la notion d’annotation à celle de tag. Nous stockons en base de données des articles et leurs tags associés,
+qui sont en réalité des entités DBpedia. Ces tags permettent de lier les articles similaires et d’agréger les articles concernant
 l’entité DBpedia correspondante.
 
 Afin de tirer davantage partie de cette quantité massive d’informations, nous souhaitons :
-    - Proposer un maximum d’analyse statistiques, qui permettront notamment de connaître en un coup d’oeil le contenu de l’actualité journalière,
-      hebdomadaire, mensuelle...
+    - Proposer un maximum d’analyses statistiques, qui permettront notamment de connaître en un coup d’oeil le contenu de l’actualité journalière,
+      hebdomadaire, mensuelle, ...
     - Proposer un système de recommandation personnalisée aux utilisateurs connectés en fonction de leur historique de consultations
       (recommandation automatique) et de leurs goûts (recommandation contrôlée)
 
@@ -33,7 +33,7 @@ Installation
 
 L'application a besoin de plusieurs choses :
 
-    - la base de données : Pour cela il suffit de télécharger Neo4j, nous avons utilisé la version 2.0.1. Il faut ensuite démarrer la base sur le port 7474
+    - la base de données : pour cela, il suffit de télécharger Neo4j, nous avons utilisé la version 2.0.1. Il faut ensuite démarrer la base sur le port 7474
       (port par défaut)
 
     - l'annotateur :
@@ -48,10 +48,3 @@ L'application a besoin de plusieurs choses :
     - pour récupérer les sources du projet, git clone git@github.com:david-dogneton/pfe-semantic-news.git
 
 
-
-
-
-This is your new Play application
-=====================================
-
-This file will be packaged with your application, when using `play dist`.
