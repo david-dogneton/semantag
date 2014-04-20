@@ -18,7 +18,7 @@ import java.util.Date
 object FluxRss {
 
 
-  def miseAJourBddSites = {
+  def miseAJourBddSites() = {
     val src = Source.fromFile("public/Liste_Flux_Rss_PFE.csv", "utf-8")
     val iter: Iterator[Array[String]] = src.getLines().map(_.split(";"))
     val listeSites = iter.map(el => {
@@ -111,7 +111,7 @@ class Child extends Actor {
           ""
         }
         val nouvelArticle = Article(titre, auteur, description, dateValid, lien, site, image)
-        val articleInsertedOpt = Article.insert(nouvelArticle)
+
         val allResources: Future[List[ResourceDbPedia]] = AnnotatorWS.annotate(titre + ". " + description)
 
         // on regroupe les éléments de la liste selon leurs URIs => (Key : Uri => Valeurs : listes des éléments identiques)
@@ -123,7 +123,7 @@ class Child extends Actor {
           })
         })
         // on crée l'entité et le tag associé au nouvel article créé
-
+        val articleInsertedOpt = Article.insert(nouvelArticle)
         articleInsertedOpt match {
           case Some(articleInserted) =>
 
