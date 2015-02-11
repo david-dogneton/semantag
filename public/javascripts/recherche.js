@@ -20,6 +20,8 @@ function GestionEntites($scope, $http) {
 }
 
 function GestionArticles($scope, $http) {
+
+
     $scope.gererCoeurArticle = function ($mailUser, $urlArticle, $idArticle) {
         $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
         if ($('#' + $idArticle).attr('class').indexOf('cliquee') > -1) {

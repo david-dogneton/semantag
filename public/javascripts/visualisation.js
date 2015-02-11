@@ -29,7 +29,7 @@ function NewsRenderer($scope, $http) {
 //            // dommage
 //        });
 
-    $scope.limite = 5;
+    $scope.limite = 4;
 
 
 

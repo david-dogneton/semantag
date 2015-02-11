@@ -1,40 +1,29 @@
 @(page:String)(implicit user: Option[Utilisateur], lang: Lang)
-<div class="ui inverted huge teal block header" id="header">
-    <div class="ui inverted menu" style="background:none">
+<div class="ui page stackable grid" id="header">
+
+    <div class="three wide column" style="text-align: center;">
         <a href="@routes.Application.index()">
-            <div class="header item" style="background:none">
-                <h3 id="logo">Semantag</h3>
-                <p class="blue" style="margin-top:0;">@Messages("header.slogan")</p>
-            </div>
+            <h3 id="logo">Semantag</h3><!--
+            <p class="blue" style="margin-top:0;">@Messages("header.slogan")</p>-->
         </a>
         @user match {
         case Some(usr) => {
 
         }
         case None => {
-        <div class="large basic inverted animated fade ui button">
+<!--        <div class="tiny basic inverted animated fade ui button">
             <div class="visible content">@Messages("header.buttonSubscribe")</div>
             <div class="hidden content" ><a href="@routes.LoginLogout.inscription">@Messages("header.buttonSubscribeHover")</a></div>
-        </div>
+        </div>-->
         }
         }
-
-        <div class="right item">
-            <form action="@routes.Application.search" method="POST">
-                <div class="field">
-                    <div class="ui action input">
-                        <input name="search" style="min-width:250px" placeholder='@Messages("header.search")' type="text">
-                        <div class="ui button" style="cursor:inherit"><button type="submit" style="cursor:pointer; border:0; height:100%; width:100%"><i class="search icon"></i></button></div>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="right item menu">
-            <div class="top right pointing mobile dropdown link item">
+    </div>
+    <div class="ten wide column"  style="text-align: center;">
+        <div class="ui pointing secondary menu" style="text-transform: uppercase; color:white">
+<!--            <div class="top right pointing mobile dropdown link item">
                 Menu
                 <i class="dropdown icon"></i>
-                <div class="menu">
+
                     @if(page=="presentation"){
                     <a class="active item">@Messages("header.presentation")</a>
                     } else{
@@ -44,41 +33,82 @@
                     <a class="item">@Messages("header.stats")</a>
                     <a class="item">@Messages("header.subscribe")</a>
                     <a class="item">@Messages("header.connect")</a>
-                </div>
-            </div>
-            @if(page=="presentation"){
-            <a class="active item" href="@routes.Application.presentation()">@Messages("header.presentation")</a>
+            </div>-->
+            @if(page=="accueil"){
+            <a class="active item" href="@routes.Application.index()"><i class="home icon" style="display: inline;"></i> Accueil </a>
             } else{
-            <a class="item" href="@routes.Application.presentation()">@Messages("header.presentation")</a>
+            <a class="item" href="@routes.Application.index()"><i class="home icon" style="display: inline;"></i>  Accueil </a>
+            }
+
+            @if(page=="presentation"){
+            <a class="active item" href="@routes.Application.presentation()"><i class="idea icon" style="display: inline;"></i> @Messages("header.presentation")</a>
+            } else{
+            <a class="item" href="@routes.Application.presentation()"><i class="idea icon" style="display: inline;"></i>  @Messages("header.presentation")</a>
             }
 
             @if(page=="statistiques"){
-            <a class="active item" href="@routes.Application.statistiques()">@Messages("header.stats")</a>
+            <a class="active item" href="@routes.Application.statistiques()"><i class="bar chart icon" style="display: inline;"></i> @Messages("header.stats")</a>
             } else{
-            <a class="item" href="@routes.Application.statistiques()">@Messages("header.stats")</a>
+            <a class="item" href="@routes.Application.statistiques()"><i class="bar chart icon" style="display: inline;"></i> @Messages("header.stats")</a>
+            }
+            @if(page=="inscription"){
+            <a class="active item" href="@routes.LoginLogout.inscription"><i class="pencil icon" style="display: inline;"></i> @Messages("header.subscribe")</a>
+            } else{
+            <a class="item" href="@routes.LoginLogout.inscription"><i class="pencil icon" style="display: inline;"></i> @Messages("header.subscribe")</a>
+            }
+            @if(page=="connexion"){
+            <a class="active item"  href="@routes.LoginLogout.connexion"><i class="lock icon" style="display: inline;"></i> @Messages("header.connect")</a>
+            } else{
+            <a class="item"  href="@routes.LoginLogout.connexion"><i class="lock icon" style="display: inline;"></i> @Messages("header.connect")</a>
             }
 
+
+            </div>
+      </div>
             @user match {
             case Some(usr) => {
+            <div class="four wide column">
             @if(page=="mapage"){
             <a class="active item" href="@routes.Application.mapage()">@Messages("header.mapage")</a>
             } else{
             <a class="item" href="@routes.Application.mapage()">@Messages("header.mapage")</a>
             }
-            <div class="item">
                 <p>@Messages("header.hi") <strong>@usr.pseudo</strong> !</p>
                 <a href="@routes.LoginLogout.logout" class="ui red button" > @Messages("header.deconnect")</a>
             </div>
             }
             case None => {
-            <div class="item">
-                <div class="ui teal button"> <a  style="color :white;" href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
-                <div class="ui button"><a href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
+<!--            <div class="two wide column">
+                <div class="ui button">  <i class="pencil icon" style="display: inline;"></i><a href="@routes.LoginLogout.inscription">@Messages("header.subscribe")</a></div>
+               </div>
+        <div class="two wide column">
+                <div class="ui button"> <i class="lock icon" style="display: inline;"></i> <a href="@routes.LoginLogout.connexion">@Messages("header.connect")</a></div>
+            </div>-->
+            }
+            }
+    <div class="three wide column"  ng-controller="Search" style="text-align: center;">
+        <form action="@routes.Application.search" method="POST" id="search-form" style="margin: 0;">
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input autocomplete="off" name="search" class="prompt" style="border-radius: 0.3rem !important;" type="text" placeholder='@Messages("header.search")' id="search-field">
+                    <i class="search icon validate"></i>
+      <!--              <input type="submit" style="display: none"/>-->
+                </div>
+                <div class="results validate"></div>       <!-- Autocomplete-->
             </div>
-            }
-            }
 
-        </div>
+      <!--      <div class="field">
+                <div class="ui action input">
+                    <input name="search" style="min-width:250px; font-family: Open Sans; font-style: italic;" placeholder='@Messages("header.search")' type="text">
+                    <div class="ui button" style="cursor:inherit"><button type="submit" style="background: none !important; cursor:pointer; border:0; height:100%; width:100%"><i class="search icon"></i></button></div>
+
+                </div>
+            </div>-->
+        </form>
     </div>
+        </div>
+
+     </div>
 </div>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
 <script src='@routes.Assets.at("javascripts/header.js")' type="text/javascript"></script>

@@ -39,6 +39,27 @@ object Type {
     }
   }
 
+  def getEntityType(entite:Entite): Option[Type] = {
+    play.api.Logger.debug("-------------------------------")
+    play.api.Logger.debug("entite.nom :" +entite.nom)
+    play.api.Logger.debug("entite.id :" +entite.id)
+    play.api.Logger.debug("-------------------------------")
+    val result: List[Type] = Cypher(
+      """
+        Match (type:Type), (entite: Entite) where ID(entite)={entityId} AND (entite)-[r:aPourType]->(type)
+        return  type.denomination as denomination
+        LIMIT 1
+      """).on("entityId" -> entite.id)().collect {
+      case CypherRow(denomination: String) => new Type(denomination)
+      case _ => throw new IllegalArgumentException("Mauvais format du type")
+    }.toList
+
+    result match {
+      case Nil => None
+      case head::tail => Some(head)
+    }
+  }
+
   def getAll: List[Type] = {
     val result: List[Type] = Cypher(
       """

@@ -4,7 +4,7 @@ import org.anormcypher.{CypherRow, Cypher}
 import org.joda.time.DateTime
 
 
-case class EstLie(urlArticleA: String, urlArticleB: String, ponderation: Double) {
+case class EstLie(urlA: String, urlB: String, ponderation: Double) {
 
 }
 
@@ -30,7 +30,7 @@ object EstLie {
 
 
   def create(estLie: EstLie): Boolean = {
-    create(estLie.urlArticleA, estLie.urlArticleB, estLie.ponderation)
+    create(estLie.urlA, estLie.urlB, estLie.ponderation)
   }
 
 //  def getPonderation(articleA: Article, articleB: Article): Int = {

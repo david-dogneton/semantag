@@ -3,39 +3,40 @@
 # ~~~~
 
 # Home page
-GET         /                                 controllers.Application.index
-GET         /jsRoutes                         controllers.Application.javascriptRoutes
-GET         /getart                           controllers.Application.getArt
-GET         /getDomaines                      controllers.Application.getDomaines
-GET         /getTypes                         controllers.Application.getTypes
-GET         /getTop                           controllers.Application.getTop10
-GET         /statsAnnotations/:idType                   controllers.Application.getTop(idType: Int)
-GET         /statsAnnotationsJour/:idType               controllers.Application.getTopJour(idType: Int)
-GET         /statsAnnotationsSemaine/:idType            controllers.Application.getTopSemaine(idType: Int)
-GET         /statsAnnotationsMois/:idType               controllers.Application.getTopMois(idType: Int)
-POST        /getArticlesByTag                 controllers.Application.getArticlesByTag
+GET         /                                   controllers.Application.index
+GET         /jsRoutes                           controllers.Application.javascriptRoutes
+GET         /getart                             controllers.Application.getArt
+GET         /getDomaines                        controllers.Application.getDomaines
+GET         /getTypes                           controllers.Application.getTypes
+GET         /getTop                             controllers.Application.getTop10
+GET         /statsAnnotations/:idType           controllers.Application.getTop(idType: Int)
+GET         /entitiesTitles/                    controllers.Application.getEntitesTitle
+GET         /statsAnnotationsJour/:idType       controllers.Application.getTopJour(idType: Int)
+GET         /statsAnnotationsSemaine/:idType    controllers.Application.getTopSemaine(idType: Int)
+GET         /statsAnnotationsMois/:idType       controllers.Application.getTopMois(idType: Int)
+POST        /getArticlesByTag                   controllers.Application.getArticlesByTag
 
-GET         /majsites                         controllers.Application.miseAJourSites
-GET         /majflux                          controllers.Application.miseAJourFlux
+GET         /majsites                           controllers.Application.miseAJourSites
+GET         /majflux                            controllers.Application.miseAJourFlux
 
-#POST       /displayart                       controllers.Application.displayArt
+#POST       /displayart                         controllers.Application.displayArt
 
-GET         /displaylinkedart/:id             controllers.Application.displayLinkedArt(id: Int)
-GET         /displayart/:id                   controllers.Application.displayArt(id: Int)
-GET         /connexion                        controllers.LoginLogout.connexion
-POST        /authenticate                     controllers.LoginLogout.authenticate
-GET         /mapage                           controllers.Application.mapage
-GET         /logout                           controllers.LoginLogout.logout
-GET         /entite/:id                       controllers.Application.entite(id: Int)
+GET         /displaylinkedart/:id               controllers.Application.displayLinkedArt(id: Int)
+GET         /displayart/:id                     controllers.Application.displayArt(id: Int)
+GET         /connexion                          controllers.LoginLogout.connexion
+POST        /authenticate                       controllers.LoginLogout.authenticate
+GET         /mapage                             controllers.Application.mapage
+GET         /logout                             controllers.LoginLogout.logout
+GET         /entite/:id                         controllers.Application.entite(id: Int)
 
-GET         /inscription                      controllers.LoginLogout.inscription
-POST        /inscriptionsubmit                controllers.LoginLogout.inscriptionsubmit
+GET         /inscription                        controllers.LoginLogout.inscription
+POST        /inscriptionsubmit                  controllers.LoginLogout.inscriptionsubmit
 
-POST        /search                           controllers.Application.search
+POST        /search                             controllers.Application.search
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                     controllers.Assets.at(path="/public", file)
+GET         /assets/*file                       controllers.Assets.at(path="/public", file)
 
 
 GET         /delete                           controllers.Application.delete
@@ -59,5 +60,7 @@ POST        /enregistrerLecture               controllers.Application.enregistre
 POST        /enregistrerLikeEntite            controllers.Application.enregistrerLikeEntite
 POST        /getLikeEntite                    controllers.Application.getLikeEntite
 POST        /getLikeArticle                   controllers.Application.getLikeArticle
+
+POST        /getEntityInfos                   controllers.Application.getEntityInfos
 
 GET         /getArtRecommandes                controllers.Application.getArticlesRecommandes

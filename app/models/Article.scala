@@ -203,14 +203,14 @@ object Article {
 
   /**
    * Méthode incrémentant le nombre de consultations d'un article (du jour, de la semaine, du mois et au total).
-   * @param urlArticle URL de l'article à modifier
+   * @param url URL de l'article à modifier
    * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
    */
-  def incrNbConsultations(urlArticle: String): Option[Article] = {
+  def incrNbConsultations(url: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
       """
-        Match (site:Site)--(article:Article {url: {urlArticle}})
+        Match (site:Site)--(article:Article {url: {url}})
         set article.consultationsJour = article.consultationsJour + 1,
                 article.consultationsSemaine = article.consultationsSemaine + 1,
                 article.consultationsMois = article.consultationsMois + 1,
@@ -219,7 +219,7 @@ object Article {
                 article.auteur as auteur,
                 article.description as description,
                 article.date as date,
-                article.url as urlArticle,
+                article.url as url,
                 site.url as urlSite,
                 site.nom as nomSite,
                 site.type as typeSite,
@@ -234,7 +234,7 @@ object Article {
                 article.nbEtoiles as nbE,
                 article.nbCoeurs as nbC,
                 ID(article) as idArticle
-      """).on("urlArticle" -> urlArticle)().collect {
+      """).on("url" -> url)().collect {
       case CypherRow(titre: String,
       auteur: String,
       description: String,
@@ -282,20 +282,20 @@ object Article {
 
   /**
    * Méthode incrémentant le nombre de coeurs d'un article.
-   * @param urlArticle URL de l'article à modifier
+   * @param url URL de l'article à modifier
    * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
    */
-  def incrNbCoeurs(urlArticle: String): Option[Article] = {
+  def incrNbCoeurs(url: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
       """
-        Match (site:Site)--(article:Article {url: {urlArticle}})
+        Match (site:Site)--(article:Article {url: {url}})
         set article.nbCoeurs = article.nbCoeurs + 1
         return  article.titre as titre,
                 article.auteur as auteur,
                 article.description as description,
                 article.date as date,
-                article.url as urlArticle,
+                article.url as url,
                 site.url as urlSite,
                 site.nom as nomSite,
                 site.type as typeSite,
@@ -310,7 +310,7 @@ object Article {
                 article.nbEtoiles as nbE,
                 article.nbCoeurs as nbC,
                 ID(article) as idArticle
-      """).on("urlArticle" -> urlArticle)().collect {
+      """).on("url" -> url)().collect {
       case CypherRow(titre: String,
       auteur: String,
       description: String,
@@ -360,20 +360,20 @@ object Article {
 
   /**
    * Méthode décrémentant le nombre de coeurs d'un article.
-   * @param urlArticle URL de l'article à modifier
+   * @param url URL de l'article à modifier
    * @return Some(article) ou None, en fonction de si l'article a été trouvé en BDD ou non
    */
-  def decrNbCoeurs(urlArticle: String): Option[Article] = {
+  def decrNbCoeurs(url: String): Option[Article] = {
 
     val result: List[Article] = Cypher(
       """
-        Match (site:Site)--(article:Article {url: {urlArticle}})
+        Match (site:Site)--(article:Article {url: {url}})
         set article.nbCoeurs = article.nbCoeurs - 1
         return  article.titre as titre,
                 article.auteur as auteur,
                 article.description as description,
                 article.date as date,
-                article.url as urlArticle,
+                article.url as url,
                 site.url as urlSite,
                 site.nom as nomSite,
                 site.type as typeSite,
@@ -388,7 +388,7 @@ object Article {
                 article.nbEtoiles as nbE,
                 article.nbCoeurs as nbC,
                 ID(article) as idArticle
-      """).on("urlArticle" -> urlArticle)().collect {
+      """).on("url" -> url)().collect {
       case CypherRow(titre: String,
       auteur: String,
       description: String,
@@ -492,7 +492,7 @@ object Article {
    */
   def getLastArticle: List[Article] = {
 
-    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 40;").toList
+    val result = getArticles("" -> "", "", "ORDER BY article.date DESC LIMIT 100;").toList
     result.map(_.get)
   }
 
@@ -520,7 +520,7 @@ Match (article:Article) where ID(article) = {id} delete article;
   def getEntitesLiees(article: Article): Option[List[Entite]] = {
     val result: List[Entite] = Cypher(
       """
-        match (entite: Entite)-[r:tag]-(article: Article {url : {urlArticle}})
+        match (entite: Entite)-[r:tag]-(article: Article {url : {url}})
                 return entite.nom as nom,
                   entite.url as url,
                   entite.apparitionsJour as apparitionsJour,
@@ -528,7 +528,7 @@ Match (article:Article) where ID(article) = {id} delete article;
                   entite.apparitionsSemaineDerniere as apparitionsSemaineDerniere,
                   entite.apparitionsMois as apparitionsMois,
                   entite.apparitions as apparitions;
-      """).on("urlArticle" -> article.url)().collect {
+      """).on("url" -> article.url)().collect {
       case CypherRow(nom: String,
       url: String,
       apparitionsJour: BigDecimal,
@@ -560,9 +560,9 @@ Match (article:Article) where ID(article) = {id} delete article;
   def getDomainesLies(article: Article): Option[List[Domaine]] = {
     val result: List[Domaine] = Cypher(
       """
-        match (article: Article {url : {urlArticle}})-[r:aPourDomaine]->(domaine: Domaine)
+        match (article: Article {url : {url}})-[r:aPourDomaine]->(domaine: Domaine)
                 return domaine.nom as nom;
-      """).on("urlArticle" -> article.url)().collect {
+      """).on("url" -> article.url)().collect {
       case CypherRow(nom: String) =>
         new Domaine(nom)
       case _ => throw new IllegalArgumentException("Mauvais format du domaine")

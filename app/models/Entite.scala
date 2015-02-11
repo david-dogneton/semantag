@@ -60,13 +60,13 @@ object Entite {
         return id(entite);
       """
     ).on("nom" -> entite.nom,
-        "url" -> entite.url,
-        "apparitionsJour" -> entite.apparitionsJour,
-        "apparitionsSemaine" -> entite.apparitionsSemaine,
-        "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
-        "apparitionsMois" -> entite.apparitionsMois,
-        "apparitions" -> entite.apparitions
-      )().collect {
+      "url" -> entite.url,
+      "apparitionsJour" -> entite.apparitionsJour,
+      "apparitionsSemaine" -> entite.apparitionsSemaine,
+      "apparitionsSemaineDerniere" -> entite.apparitionsSemaineDerniere,
+      "apparitionsMois" -> entite.apparitionsMois,
+      "apparitions" -> entite.apparitions
+    )().collect {
       case CypherRow(id: BigDecimal) =>
         Some(new Entite(entite.nom,
           entite.url,
@@ -102,7 +102,7 @@ object Entite {
                 entite.apparitionsMois,
                 entite.apparitions,
                 ID(entite)
-      """+restriction).on(args)().collect {
+                                            """+restriction).on(args)().collect {
       case CypherRow(nom: String,
       url: String,
       apparitionsJour: BigDecimal,
@@ -217,16 +217,16 @@ object Entite {
     }
   }
 
-  def topAnnotationsJour(nombre:Int, idTypeEntite:Int): List[Entite] = {
-    idTypeEntite match{
-      case -1 =>
-        val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
-        result.map(_.get)
-      case _ =>
-        val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
-        result.map(_.get)
+    def topAnnotationsJour(nombre:Int, idTypeEntite:Int): List[Entite] = {
+      idTypeEntite match{
+        case -1 =>
+          val result = getEntites("" -> "", "", "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+          result.map(_.get)
+        case _ =>
+          val result = getEntites("" -> "", "-[aPourType]->(type) where ID(type) = "+idTypeEntite, "ORDER BY entite.apparitionsJour DESC Limit "+nombre+";").toList
+          result.map(_.get)
+      }
     }
-  }
 
   /**
    * Augmente de 1 tous les champs "apparitions" d'une entité lorsqu'un artcile possède cette entité

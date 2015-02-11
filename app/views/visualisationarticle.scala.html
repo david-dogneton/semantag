@@ -5,7 +5,7 @@
 
     function EntityNewsRenderer($scope, $http) {
         var id = "@article.id";
-        $scope.limite = 5;
+        $scope.limite = 4;
         $scope.news = {
             "items": [
             ]
@@ -13,6 +13,43 @@
 
         $scope.tailleListe = -1;
 
+        $scope.getCategoryColor = function ($domaine) {
+            switch ($domaine) {
+                case "sciences":
+                    return "#564F8A";
+                    break;
+                case "sports":
+                    return "#A1CF64";
+                    break;
+                case "culture":
+                    return "#6ECFF5";
+                    break;
+                case "politique":
+                    return "#49769C";
+                    break;
+                case "sociétés":
+                    return "#D34836";
+                    break;
+                case "technologies":
+                    return "#1F88BE";
+                    break;
+                case "économie":
+                    return "#CC181E";
+                    break;
+                case "à la une":
+                    return "#81CFE0";
+                    break;
+                case "cinéma":
+                    return "#674172";
+                    break;
+                case "Jeux vidéos":
+                    return "#6C7A89";
+                    break;
+                case "musique":
+                    return "#D35400";
+                    break;
+            }
+        }
 
         $scope.enregistrerLecture = function ($mailUser, $urlArticle) {
             $http.post("/enregistrerLecture", {mailUser: $mailUser, urlArticle: $urlArticle});
@@ -24,9 +61,9 @@
             $scope.tailleListe = data.liste.length;
 
         }).error(function (err) {
-            console.log("err : " + err);
-            $scope.tailleListe = 0;
-        });
+                    console.log("err : " + err);
+                    $scope.tailleListe = 0;
+                });
 
         $scope.gererCoeur = function ($mailUser, $urlArticle) {
             $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
@@ -55,11 +92,11 @@
         };
     }
 </script>
-<div class="ui grid">
+<div class="sixteen column stackable ui grid">
     <div class="three wide column">
         <div class="ui one items" ng-controller="ControlleurCoeur">
             <div class="item">
-                <div class="ui  label ribbon" style="margin-top:5px">@article.site.typeSite</div>
+                <div class="ui  label ribbon" style="margin-top:5px ">@article.site.typeSite</div>
                 <div class="image">
                     @article.image.length match{
                     case 0 => { <img src='@routes.Assets.at("images/no-image.jpg")'> }
@@ -82,7 +119,6 @@
                     }
                     }
 
-
                     <div class="extra">
                         <i class="unhide icon"></i> @article.consultationsJour |
                         <i class="heart icon"></i> @article.nbCoeurs
@@ -95,12 +131,13 @@
     <div ng-controller="EntityNewsRenderer" class="ten wide column">
         <div class="ui piled segment">
             @user match {
-                case Some(usr) => {
-                    <h2><a href="@article.url" target="_blank" ng-click="enregistrerLecture('@usr.mail', '@article.url')">@article.titre</a></h2>
-                }
-                case None => {
-                    <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
-                }
+            case Some(usr) => {
+            <h2><a href="@article.url" target="_blank" ng-click="enregistrerLecture('@usr.mail', '@article.url')">@article.titre</a>
+            </h2>
+            }
+            case None => {
+            <h2><a href="@article.url" target="_blank">@article.titre</a></h2>
+            }
             }
             <p>@Html(article.description)</p>
 
@@ -117,8 +154,8 @@
         <div ng-show="tailleListe == 0" class="ui primary inverted red segment" style="padding-top:50px">
             Aucun article n'est lié à celui-ci.
         </div>
-        <div class="ui five items">
-            <div class="item" style="min-height: 450px;" ng-repeat="item in news['items'] | limitTo:limite">
+        <div class="ui items">
+            <div class="item" style="min-height: 450px; width:185px" ng-repeat="item in news['items'] | limitTo:limite">
                 @user match {
                 case Some(usr) => {
                 <a class="like ui corner label" ng-click="gererCoeur('@usr.mail', item['url'])">
@@ -135,23 +172,26 @@
                         <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
                         <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
 
-                        <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
+                        <div class="ui ribbon label"
+                             style="margin-top:5px; color:white; background-color:{{getCategoryColor(item['domaine'])}}">
+                            {{item['domaine']}}
+                        </div>
                     </div>
                 </a>
 
                 <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
                 <div class="content">
                     @user match {
-                        case Some(usr) => {
-                            <a href="{{item['url']}}" target="_blank" ng-click="enregistrerLecture('@usr.mail', item['url'])">
-                                <div class="name">{{item['titre']}}</div>
-                            </a>
-                        }
-                        case None => {
-                            <a href="{{item['url']}}" target="_blank">
-                                <div class="name">{{item['titre']}}</div>
-                            </a>
-                        }
+                    case Some(usr) => {
+                    <a href="{{item['url']}}" target="_blank" ng-click="enregistrerLecture('@usr.mail', item['url'])">
+                        <div class="name">{{item['titre']}}</div>
+                    </a>
+                    }
+                    case None => {
+                    <a href="{{item['url']}}" target="_blank">
+                        <div class="name">{{item['titre']}}</div>
+                    </a>
+                    }
                     }
 
                     <p style="font-weight:bold">{{item['site']}}</p>
@@ -161,8 +201,9 @@
                         <i class="heart icon"></i> {{item['coeurs']}}
                     </div>
                     <p>
-                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px"
-                              class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                                <span ng-repeat="tag in item['tags'] | limitTo:5"
+                                      style="padding:2px;margin:2px;font-size:11px"
+                                      class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
 
                     </p>
@@ -177,32 +218,31 @@
                         1 article lié à ce sujet.
                     </p>
 
-                    <p ng-show="item['lies']==0">
-                        Pas d'article lié à ce sujet.
-                    </p>
+                    <!--          <p ng-show="item['lies']==0">
+                                  Pas d'article lié à ce sujet.
+                              </p>-->
 
                     <p><a href="/displayart/{{item['id']}}"> <i class="add icon"></i>Voir plus</a></p>
                 </div>
             </div>
         </div>
-        <div class="fluid ui button" ng-click="limite=limite+10"
+        <div class="fluid ui button" ng-click="limite=limite+8"
              ng-show="limite<(news['items']| filter:filtrage).length">Plus
         </div>
     </div>
     <div ng-controller="NewsRenderer" class="three wide column">
-        <h3 class="ui header">Top du jour</h3>
+        <h3 class="ui header" style="text-transform: uppercase;">Top du jour</h3>
 
         <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
             <div class="ui active center loader"></div>
         </div>
         <div class="ui divided ordered list">
-            <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
+            <div class="item" style="min-height: 30px" id="top"
+                 ng-repeat="item in tops['items'] | orderBy:'nombre':true">
                 <div class="content">
-                    <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}}
-                        ({{item['nombre']}})</a>
+                    <a class="header" href="/entite/{{item['id']}}">{{item['nom']}}</a>
 
-                    <div class="description">{{item['type']}}</div>
+                    <div class="description"><i class="tags icon"></i> {{item['nombre']}}</div>
                 </div>
             </div>
         </div>

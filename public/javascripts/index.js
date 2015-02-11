@@ -1,4 +1,4 @@
-var app = angular.module('app', []);
+var app = angular.module('app', ['infinite-scroll']);
 
 app.filter('fromNow', function () {
     return function (date) {
@@ -7,7 +7,12 @@ app.filter('fromNow', function () {
     }
 });
 
-function NewsRenderer($scope, $http) {
+function NewsRenderer($scope, $http, $sce) {
+
+    $scope.deliberatelyTrustDangerousSnippet = function(content) {
+        content = content.replace("href", "target='_blank' href");
+        return $sce.trustAsHtml(content);
+    };
 
     $scope.gererCoeur = function ($mailUser, $urlArticle) {
         $http.post("/changerCoeur", {mailUser: $mailUser, urlArticle: $urlArticle});
@@ -17,7 +22,7 @@ function NewsRenderer($scope, $http) {
             if ($scope.news["items"][item].url == $urlArticle) rank = currentRank;
             currentRank++;
         }
-        if(($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
+        if (($scope.news["items"][rank])['coeurPresent'] == 0) ($scope.news["items"][rank])['coeurPresent'] = 1;
         else ($scope.news["items"][rank])['coeurPresent'] = 0;
     }
 
@@ -160,13 +165,86 @@ function NewsRenderer($scope, $http) {
     }).error(function (err) {
             console.log("err : " + err);
         });
-    $scope.limite = 5;
+    $scope.limite = 4;
     $scope.filtrage = [];
     $scope.domaines = {
         "items": [
         ]
     }
+
+    $scope.loadMore = function (number) {
+        $scope.limite=$scope.limite+number;
+    }
+
+
     $scope.filtrage['domaine'] = "";
+    $scope.lock = false;
+    $scope.getCategoryColor = function ($domaine) {
+        switch ($domaine) {
+            case "sciences":
+                return "#564F8A";
+                break;
+            case "sports":
+                return "#A1CF64";
+                break;
+            case "culture":
+                return "#6ECFF5";
+                break;
+            case "politique":
+                return "#49769C";
+                break;
+            case "sociétés":
+                return "#D34836";
+                break;
+            case "technologies":
+                return "#1F88BE";
+                break;
+            case "économie":
+                return "#CC181E";
+                break;
+            case "à la une":
+                return "#81CFE0";
+                break;
+            case "cinéma":
+                return "#674172";
+                break;
+            case "Jeux vidéos":
+                return "#6C7A89";
+                break;
+            case "musique":
+                return "#D35400";
+                break;
+
+        }
+    }
+
+    $scope.getCategoryColorIfActive = function ($domaine) {
+        if ($scope.color == $domaine || $scope.filtrage.domaine == $domaine) {
+            return  $scope.getCategoryColor($domaine);
+        }
+    }
+
+    $scope.getNewColorIfActive = function ($domaine) {
+        if ($scope.color == $domaine || $scope.filtrage.domaine == $domaine) {
+            return  "white";
+        }
+    }
+
+    $scope.getNewFontIfActive = function ($domaine) {
+        if ($scope.color == $domaine || $scope.filtrage.domaine == $domaine) {
+            return  "Oswald";
+        }
+    }
+
+
+    $scope.changeDomaineFilter = function ($domaine) {
+        $scope.lock = !$scope.lock;
+        $scope.filtrage.domaine = $domaine;
+    }
+
+    $scope.changeActive = function ($domaine) {
+        $scope.color = $domaine;
+    }
 
     $http.get('/getDomaines').success(function (data) {
         console.dir(data);
@@ -188,5 +266,16 @@ function NewsRenderer($scope, $http) {
             console.log("err : " + err);
         });
 
+    var handler = function ($event) {
+        if ($event.which == 32) {
+            $scope.limite = $scope.limite + 8;
+        }
+    };
 
+    var $doc = angular.element(document);
+
+    $doc.on('keydown', handler);
+    $scope.$on('$destroy', function () {
+        $doc.off('keydown', handler);
+    })
 }

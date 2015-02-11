@@ -1,4 +1,4 @@
-var app = angular.module('app', []);
+var app = angular.module('app', ['ngSanitize']);
 
 app.filter('fromNow', function () {
     return function (date) {
@@ -22,5 +22,8 @@ function NewsRenderer($scope, $http) {
             console.log("err : " + err);
         });
 
-
+    $("img").error(function(){
+        $(this.parentNode).hide();
+        $(this.parentNode).next().hide();
+    });
 }

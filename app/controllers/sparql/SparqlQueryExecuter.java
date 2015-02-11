@@ -108,7 +108,7 @@ public class SparqlQueryExecuter {
             int statusCode = client.executeMethod(method);
 
             if (statusCode != HttpStatus.SC_OK) {
-            /*    LOG.error("SparqlQuery failed: " + method.getStatusLine());*/
+                System.err.println("SparqlQuery failed: " + method.getStatusLine());
                 throw new SparqlExecutionException(String.format("%s (%s). %s",
                         method.getStatusLine(),
                         method.getURI(),
@@ -204,6 +204,29 @@ public class SparqlQueryExecuter {
         return img;
     }
 
+    public String getImageFullSize(String uri){
+        String img ="noPic";
+        String requete = "select ?thumb {<"+uri+"> foaf:depiction ?thumb}";
+        JSONArray uris = null;
+        try {
+            uris = this.query(requete);
+            if(uris!=null && uris.length()>0){
+                try {
+                    JSONObject res = uris.getJSONObject(0).getJSONObject("thumb");
+                    String tmp = res.getString("value");
+                    if(!tmp.contains("DOCTYPE")) {
+                        img = res.getString("value");
+                    }
+                } catch (JSONException e) {
+                    img ="noPic";
+                }
+            };
+        } catch (Exception e) {
+            img ="noPic";
+        }
+        return img;
+    }
+
     public String getImageDescription(String uri) throws Exception {
         String desc ="";
         String requete = "select ?thumbCaption {<"+uri+"> dbpedia-owl:thumbnailCaption ?thumbCaption}";
@@ -221,7 +244,7 @@ public class SparqlQueryExecuter {
     }
 
     public String getAbstract(String uri) throws Exception {
-        String img ="Pas de description.";
+        String img = null;
         String requete = "select ?abstract {<"+uri+"> dbpedia-owl:abstract ?abstract}";
         JSONArray uris = this.query(requete);
         if(uris!=null && uris.length()>0){

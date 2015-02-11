@@ -9,10 +9,10 @@ object RecommandationParLike {
     val resultCreate: Boolean = Cypher( """
         create (recommandationParLike: RecommandationParLike {
         ponderation: {ponderation},
-        urlArticle: {urlArticle},
+        url: {url},
         urlEntite: {urlEntite},
         mailUser: {mailUser}});
-                                        """).on("ponderation" -> recommandationParLike.ponderation, "urlArticle" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
+                                        """).on("ponderation" -> recommandationParLike.ponderation, "url" -> recommandationParLike.article.url, "urlEntite" -> recommandationParLike.entite.url, "mailUser" -> recommandationParLike.utilisateur.mail).execute()
 
     if (resultCreate) {
       val otherResult: Boolean = Cypher(
@@ -26,10 +26,10 @@ object RecommandationParLike {
       val otherResult2: Boolean = Cypher(
         """
          match (article: Article), (recommandationParLike: RecommandationParLike)
-         where article.url = {urlArticle} and recommandationParLike.urlArticle = {urlArticle}
+         where article.url = {url} and recommandationParLike.url = {url}
          create (article)-[r:lienRecommandationParLikeArticle]->(recommandationParLike)
         """
-      ).on("urlArticle" -> recommandationParLike.article.url).execute()
+      ).on("url" -> recommandationParLike.article.url).execute()
       if (!otherResult2) false
       Cypher(
         """
@@ -43,7 +43,7 @@ object RecommandationParLike {
   }
 
   def get(user: Utilisateur, article: Article, entite: Entite): Option[RecommandationParLike] = {
-    val result: CypherRow = Cypher("Match (n:RecommandationParLike) where n.mailUser = {mailDonne} return n.ponderation as ponderation;").on("mailDonne" -> user.mail, "urlArticle" -> article.url, "urlEntite" -> entite.url).apply().head
+    val result: CypherRow = Cypher("Match (n:RecommandationParLike) where n.mailUser = {mailDonne} return n.ponderation as ponderation;").on("mailDonne" -> user.mail, "url" -> article.url, "urlEntite" -> entite.url).apply().head
     result match {
       case CypherRow(ponderation: BigDecimal) => Some(RecommandationParLike(user, article, entite, ponderation.toDouble))
       case _ => None
@@ -51,7 +51,7 @@ object RecommandationParLike {
   }
 
   def setPonderation(user: Utilisateur, article: Article, entite: Entite, nouvellePonderation: Double): Option[RecommandationParLike] = {
-    val result: CypherRow = Cypher("Match (n:RecommandationParLike) where n.mailUser = {mailDonne} set n.ponderation = {nouvPonderation} return n.ponderation as ponderation;").on("mailDonne" -> user.mail, "urlArticle" -> article.url, "urlEntite" -> entite.url, "nouvPonderation" -> nouvellePonderation).apply().head
+    val result: CypherRow = Cypher("Match (n:RecommandationParLike) where n.mailUser = {mailDonne} set n.ponderation = {nouvPonderation} return n.ponderation as ponderation;").on("mailDonne" -> user.mail, "url" -> article.url, "urlEntite" -> entite.url, "nouvPonderation" -> nouvellePonderation).apply().head
     result match {
       case CypherRow(ponderation: BigDecimal) => Some(RecommandationParLike(user, article, entite, ponderation.toDouble))
       case _ => None
@@ -81,20 +81,20 @@ object RecommandationParLike {
       """
         match (user: Utilisateur {mail : {mailUser}})-[r:lienRecommandationParLikeUser]-(reco: RecommandationParLike)
                  return reco.mailUser as mailUser,
-                 reco.urlArticle as urlArticle,
+                 reco.url as url,
                  reco.urlEntite as urlEntite,
                  reco.ponderation as ponderation
                  order by r.ponderation DESC
                  limit {nbRecommandations};
       """).on("mailUser" -> user.mail, "nbRecommandations" -> nbRecommandations)().collect {
       case CypherRow(mailUser: String,
-      urlArticle: String,
+      url: String,
       urlEntite: String,
       ponderation: BigDecimal) =>
         val optionUser = Utilisateur.get(mailUser)
         optionUser match {
           case Some(user) =>
-            val optionArticle = Article.getByUrl(urlArticle)
+            val optionArticle = Article.getByUrl(url)
             optionArticle match {
               case Some(article) =>
                 val optionEntite = Entite.getByUrl(urlEntite)

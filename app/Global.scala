@@ -52,14 +52,14 @@ object Global extends GlobalSettings {
 
     /**************************************************/
 
-    Akka.system.scheduler
+/*   Akka.system.scheduler
       .schedule(
         Duration.create(0,TimeUnit.SECONDS),
-        Duration.create(5, TimeUnit.MINUTES),
+        Duration.create(1, TimeUnit.MINUTES),
         new Runnable() {
           override def run()= {
             Logger.debug("===============================================")
-            Logger.debug("Toutes les 5 minutes : mise à jour " + System.currentTimeMillis())
+            Logger.debug("Toutes les 1 minutes : mise à jour " + System.currentTimeMillis())
             val nbnewsart=FluxRss.misAJourTousSites()
             Logger.debug("Nombre articles rajoutés TOTAL :" +nbnewsart)
             Logger.debug("===============================================")
@@ -75,7 +75,7 @@ object Global extends GlobalSettings {
           Utils.remiseAZeroJour()
           Logger.debug("remise a zéro articles")
         }
-      })
+      })*/
 
 
   }

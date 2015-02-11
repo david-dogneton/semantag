@@ -51,12 +51,12 @@ object Utilisateur {
   def aime(user: Utilisateur, article:Article): Int = {
     val result: List[Utilisateur] = Cypher(
       """
-        Match (n:Utilisateur {mail: {mailUser}})-[r:note]-(a:Article {url: {urlArticle}})
+        Match (n:Utilisateur {mail: {mailUser}})-[r:note]-(a:Article {url: {url}})
         return n.mail as mail,
           n.mdp as mdp,
           n.pseudo as pseudo,
           n.nbCoeurs as nbCoeurs;
-      """).on("mailUser" -> user.mail, "urlArticle" -> article.url)().collect {
+      """).on("mailUser" -> user.mail, "url" -> article.url)().collect {
       case CypherRow(mail: String,
       mdp: String,
       pseudo: String,

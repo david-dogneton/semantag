@@ -1,99 +1,136 @@
 @()(implicit user: Option[Utilisateur], lang: Lang)
 @main(Messages("index.title"))("accueil") {
-<div class="ui grid" ng-controller="NewsRenderer">
-    <div class="two wide column">
-        <div class="sixteen wide column">
-            <h3 class="ui header">Domaine</h3>
-            <a style="cursor:pointer" ng-click="filtrage.domaine=''">Tout</a>
-            <div class="sixteen wide column" ng-repeat="domaine in domaines['items'] | orderBy:'nom'" style="font-family: 'Source Sans Pro'">
-                <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
+<div class="ui page stackable grid" ng-controller="NewsRenderer">
+    <div class="three wide column">
+        <!--<div style="position:fixed">-->
+        <div class="box-container">
+            <div class="box-header">
+                Domaines
             </div>
+        <div class="ui secondary vertical pointing menu box-content" style="text-transform: uppercase; padding:0">
+
+            <a ng-mouseover="changeIfNotLocked('')"
+               ng-class="{'active item': filtrage.domaine=='', 'item': filtrage.domaine!=''}"
+               ng-click="changeDomaineFilter('')" class="active item">
+                Tout
+            </a>
+            <a ng-mouseover="changeActive(domaine['nom'])"
+               ng-mouseleave="changeActive('')"
+               style="color: {{getNewColorIfActive(domaine['nom'])}}; font-family: {{getNewFontIfActive(domaine['nom'])}}; background-color:{{getCategoryColorIfActive(domaine['nom'])}}"
+               ng-class="{'active item': filtrage.domaine==domaine['nom'], 'item': filtrage.domaine!=domaine['nom']}"
+               ng-click="changeDomaineFilter(domaine['nom'])" class="item"
+               ng-repeat="domaine in domaines['items'] | orderBy:'nom'">
+                {{domaine['nom']}}
+            </a>
+
+            <!--    <div class="sixteen wide column" ng-repeat="domaine in domaines['items'] | orderBy:'nom'">
+                    <a style="cursor:pointer" ng-click="filtrage.domaine=domaine['nom']">{{domaine['nom']}}</a>
+                </div>-->
         </div>
+        </div>
+        <!--  </div>-->
     </div>
-    <div class="eleven wide column">
+    <div class="ten wide column" infinite-scroll="loadMore(8)">
         <div ng-show="news['items'].length==0" class="ui segment" style="padding-top:50px">
             Récupération des articles les plus récents...
             <div class="ui active center loader"></div>
         </div>
-        <div class="ui five items">
-            <div class="item" style="min-height: 600px;" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
-                @user match {
-                    case Some(usr) => {
-                            <a class="like ui corner label" ng-click="gererCoeur('@usr.mail', item['url'])">
-                                <i ng-class="{'like icon':item['coeurPresent'] == 0, 'like icon cliquee':item['coeurPresent'] == 1}"></i>
-                            </a>
-                    }
-                    case None => {
-                    }
-                }
 
-                <a href="{{item['url']}}" target="_blank">
-                    <div class="image">
-                        <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
-                        <img ng-show="{{item['image'].length==0}}" src='@routes.Assets.at("images/no-image.jpg")'>
-                        <div class="ui ribbon label" style="margin-top:5px">{{item['domaine']}}</div>
-                    </div>
-                </a>
+        <div class="ui items" >
+            <div class="item" id="boxed-item" ng-repeat="item in news['items'] | filter:filtrage  | limitTo:limite">
+                <div class="image">
 
-                <div class="meta" style="float:none">{{item['date'] | fromNow}}</div>
+                    <img ng-show="{{item['image'].length>0}}" src="{{item['image']}}">
+                    <img ng-show="{{item['image'].length==0}}"
+                         src='@routes.Assets.at("images/no-image.jpg")'>
+                    <!--<span style="margin-top:5px; color:white;     font-family: 'Oswald', sans-serif;">    {{item['domaine']}}</span>-->
+                </div>
                 <div class="content">
-                    @user match {
+                    <a class="header">
+                        @user match {
                         case Some(usr) => {
-                            <a href="{{item['url']}}" target="_blank" ng-click="enregistrerLecture('@usr.mail', item['url'])">
-                                <div class="name">{{item['titre']}}</div>
-                            </a>
+                        <div class="name" ng-mouseover="show=true" ng-mouseleave="show=false" ng-click="enregistrerLecture('@usr.mail', item['url'])">
+                            {{item['titre']}}
+                            <i ng-show="show" class="long arrow right icon"></i>
+                        </div>
                         }
                         case None => {
-                            <a href="{{item['url']}}" target="_blank">
-                                <div class="name">{{item['titre']}}</div>
-                            </a>
+                        <a href="{{item['url']}}" target="_blank">
+                            <div class="name" ng-mouseover="show=true" ng-mouseleave="show=false">
+                                {{item['titre']}}
+                                <i ng-show="show" class="long arrow right icon"></i>
+                            </div>
+                        </a>
                         }
-                    }
-                    <p style="font-weight:bold">{{item['site']}}</p>
-                    <p class="description">{{item['description']}}</p>
-                    <div class="extra">
+                        }</a>
+                    <div class="meta">
+                        <span class="cinema">{{item['date'] | fromNow}}</span>
                         <i class="unhide icon"></i> {{item['consultationsJour']}} |
                         <i class="heart icon"></i> {{item['coeurs']}}
                     </div>
-                    <p>
-                        <i class="tags icon"></i>
-                        <span ng-repeat="tag in item['tags'] | limitTo:5" style="padding:2px;margin:2px;font-size:11px" class="ui label"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></span>
+                    <div class="ui divider"></div>
+                    <div class="description" ng-bind-html="deliberatelyTrustDangerousSnippet(item['description'])">
+
+                        <p style="font-weight:bold">{{item['site']}}</p>
+                 <!--       {{item['description']}}-->
+
+                        <p ng-show="item['lies']>1">
+                            {{item['lies']}} articles liés à ce sujet.
+                        </p>
+
+                        <p ng-show="item['lies']==1">
+                            1 article lié à ce sujet.
+                        </p>
+
+                    </div>
+                    <div class="extra">
+                        <div class="ui horizontal label" ng-repeat="tag in item['tags'] | limitTo:5"><a href="/entite/{{tag.id}}">{{tag.nom}}</a></div>
                         <span ng-show="item['tags'].length>5">... {{item['tags'].length-5}} de plus</span>
-                    </p>
-                    <p ng-show="item['lies']>1">
-                        {{item['lies']}} articles liés à ce sujet.
-                    </p>
-                    <p ng-show="item['lies']==1">
-                        1 article lié à ce sujet.
-                    </p>
-                    <p ng-show="item['lies']==0">
-                        Pas d'article lié à ce sujet.
-                    </p>
-                    <p> <a href="/displayart/{{item['id']}}"><i class="add icon"></i>Voir plus</a></p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="fluid ui button" ng-click="limite=limite+10" ng-show="limite<(news['items']| filter:filtrage).length">Plus</div>
     </div>
     <div class="three wide column">
-        <h3 class="ui header">Top du jour</h3>
-        <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
-            <div  class="ui active center loader"></div>
-        </div>
-        <div class="ui divided ordered list">
-            <div class="item" id="top" ng-repeat="item in tops['items'] | orderBy:'nombre':true">
-                <!--<img ng-show="{{item['image']!='noPic'}}" class="ui avatar image" style="margin-right:0" src="{{item['image']}}" alt="">-->
-                <div class="content">
-                        <a class="ui mini hover teal button" href="/entite/{{item['id']}}">{{item['nom']}} ({{item['nombre']}})</a>
-                        <div class="description">{{item['type']}}</div>
-                    </div>
-                    <div class="description">{{item['type']}}</div>
-                </div>
+        <!--<div style="position:fixed">-->
+        <div class="box-container">
+            <div class="box-header">
+                Top du jour
             </div>
+                <div class="box-content">
+                    <div ng-show="tops['items'].length==0" class="ui segment" style="padding:20px">
+                        <div class="ui active center loader"></div>
+                    </div>
+                    <div class="ui divided list" style="text-align:center">
+                        <div class="item" style="min-height: 30px" id="top"
+                             ng-repeat="item in tops['items'] | orderBy:'nombre':true">
+                            <a href="/entite/{{item['id']}}">
+                            <div class="ui mini statistic">
+                                <div class="value">
+                                    {{item['nombre']}}
+                                </div>
+                                <div class="label">
+                                    {{item['nom']}}
+                                </div>
+                            </div>
+                                </a>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
-    <link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
-    <script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
-    <script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
-    <script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
-    }
+</div>
+<script>
+    $('.image')
+            .dimmer({
+                on: 'hover'
+            })
+    ;
+</script>
+<link rel='stylesheet' media="screen" href='@routes.Assets.at("stylesheets/index.css")'>
+<script src='@routes.Assets.at("javascripts/moment-with-langs.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/angular.min.js")' type="text/javascript"></script>
+<script src='@routes.Assets.at("javascripts/angular-sanitize.min.js")'></script>
+<script src='@routes.Assets.at("javascripts/ng-infinite-scroll.min.js")'></script>
+<script src='@routes.Assets.at("javascripts/index.js")' type="text/javascript"></script>
+}

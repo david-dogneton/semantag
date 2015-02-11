@@ -12,7 +12,7 @@ header.stats.today=Aujourd''hui
 header.stats.thisWeek=Cette semaine
 header.stats.thisMonth=Ce mois-ci
 header.stats.fromBeginning=Depuis le début
-header.search=Rechercher un article qui parle de...
+header.search=Rechercher...
 header.hi=Salut
 header.deconnect=Déconnexion
 
@@ -25,6 +25,7 @@ results.title=Résultats de la recherche
 
 #PAGE STATISTIQUES
 stats.title=Statistiques générales
+stats.types.search=Rechercher un type...
 
 #VISUALISATION ENTITE
 entity.title=Semantag : entité
