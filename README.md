@@ -12,7 +12,8 @@ Semantag fetches and semantically structures articles from any RSS feeds.
 
 ## About
 
-Semantag annotates RSS feeds titles and descriptions as DBpedia entities thanks to DBpedia Spotlight.
+Semantag annotates RSS feeds titles and descriptions as DBpedia entities thanks to [DBpedia Spotlight](https://github.com/dbpedia-spotlight/dbpedia-spotlight).
+
 Articles are then semantically linked together by tags, making a strong and smart recommandation engine.
 
 ## Installation
